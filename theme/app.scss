@@ -29,4 +29,17 @@ ul.softlinks {
 footer {
   border-top: 1px solid black;
   padding: 1em;
+
+  .plug {
+    font-size: small;
+  }
+
+  .version {
+    font-size: x-small;
+    color: #aaa;
+
+    a {
+      color: #aaa;
+    }
+  }
 }

@@ -8,6 +8,8 @@ import re
 import urlparse
 import urllib
 import bleach
+import git
+import os
 
 import settings
 
@@ -15,6 +17,11 @@ app = Flask(__name__)
 Misaka(app)
 
 database = peewee.SqliteDatabase(settings.DATABASE, threadlocals=True)
+
+@app.context_processor
+def add_git_version():
+    repo = git.Repo(os.path.dirname(os.path.realpath(__file__)))
+    return dict(git_version=repo.head.commit.hexsha)
 
 @app.context_processor
 def add_random_page():
