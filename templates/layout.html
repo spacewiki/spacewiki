@@ -8,8 +8,20 @@
 </head>
 <body>
 <div class="row">
-  <div class="small-12 columns">
+  <div class="small-8 columns">
     <h1><a href="/">{{settings.SITE_NAME}}</a></h1>
+  </div>
+  <div class="small-4 columns">
+    <form method="get" action="/.search">
+      <div class="row collapse postfix-round">
+        <div class="small-10 columns">
+          <input type="text" name="q" placeholder="{{random_page.title}}">
+        </div>
+        <div class="small-2 columns">
+          <button type="submit" class="button postfix">Search</button>
+        </div>
+      </div>
+    </form>
   </div>
 </div>
 {% block canvas %}

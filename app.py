@@ -16,6 +16,11 @@ Misaka(app)
 database = peewee.SqliteDatabase(settings.DATABASE, threadlocals=True)
 
 @app.context_processor
+def add_random_page():
+    page = Page.select().order_by(peewee.fn.Random()).limit(1)[0]
+    return dict(random_page=page)
+
+@app.context_processor
 def add_site_settings():
     return dict(settings=settings)
 
@@ -107,6 +112,12 @@ def edit(slug):
     else:
         return render_template('404.html',
             slug=slug)
+
+@app.route("/.search")
+def search():
+    query = request.args.get('q')
+    pages = Page.select().where(Page.title.contains(query))
+    return render_template('search.html', results=pages, query=query)
 
 @app.route("/.all-pages")
 def allPages():
