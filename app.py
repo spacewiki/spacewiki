@@ -86,6 +86,12 @@ def edit(slug):
         return render_template('404.html',
             slug=slug)
 
+@app.route("/.all-pages")
+def allPages():
+    pages = Page.select().order_by(Page.title)
+    return render_template('all-pages.html',
+        pages=pages)
+
 @app.route("/")
 @app.route("/<slug>")
 def index(slug='Index', redirectFrom=None):
