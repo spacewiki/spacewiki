@@ -13,10 +13,11 @@
 {% endif %}
 {{revision.body | wikilinks | markdown}}
 
-<ul>
+<ul class="softlinks">
 {% for softlink in revision.page.softlinks_out %}
 <li><a href="/{{softlink.dest.slug}}">{{softlink.dest.title}}</a></li>
 {% endfor %}
+<br style="clear:both">
 </ul>
 {% endblock %}
 

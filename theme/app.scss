@@ -4,3 +4,24 @@
 textarea {
   height: 30em;
 }
+
+ul.softlinks {
+  li {
+    display: block;
+    float: left;
+    a {
+      display: block;
+      min-width: 7em;
+      height: 2em;
+      padding: 0.25em;
+      background-color: #ddd;
+      text-align: center;
+      color: #000;
+    }
+
+    a:hover {
+      background-color: #aaa;
+    }
+    padding: 1px;
+  }
+}
