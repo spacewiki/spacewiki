@@ -50,7 +50,11 @@ def setup_db():
 @app.teardown_appcontext
 def close_db(error):
     if hasattr(g, '_database'):
-        g._database.close()
+        try:
+            g._database.close()
+        except:
+            pass
+        del g._database
 
 class BaseModel(peewee.Model):
     class Meta:
