@@ -35,8 +35,12 @@
       pip: virtualenv=/srv/spacewiki/virtualenv requirements=/srv/spacewiki/app/requirements.txt
     - name: Configure uwsgi app
       template: src=uwsgi-spacewiki.conf dest=/etc/uwsgi/apps-available/spacewiki
+      notify:
+        - Reload uwsgi
     - name: Activate uwsgi app
       file: src=/etc/uwsgi/apps-available/spacewiki dest=/etc/uwsgi/apps-enabled/spacewiki.ini state=link
+      notify:
+        - Reload uwsgi
     - name: Update nginx config
       template: src=nginx-spacewiki.conf dest=/etc/nginx/sites-available/spacewiki
       notify:
