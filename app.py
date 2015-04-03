@@ -7,6 +7,7 @@ import logging
 import re
 import urlparse
 import urllib
+import bleach
 
 import settings
 
@@ -27,6 +28,16 @@ def add_random_page():
 @app.context_processor
 def add_site_settings():
     return dict(settings=settings)
+
+tag_whitelist = [
+  'ul', 'li', 'ol', 'p', 'table', 'div', 'tr', 'th', 'td', 'em', 'big', 'b',
+  'strong', 'a', 'abbr', 'aside', 'audio', 'blockquote', 'br', 'button', 'code',
+  'dd', 'del', 'dfn', 'dl', 'dt', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'i',
+  'img', 'ins', 'kbd', 'pre', 's', 'small', 'span', 'sub', 'sup', 'u', 'video'
+]
+@app.template_filter('safetags')
+def safetags(s):
+    return bleach.clean(s, tags=tag_whitelist, strip_comments=False)
 
 linkSyntax = re.compile("\[\[(.+?)\]\]")
 titledLinkSyntax = re.compile("\[\[(.+?)\|(.+?)\]\]")
