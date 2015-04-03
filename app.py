@@ -112,6 +112,16 @@ class Revision(BaseModel):
     page = peewee.ForeignKeyField(Page, related_name='revisions')
     body = peewee.TextField()
 
+@app.route("/.history/<slug>")
+def history(slug):
+    page = Page.get(slug=slug)
+    return render_template('history.html', page=page)
+
+@app.route('/.revision/<revision>')
+def revision(revision):
+    revision = Revision.get(id=revision)
+    return render_template('revision.html', revision=revision)
+
 @app.route("/.save", methods=['POST'])
 def save():
     try:

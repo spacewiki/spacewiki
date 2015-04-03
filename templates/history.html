@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<table>
+  <tr>
+    <th>Revision</th>
+  </tr>
+  {% for rev in page.revisions %}
+  <tr>
+    <td>
+      <a href="{{url_for('revision', revision=rev.id)}}">{{rev.id}}</a>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}
