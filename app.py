@@ -5,6 +5,8 @@ from flask.ext.misaka import Misaka
 from argparse import ArgumentParser
 import logging
 import re
+import urlparse
+import urllib
 
 DATABASE = 'spacewiki.sqlite3'
 
@@ -52,6 +54,17 @@ class Page(BaseModel):
     def newRevision(self, body):
         return Revision.create(page=self, body=body)
 
+    def makeSoftlinkFrom(self, prev):
+        logging.debug("Linking from %s to %s", prev.slug, self.slug)
+        try:
+            Softlink.get(Softlink.src == prev, Softlink.dest == self)
+            logging.debug("Link exists!")
+        except peewee.DoesNotExist:
+            Softlink.create(src=prev, dest=self)
+            logging.debug("New link!")
+        Softlink.update(hits = Softlink.hits + 1).where(Softlink.src ==
+            prev, Softlink.dest == self).execute()
+
     @classmethod
     def latestRevision(cls, slug):
         try:
@@ -61,6 +74,11 @@ class Page(BaseModel):
                 .order_by(Revision.id.desc())[0]
         except IndexError:
             return None
+
+class Softlink(BaseModel):
+    src = peewee.ForeignKeyField(Page, related_name='softlinks_out')
+    dest = peewee.ForeignKeyField(Page, related_name='softlinks_in')
+    hits = peewee.IntegerField(default=0)
 
 class Revision(BaseModel):
     page = peewee.ForeignKeyField(Page, related_name='revisions')
@@ -95,11 +113,27 @@ def allPages():
 @app.route("/")
 @app.route("/<slug>")
 def index(slug='Index', redirectFrom=None):
+    lastPage = None
     revision = Page.latestRevision(slug)
+
+    if 'Referer' in request.headers:
+        referer = request.headers['Referer']
+        referUrl = urlparse.urlparse(referer)
+        if referUrl.netloc == request.headers['Host']:
+            lastPageSlug = urllib.unquote(referUrl.path[1:])
+            logging.debug("Last page slug: %s", lastPageSlug)
+            try:
+                lastPage = Page.get(slug=lastPageSlug)
+            except peewee.DoesNotExist:
+                pass
+
     if revision is not None:
+        if lastPage is not None and lastPage != revision.page:
+            revision.page.makeSoftlinkFrom(lastPage)
+
         if revision.body.startswith("#Redirect"):
             newSlug = revision.body.split(' ', 1)[1]
-            print "Redirect to", newSlug
+            logging.debug("Redirect to %s", newSlug)
             return index(newSlug, redirectFrom=slug)
         return render_template('page.html',
             revision=revision, redirectFrom=redirectFrom)
@@ -118,7 +152,7 @@ if __name__ == "__main__":
     if args.syncdb:
       logging.info("Creating tables...")
       with app.app_context():
-        database.create_tables([Page, Revision])
+        database.create_tables([Page, Revision, Softlink])
       logging.info("OK!")
     else:
       app.run()

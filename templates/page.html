@@ -7,6 +7,12 @@
     href="/.edit/{{redirectFrom}}">{{redirectFrom}}</a></small>
 {% endif %}
 {{revision.body | wikilinks | markdown}}
+
+<ul>
+{% for softlink in revision.page.softlinks_out %}
+<li><a href="/{{softlink.dest.slug}}">{{softlink.dest.title}}</a></li>
+{% endfor %}
+</ul>
 {% endblock %}
 
 {% block sidebar %}
