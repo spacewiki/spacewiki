@@ -200,4 +200,4 @@ if __name__ == "__main__":
         database.create_tables([Page, Revision, Softlink])
       logging.info("OK!")
     else:
-      app.run()
+      app.run(debug=True)
