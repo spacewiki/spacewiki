@@ -2,6 +2,10 @@
 
 {% block content %}
 <h1>{{revision.page.title}}</h1>
+{% if redirectFrom %}
+<p><small>Redirected from <a
+    href="/.edit/{{redirectFrom}}">{{redirectFrom}}</a></small>
+{% endif %}
 {{revision.body | wikilinks | markdown}}
 {% endblock %}
 

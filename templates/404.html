@@ -1,3 +1,19 @@
-There is no page titled "{{slug}}". You may create one here:
+{% extends "layout.html" %}
 
-{% include "_editor.html" %}
+{% block canvas %}
+<div class="row">
+  <div class="small-12 columns">
+    <h1>Editing <em>{{slug}}</em></h1>
+    {% if redirectFrom %}
+    <p><small>Redirected from <a
+        href="/.edit/{{redirectFrom}}">{{redirectFrom}}</a></small>
+    {% endif %}
+    <p><em>There is no page titled "{{slug}}". You may create one here:</em>
+  </div>
+</div>
+<div class="row">
+  <div class="small-12 columns">
+    {% include "_editor.html" %}
+  </div>
+</div>
+{% endblock %}

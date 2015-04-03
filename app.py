@@ -88,14 +88,18 @@ def edit(slug):
 
 @app.route("/")
 @app.route("/<slug>")
-def index(slug='Index'):
+def index(slug='Index', redirectFrom=None):
     revision = Page.latestRevision(slug)
     if revision is not None:
+        if revision.body.startswith("#Redirect"):
+            newSlug = revision.body.split(' ', 1)[1]
+            print "Redirect to", newSlug
+            return index(newSlug, redirectFrom=slug)
         return render_template('page.html',
-            revision=revision)
+            revision=revision, redirectFrom=redirectFrom)
     else:
         return render_template('404.html',
-            slug=slug)
+            slug=slug, redirectFrom=redirectFrom)
 
 if __name__ == "__main__":
     parser = ArgumentParser()
