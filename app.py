@@ -17,7 +17,11 @@ database = peewee.SqliteDatabase(settings.DATABASE, threadlocals=True)
 
 @app.context_processor
 def add_random_page():
-    page = Page.select().order_by(peewee.fn.Random()).limit(1)[0]
+    page = None
+    try:
+        page = Page.select().order_by(peewee.fn.Random()).limit(1)[0]
+    except:
+        pass
     return dict(random_page=page)
 
 @app.context_processor
