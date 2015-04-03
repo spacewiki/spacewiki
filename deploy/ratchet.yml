@@ -1,0 +1,56 @@
+---
+- name: Deploy spacewiki on Ratchet
+  hosts: all
+  sudo: true
+  tasks:
+    - name: Enable node ppa
+      apt_repository: repo='deb https://deb.nodesource.com/node_0.10 wheezy main' state=present
+    - name: Install node repo key
+      apt_key: keyserver=hkp://keys.gnupg.net id=1655A0AB68576280
+    - name: Install packages
+      apt: name={{item}} state=installed
+      with_items:
+        - uwsgi
+        - nodejs
+        - uwsgi-plugin-python
+    - name: Create spacewiki user
+      user: name=spacewiki comment=SpaceWiki home=/srv/spacewiki shell=/sbin/nologin system=yes
+    - name: Make spacewiki dirs
+      file: state=directory owner=spacewiki path={{item}}
+      with_items:
+        - /srv/spacewiki
+        - /srv/spacewiki/app
+        - /srv/spacewiki/app/static/lib
+        - /srv/spacewiki/data
+    - name: Check out spacewiki
+      git: accept_hostkey=yes dest=/srv/spacewiki/app repo=git://github.com/tdfischer/spacewiki
+      notify:
+        - Compile static files
+        - Reload uwsgi
+    - name: Configure spacewiki
+      template: src=spacewiki-conf.py dest=/srv/spacewiki/app/local_settings.py
+      notify:
+        - Reload uwsgi
+    - name: Setup spacewiki virtualenv
+      pip: virtualenv=/srv/spacewiki/virtualenv requirements=/srv/spacewiki/app/requirements.txt
+    - name: Configure uwsgi app
+      template: src=uwsgi-spacewiki.conf dest=/etc/uwsgi/apps-available/spacewiki
+    - name: Activate uwsgi app
+      file: src=/etc/uwsgi/apps-available/spacewiki dest=/etc/uwsgi/apps-enabled/spacewiki.ini state=link
+    - name: Update nginx config
+      template: src=nginx-spacewiki.conf dest=/etc/nginx/sites-available/spacewiki
+      notify:
+        - Reload nginx
+    - name: Activate nginx site
+      file: dest=/etc/nginx/sites-enabled/spacewiki src=/etc/nginx/sites-available/spacewiki state=link
+      notify:
+        - Reload nginx
+    - name: Compile static files
+      shell: chdir=/srv/spacewiki/app su -s /bin/sh spacewiki -c 'npm install && node ./node_modules/gulp/bin/gulp.js'
+  handlers:
+    - name: Reload nginx
+      shell: service nginx configtest && service nginx reload
+    - name: Reload uwsgi
+      service: name=uwsgi state=reloaded
+    - name: Compile static files
+      shell: chdir=/srv/spacewiki/app su -s /bin/sh spacewiki -c 'npm install && node ./node_modules/gulp/bin/gulp.js'

@@ -1,3 +1,8 @@
 test:
   override:
     - nosetests
+deployment:
+  ratchet:
+    branch: master
+    commands:
+      - ansible-playbook -i deploy/hosts.txt deploy/ratchet.yml
