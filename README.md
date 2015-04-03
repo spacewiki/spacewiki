@@ -20,7 +20,9 @@ others to get up and going with minimal setup:
 * Default sqlite database out of the box
 * Markdown page syntax
 * The familiar MediaWiki syntax for linking to other pages
-* Softlinks for easy-peasy organic discovery of related pages
+* Softlinks for easy-peasy organic discovery of related pages. If you are
+  unfamiliar with Softlinks, [check out how Everything2 does
+  it](http://everything2.com/title/Soft+link)
 
 ## Setup
 
