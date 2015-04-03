@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <link rel="stylesheet" href="/static/lib/app.css">
+<link rel="stylesheet" href="{{url_for('static', filename='lib/app.css')}}">
   <title>
     {% block title %}{% block subtitle %}{% endblock %} - {{settings.SITE_NAME}}{% endblock %}
   </title>
@@ -9,13 +9,13 @@
 <body>
 <div class="row">
   <div class="small-8 columns">
-    <h1><a href="/">{{settings.SITE_NAME}}</a></h1>
+    <h1><a href="{{url_for('index')}}">{{settings.SITE_NAME}}</a></h1>
   </div>
   <div class="small-4 columns">
-    <form method="get" action="/.search">
+    <form method="get" action="{{url_for('search')}}">
       <div class="row collapse postfix-round">
         <div class="small-10 columns">
-          <input type="text" name="q" placeholder="{{random_page.title}}">
+          <input type="text" name="q" placeholder="{% if random_page %}{{random_page.title}}{% endif %}">
         </div>
         <div class="small-2 columns">
           <button type="submit" class="button postfix">Search</button>

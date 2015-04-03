@@ -9,13 +9,13 @@
 <h1>{{revision.page.title}}</h1>
 {% if redirectFrom %}
 <p><small>Redirected from <a
-    href="/.edit/{{redirectFrom}}">{{redirectFrom}}</a></small>
+    href="{{url_for('edit', slug=redirectFrom)}}">{{redirectFrom}}</a></small>
 {% endif %}
 {{revision.body | wikilinks | markdown}}
 
 <ul class="softlinks">
 {% for softlink in revision.page.softlinks_out %}
-<li><a href="/{{softlink.dest.slug}}">{{softlink.dest.title}}</a></li>
+<li><a href={{url_for('index', slug=softlink.dest.slug)}}">{{softlink.dest.title}}</a></li>
 {% endfor %}
 <br style="clear:both">
 </ul>
@@ -23,7 +23,7 @@
 
 {% block sidebar %}
 <h1>Tools</h1>
-{% filter markdown %}
-* [Edit](/.edit/{{revision.page.slug}})
-{% endfilter %}
+<ul>
+  <li><a href="{{url_for('edit', slug=revision.page.slug)}}">Edit</a></li>
+</ul>
 {% endblock %}
