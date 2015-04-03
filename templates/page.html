@@ -1,5 +1,10 @@
 {% extends "layout.html" %}
 
+{% block subtitle %}
+{{revision.page.title}}
+{% endblock %}
+
+
 {% block content %}
 <h1>{{revision.page.title}}</h1>
 {% if redirectFrom %}

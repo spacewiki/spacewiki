@@ -8,12 +8,16 @@ import re
 import urlparse
 import urllib
 
-DATABASE = 'spacewiki.sqlite3'
+import settings
 
 app = Flask(__name__)
 Misaka(app)
 
-database = peewee.SqliteDatabase(DATABASE, threadlocals=True)
+database = peewee.SqliteDatabase(settings.DATABASE, threadlocals=True)
+
+@app.context_processor
+def add_site_settings():
+    return dict(settings=settings)
 
 linkSyntax = re.compile("\[\[(.+?)\]\]")
 titledLinkSyntax = re.compile("\[\[(.+?)\|(.+?)\]\]")
@@ -112,7 +116,7 @@ def allPages():
 
 @app.route("/")
 @app.route("/<slug>")
-def index(slug='Index', redirectFrom=None):
+def index(slug=settings.INDEX_PAGE, redirectFrom=None):
     lastPage = None
     revision = Page.latestRevision(slug)
 
@@ -122,10 +126,11 @@ def index(slug='Index', redirectFrom=None):
         if referUrl.netloc == request.headers['Host']:
             lastPageSlug = urllib.unquote(referUrl.path[1:])
             logging.debug("Last page slug: %s", lastPageSlug)
-            try:
-                lastPage = Page.get(slug=lastPageSlug)
-            except peewee.DoesNotExist:
-                pass
+            if lastPageSlug != settings.INDEX_PAGE:
+                try:
+                    lastPage = Page.get(slug=lastPageSlug)
+                except peewee.DoesNotExist:
+                    pass
 
     if revision is not None:
         if lastPage is not None and lastPage != revision.page:

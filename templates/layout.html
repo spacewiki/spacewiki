@@ -3,10 +3,15 @@
 <head>
   <link rel="stylesheet" href="/static/lib/app.css">
   <title>
-    {% block title %}{% endblock %}
+    {% block title %}{% block subtitle %}{% endblock %} - {{settings.SITE_NAME}}{% endblock %}
   </title>
 </head>
 <body>
+<div class="row">
+  <div class="small-12 columns">
+    <h1><a href="/">{{settings.SITE_NAME}}</a></h1>
+  </div>
+</div>
 {% block canvas %}
 <div class="row">
   <div class="small-10 columns">
