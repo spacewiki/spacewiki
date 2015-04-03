@@ -82,9 +82,17 @@ class BaseModel(peewee.Model):
     class Meta:
         database = database
 
+class SlugField(peewee.CharField):
+    def coerce(self, value):
+        return self.slugify(value)
+
+    @staticmethod
+    def slugify(title):
+        return re.sub('[^\w]', '_', title.lower())
+
 class Page(BaseModel):
     title = peewee.CharField(unique=True)
-    slug = peewee.CharField(unique=True)
+    slug = SlugField(unique=True)
 
     def newRevision(self, body):
         return Revision.create(page=self, body=body)
