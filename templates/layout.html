@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="/static/lib/app.css">
+  <title>
+    {% block title %}{% endblock %}
+  </title>
+</head>
+<body>
+{% block canvas %}
+<div class="row">
+  <div class="small-10 columns">
+    {% block content %}
+    {% endblock %}
+  </div>
+  <div class="small-2 columns">
+    {% block sidebar %}
+    {% endblock %}
+  </div>
+</div>
+{% endblock %}
+<footer class="row">
+  <div class="small-12 columns">
+    Powered by <a href="https://github.com/tdfischer/spacewiki">SpaceWiki</a>
+  </div>
+</footer>
+</body>
+</html>

@@ -1,6 +1,16 @@
 <form method="post" action="/.save">
-  Title: <input type="text" name="title" value="{% if revision and revision.page.title %}{{revision.page.title}}{% elif slug %}{{slug}}{% endif %}">
-  <br />
-  Body: <textarea name="body">{% if revision and revision.body %}{{revision.body}}{% endif %}</textarea>
+  <div class="row">
+    <div class="large-12 columns">
+      <label>
+        Title
+        <input type="text" name="title" value="{% if revision and revision.page.title %}{{revision.page.title}}{% elif slug %}{{slug}}{% endif %}">
+      </label>
+    </div>
+  </div>
+  <div class="row">
+    <div class="large-12 columns">
+      <textarea name="body">{% if revision and revision.body %}{{revision.body}}{% endif %}</textarea>
+    </div>
+  </div>
   <button type="submit">Save</button>
 </form>

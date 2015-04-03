@@ -1,2 +1,14 @@
-You are editing <em>{{revision.page.title}}</em>
-{% include "_editor.html" %}
+{% extends "layout.html" %}
+
+{% block canvas %}
+<div class="row">
+  <div class="small-12 columns">
+    <h1>Editing <em>{{revision.page.title}}</em></h1>
+  </div>
+</div>
+<div class="row">
+  <div class="small-12 columns">
+    {% include "_editor.html" %}
+  </div>
+</div>
+{% endblock %}
