@@ -1,3 +1,9 @@
+dependencies:
+  pre:
+    - apt-get install software-properties-common
+    - add-apt-repository ppa:ansible/ansible
+    - apt-get update
+    - apt-get install ansible
 test:
   override:
     - nosetests
