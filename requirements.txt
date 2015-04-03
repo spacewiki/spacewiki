@@ -8,3 +8,4 @@ misaka==1.0.2
 peewee==2.5.0
 wsgiref==0.1.2
 bleach==1.4.1
+GitPython==0.3.6
