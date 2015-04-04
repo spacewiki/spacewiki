@@ -7,78 +7,18 @@ import logging
 import re
 import urlparse
 import urllib
-import bleach
-import git
 import os
 import settings
 
 import model
+import context
+import filters
 
 app = Flask(__name__)
 Misaka(app)
+context.init(app)
+filters.init(app)
 
-
-@app.context_processor
-def add_git_version():
-    repo = git.Repo(os.path.dirname(os.path.realpath(__file__)))
-    return dict(git_version=repo.head.commit.hexsha)
-
-@app.context_processor
-def add_random_page():
-    page = None
-    try:
-        page = model.Page.select().order_by(peewee.fn.Random()).limit(1)[0]
-    except:
-        pass
-    return dict(random_page=page)
-
-@app.context_processor
-def add_site_settings():
-    return dict(settings=settings)
-
-tag_whitelist = [
-  'ul', 'li', 'ol', 'p', 'table', 'div', 'tr', 'th', 'td', 'em', 'big', 'b',
-  'strong', 'a', 'abbr', 'aside', 'audio', 'blockquote', 'br', 'button', 'code',
-  'dd', 'del', 'dfn', 'dl', 'dt', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'i',
-  'img', 'ins', 'kbd', 'pre', 's', 'small', 'span', 'sub', 'sup', 'u', 'video'
-]
-@app.template_filter('safetags')
-def safetags(s):
-    return bleach.clean(s, tags=tag_whitelist, strip_comments=False)
-
-templateSyntax = re.compile("\{\{(.+?)\}\}")
-def do_template(match, depth):
-    slug = match.groups()[0]
-    if depth > 10:
-      return "{{Max include depth of %s reached before [[%s]]}}"%(depth, slug)
-    replacement = model.Page.latestRevision(slug)
-    if replacement is None:
-        return "{{[[%s]]}}"%(slug)
-    return wikitemplates(replacement.body, depth=depth+1)
-
-@app.template_filter('wikitemplates')
-def wikitemplates(s, depth=0):
-    def r(*args):
-      return do_template(*args, depth=depth)
-    return templateSyntax.sub(r, s)
-
-linkSyntax = re.compile("\[\[(.+?)\]\]")
-titledLinkSyntax = re.compile("\[\[(.+?)\|(.+?)\]\]")
-def make_wikilink(match):
-    groups = match.groups()
-    if len(groups) == 1:
-        title = groups[0]
-        link = groups[0]
-    else:
-        title = groups[1]
-        link = groups[0]
-    return "[%s](%s)"%(title, link)
-
-@app.template_filter('wikilinks')
-def wikilinks(s):
-    s = titledLinkSyntax.sub(make_wikilink, s)
-    s = linkSyntax.sub(make_wikilink, s)
-    return s
 
 @app.before_request
 def setup_db():
