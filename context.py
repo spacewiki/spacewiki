@@ -19,7 +19,7 @@ def init(app):
         page = None
         try:
             page = model.Page.select().order_by(peewee.fn.Random()).limit(1)[0]
-        except peewee.DoesNotExist:
+        except IndexError:
             pass
         return dict(random_page=page)
 
