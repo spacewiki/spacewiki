@@ -6,9 +6,12 @@
 
 
 {% block content %}
+
+{% if revision.page.slug != settings.INDEX_PAGE %}
 <h1>
   {{revision.page.title}}
 </h1>
+{% endif %}
 
 {% if redirectFrom %}
 <p><small>Redirected from <a
