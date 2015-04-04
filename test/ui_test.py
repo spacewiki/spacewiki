@@ -15,5 +15,4 @@ class UiTestCase(unittest.TestCase):
         self.assertEqual(self.app.get('/.all-pages').status_code, 200)
 
     def test_edit(self):
-        self.assertEqual(self.app.get('/.edit/Index').status_code, 200)
-        self.assertEqual(self.app.get('/.edit/').status_code, 404)
+        self.assertEqual(self.app.get('/index/edit').status_code, 200)
