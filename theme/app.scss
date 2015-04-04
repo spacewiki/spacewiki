@@ -5,6 +5,12 @@ textarea {
   height: 30em;
 }
 
+#content {
+  h1 {
+    border-bottom: 1px solid black;
+  }
+}
+
 ul.softlinks {
   li {
     display: block;
@@ -41,5 +47,17 @@ footer {
     a {
       color: #aaa;
     }
+  }
+}
+
+a {
+  sup {
+    color: #f33;
+  }
+}
+
+.side-nav li.history-nav {
+  a {
+    display:inline;
   }
 }
