@@ -45,7 +45,10 @@ def init(app):
         else:
             title = groups[1]
             link = groups[0]
-        return "[%s](%s)"%(title, link)
+        if model.Page.select().where(model.Page.slug == link).exists():
+            return "[%s](%s)"%(title, link)
+        else:
+            return "[%s<sup>?</sup>](%s)"%(title, link)
 
     @app.template_filter('wikilinks')
     def wikilinks(s):
