@@ -41,10 +41,10 @@ def history(slug):
     page = model.Page.get(slug=slug)
     return render_template('history.html', page=page)
 
-@app.route('/.revision/<revision>')
-def revision(rev):
+@app.route('/.revision/<revID>')
+def revision(revID):
     """View a specific revision of a page"""
-    revision = model.Revision.get(id=rev)
+    revision = model.Revision.get(id=revID)
     return render_template('revision.html', revision=revision)
 
 @app.route("/.save/<slug>", methods=['POST'])
