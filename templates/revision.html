@@ -7,7 +7,7 @@ v{{revision.id}} of {{revision.page.title}}
 
 {% block content %}
 <h1>{{revision.page.title}} <small>Revision {{revision.id}}</small></h1>
-{{revision.body | wikilinks | markdown | safetags | safe}}
+{{revision.body | wikitemplates | wikilinks | markdown | safetags | safe}}
 {% endblock %}
 
 {% block sidebar %}

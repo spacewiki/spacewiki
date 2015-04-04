@@ -46,6 +46,22 @@ tag_whitelist = [
 def safetags(s):
     return bleach.clean(s, tags=tag_whitelist, strip_comments=False)
 
+templateSyntax = re.compile("\{\{(.+?)\}\}")
+def do_template(match, depth):
+    slug = match.groups()[0]
+    if depth > 10:
+      return "{{Max include depth of %s reached before [[%s]]}}"%(depth, slug)
+    replacement = Page.latestRevision(slug)
+    if replacement is None:
+        return "{{[[%s]]}}"%(slug)
+    return wikitemplates(replacement.body, depth=depth+1)
+
+@app.template_filter('wikitemplates')
+def wikitemplates(s, depth=0):
+    def r(*args):
+      return do_template(*args, depth=depth)
+    return templateSyntax.sub(r, s)
+
 linkSyntax = re.compile("\[\[(.+?)\]\]")
 titledLinkSyntax = re.compile("\[\[(.+?)\|(.+?)\]\]")
 def make_wikilink(match):

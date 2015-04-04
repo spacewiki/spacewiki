@@ -11,7 +11,7 @@
 <p><small>Redirected from <a
     href="{{url_for('edit', slug=redirectFrom)}}">{{redirectFrom}}</a></small>
 {% endif %}
-{{revision.body | wikilinks | markdown | safetags | safe}}
+{{revision.body | wikitemplates | wikilinks | markdown | safetags | safe}}
 
 <ul class="softlinks">
 {% for softlink in revision.page.softlinks_out %}
