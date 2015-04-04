@@ -10,8 +10,13 @@
   {% endif %}
   <div class="row">
     <div class="large-12 columns">
-      <textarea name="body">{% if revision %}{{revision.body}}{% endif %}</textarea>
+      <input type="hidden" id="body" name="body" value="{% if revision %}{{revision.body}}{% endif %}">
+      <div id="editor"></div>
     </div>
   </div>
-  <button type="submit">Save</button>
+  <div class="row">
+    <div class="large-12 columns">
+      <button type="submit">Save</button>
+    </div>
+  </div>
 </form>

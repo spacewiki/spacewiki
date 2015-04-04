@@ -3,6 +3,13 @@
 
 textarea {
   height: 30em;
+  font-family: monospace;
+}
+
+#editor {
+  position: relative;
+  height: 30em;
+  width: 100%;
 }
 
 #content {
