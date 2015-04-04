@@ -210,8 +210,14 @@ if __name__ == "__main__":
 
     if args.syncdb:
       logging.info("Creating tables...")
-      with app.app_context():
-        database.create_tables([Page, Revision, Softlink])
+      try:
+        Page.select().execute()
+      except peewee.OperationalError:
+        with app.app_context():
+          database.create_tables([Page, Revision, Softlink])
+      for page in Page.select():
+        page.slug = SlugField.slugify(page.slug)
+        page.save()
       logging.info("OK!")
     else:
       app.run(debug=True)
