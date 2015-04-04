@@ -35,17 +35,11 @@ def close_db(error): #pylint: disable=unused-argument
         del g.database
 
 
-@app.route("/.history/<slug>")
+@app.route("/<slug>/history")
 def history(slug):
     """View the revision list of a page"""
     page = model.Page.get(slug=slug)
     return render_template('history.html', page=page)
-
-@app.route('/.revision/<revID>')
-def revision(revID):
-    """View a specific revision of a page"""
-    revision = model.Revision.get(id=revID)
-    return render_template('revision.html', revision=revision)
 
 @app.route("/<slug>", methods=['POST'])
 def save(slug):
@@ -58,7 +52,7 @@ def save(slug):
     page.newRevision(request.form['body'])
     return redirect(url_for('view', slug=page.slug))
 
-@app.route("/.edit/<slug>", methods=['GET'])
+@app.route("/<slug>/edit", methods=['GET'])
 def edit(slug, redirectFrom=None):
     """Show the editing form for a page"""
     revision = model.Page.latestRevision(slug)
