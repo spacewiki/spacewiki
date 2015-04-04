@@ -18,6 +18,13 @@ Misaka(app)
 context.init(app)
 filters.init(app)
 
+if settings.ADMIN_EMAILS:
+    from logging.handlers import SMTPHandler
+    mail_handler = SMTPHandler('127.0.0.1',
+        'spacewiki@localhost',
+        settings.ADMIN_EMAILS, 'SpaceWiki error')
+    mail_handler.setLevel(logging.ERROR)
+    app.logger.addHandler(mail_handler)
 
 @app.before_request
 def setup_db():
