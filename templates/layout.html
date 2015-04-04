@@ -7,12 +7,12 @@
   </title>
 </head>
 <body>
-<div class="row">
+<header class="row">
   <div class="small-8 columns">
     <h1><a href="{{url_for('view')}}">{{settings.SITE_NAME}}</a></h1>
   </div>
   <div class="small-4 columns">
-    <form method="get" action="{{url_for('search')}}">
+    <p><form method="get" action="{{url_for('search')}}">
       <div class="row collapse postfix-round">
         <div class="small-10 columns">
           <input type="text" name="q" placeholder="{% if random_page %}{{random_page.title}}{% endif %}">
@@ -23,9 +23,9 @@
       </div>
     </form>
   </div>
-</div>
+</header>
 {% block canvas %}
-<div class="row">
+<main class="row">
   <div class="small-10 columns" id="content">
     {% block content %}
     {% endblock %}
@@ -34,7 +34,7 @@
     {% block sidebar %}
     {% endblock %}
   </div>
-</div>
+</main>
 {% endblock %}
 <footer class="row">
   <div class="small-12 columns">

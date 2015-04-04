@@ -1,4 +1,8 @@
 //@import "settings";
+
+$primary-color: #582A72;
+$base-font-size: 10pt;
+
 @import "foundation";
 
 textarea {
@@ -27,7 +31,7 @@ ul.softlinks {
       min-width: 7em;
       height: 2em;
       padding: 0.25em;
-      background-color: #ddd;
+      background-color: lighten($primary-color, 0.5);
       text-align: center;
       color: #000;
     }
@@ -40,8 +44,8 @@ ul.softlinks {
 }
 
 footer {
-  border-top: 1px solid black;
   padding: 1em;
+  background-color: #ddd;
 
   .plug {
     font-size: small;
@@ -66,5 +70,21 @@ a {
 .side-nav li.history-nav {
   a {
     display:inline;
+  }
+}
+
+body {
+  background-color: $secondary-color;
+}
+
+header {
+  background-color: $secondary-color;
+}
+
+main {
+  background-color: #ddd;
+
+  #content {
+    background-color: #fff;
   }
 }

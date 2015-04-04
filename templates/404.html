@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block canvas %}
-<div class="row">
+<main class="row">
   <div class="small-12 columns">
     <h1>Editing <em>{{slug}}</em></h1>
     {% if redirectFrom %}
@@ -10,10 +10,10 @@
     {% endif %}
     <p><em>There is no page titled "{{slug}}". You may create one here:</em>
   </div>
-</div>
-<div class="row">
+</main>
+<main class="row">
   <div class="small-12 columns">
     {% include "_editor.html" %}
   </div>
-</div>
+</main>
 {% endblock %}
