@@ -2,6 +2,8 @@ dependencies:
   post:
     - pip install ansible
 test:
+  pre:
+    - ./app --syncdb
   override:
     - nosetests
 deployment:
