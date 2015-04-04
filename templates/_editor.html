@@ -1,15 +1,16 @@
-<form method="post" action="{{url_for('save')}}">
+<form method="post" action="{{url_for('save', slug=slug)}}">
+  {% if title %}
   <div class="row">
     <div class="large-12 columns">
-      <label>
-        Title
-        <input type="text" name="title" value="{% if revision and revision.page.title %}{{revision.page.title}}{% elif slug %}{{slug}}{% endif %}">
+      <label>Title
+        <input type="text" value="{{title}}" name="title">
       </label>
     </div>
   </div>
+  {% endif %}
   <div class="row">
     <div class="large-12 columns">
-      <textarea name="body">{% if revision and revision.body %}{{revision.body}}{% endif %}</textarea>
+      <textarea name="body">{% if revision %}{{revision.body}}{% endif %}</textarea>
     </div>
   </div>
   <button type="submit">Save</button>

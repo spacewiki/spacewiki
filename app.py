@@ -137,25 +137,25 @@ def revision(revision):
     revision = Revision.get(id=revision)
     return render_template('revision.html', revision=revision)
 
-@app.route("/.save", methods=['POST'])
-def save():
+@app.route("/.save/<slug>", methods=['POST'])
+def save(slug):
     try:
-      page = Page.get(slug=request.form['title'])
+      page = Page.get(slug=slug)
     except peewee.DoesNotExist:
-      page = Page.create(slug=request.form['title'],
-          title=request.form['title'])
+      page = Page.create(title=request.form['title'], slug=request.form['title'])
     rev = page.newRevision(request.form['body'])
-    return redirect(url_for('index', slug=request.form['title']))
+    return redirect(url_for('index', slug=page.slug))
 
 @app.route("/.edit/<slug>", methods=['GET'])
-def edit(slug):
+def edit(slug, redirectFrom=None):
     revision = Page.latestRevision(slug)
     if revision is not None:
         return render_template('edit.html',
-            revision=revision)
+            revision=revision, slug=revision.page.slug,
+            redirectFrom=redirectFrom)
     else:
         return render_template('404.html',
-            slug=slug)
+            slug=SlugField.slugify(slug), title=slug, redirectFrom=redirectFrom)
 
 @app.route("/.search")
 def search():
@@ -198,8 +198,7 @@ def index(slug=settings.INDEX_PAGE, redirectFrom=None):
         return render_template('page.html',
             revision=revision, redirectFrom=redirectFrom)
     else:
-        return render_template('404.html',
-            slug=slug, redirectFrom=redirectFrom)
+        return edit(slug, redirectFrom=redirectFrom)
 
 if __name__ == "__main__":
     parser = ArgumentParser()
