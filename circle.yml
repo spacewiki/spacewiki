@@ -1,11 +1,16 @@
+general:
+  artifacts:
+    - linter.html
 dependencies:
   post:
-    - pip install ansible
+    - pip install ansible pylint
 test:
   pre:
     - ./app.py --syncdb
   override:
     - nosetests
+  post:
+    - pylint -f html *.py > linter.html
 deployment:
   ratchet:
     branch: master
