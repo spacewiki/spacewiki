@@ -2,26 +2,30 @@ import bleach
 import model
 import re
 
-tag_whitelist = [
-  'ul', 'li', 'ol', 'p', 'table', 'div', 'tr', 'th', 'td', 'em', 'big', 'b',
-  'strong', 'a', 'abbr', 'aside', 'audio', 'blockquote', 'br', 'button', 'code',
-  'dd', 'del', 'dfn', 'dl', 'dt', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'i',
-  'img', 'ins', 'kbd', 'pre', 's', 'small', 'span', 'sub', 'sup', 'u', 'video'
+TAG_WHITELIST = [
+    'ul', 'li', 'ol', 'p', 'table', 'div', 'tr', 'th', 'td', 'em', 'big', 'b',
+    'strong', 'a', 'abbr', 'aside', 'audio', 'blockquote', 'br', 'button', 'code',
+    'dd', 'del', 'dfn', 'dl', 'dt', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'i',
+    'img', 'ins', 'kbd', 'pre', 's', 'small', 'span', 'sub', 'sup', 'u', 'video'
 ]
 
-templateSyntax = re.compile("\{\{(.+?)\}\}")
-linkSyntax = re.compile("\[\[(.+?)\]\]")
-titledLinkSyntax = re.compile("\[\[(.+?)\|(.+?)\]\]")
+TEMPLATE_SYNTAX = re.compile(r'\{\{(.+?)\}\}')
+LINK_SYNTAX = re.compile(r'\[\[(.+?)\]\]')
+TITLED_LINK_SYNTAX = re.compile(r'\[\[(.+?)\|(.+?)\]\]')
 
 def init(app):
+    """Configure the given app with filters"""
     @app.template_filter('safetags')
     def safetags(s):
-        return bleach.clean(s, tags=tag_whitelist, strip_comments=False)
+        """Strips out everything that isn't a whitelisted HTML tag"""
+        return bleach.clean(s, tags=TAG_WHITELIST, strip_comments=False)
 
     def do_template(match, depth):
+        """Replaces a template regex match with the template contents,
+        recursively"""
         slug = match.groups()[0]
         if depth > 10:
-          return "{{Max include depth of %s reached before [[%s]]}}"%(depth, slug)
+            return "{{Max include depth of %s reached before [[%s]]}}"%(depth, slug)
         replacement = model.Page.latestRevision(slug)
         if replacement is None:
             return "{{[[%s]]}}"%(slug)
@@ -29,9 +33,9 @@ def init(app):
 
     @app.template_filter('wikitemplates')
     def wikitemplates(s, depth=0):
-        def r(*args):
-          return do_template(*args, depth=depth)
-        return templateSyntax.sub(r, s)
+        def do_template_with_depth(*args): #pylint: disable=missing-docstring
+            return do_template(*args, depth=depth)
+        return TEMPLATE_SYNTAX.sub(do_template_with_depth, s)
 
     def make_wikilink(match):
         groups = match.groups()
@@ -45,7 +49,7 @@ def init(app):
 
     @app.template_filter('wikilinks')
     def wikilinks(s):
-        s = titledLinkSyntax.sub(make_wikilink, s)
-        s = linkSyntax.sub(make_wikilink, s)
+        s = TITLED_LINK_SYNTAX.sub(make_wikilink, s)
+        s = LINK_SYNTAX.sub(make_wikilink, s)
         return s
 

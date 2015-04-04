@@ -1,3 +1,5 @@
+"""spacewiki database models"""
+import logging
 import peewee
 import settings
 import re
@@ -14,13 +16,15 @@ class SlugField(peewee.CharField):
 
     @staticmethod
     def slugify(title):
-        return re.sub('[^\w]', '_', title.lower())
+        """Translates a string into a reduced character set"""
+        return re.sub(r'[^\w]', '_', title.lower())
 
 class Page(BaseModel):
     title = peewee.CharField(unique=True)
     slug = SlugField(unique=True)
 
     def newRevision(self, body):
+        """Creates a new Revision of this Page with the given body"""
         return Revision.create(page=self, body=body)
 
     def makeSoftlinkFrom(self, prev):

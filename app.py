@@ -4,10 +4,8 @@ from flask import Flask, g, render_template, request, redirect, url_for
 from flask.ext.misaka import Misaka
 from argparse import ArgumentParser
 import logging
-import re
 import urlparse
 import urllib
-import os
 import settings
 
 import model
@@ -22,40 +20,46 @@ filters.init(app)
 
 @app.before_request
 def setup_db():
-    g._database = model.database
-    g._database.connect()
+    """Connect to the database before a request is handled"""
+    g.database = model.database
+    g.database.connect()
 
 @app.teardown_appcontext
-def close_db(error):
-    if hasattr(g, '_database'):
+def close_db(error): #pylint: disable=unused-argument
+    """Close the database connection when the app is shutting down"""
+    if hasattr(g, 'database'):
         try:
-            g._database.close()
-        except:
+            g.database.close()
+        except: #pylint: disable=bare-except
             pass
-        del g._database
+        del g.database
 
 
 @app.route("/.history/<slug>")
 def history(slug):
+    """View the revision list of a page"""
     page = model.Page.get(slug=slug)
     return render_template('history.html', page=page)
 
 @app.route('/.revision/<revision>')
-def revision(revision):
-    revision = model.Revision.get(id=revision)
+def revision(rev):
+    """View a specific revision of a page"""
+    revision = model.Revision.get(id=rev)
     return render_template('revision.html', revision=revision)
 
 @app.route("/.save/<slug>", methods=['POST'])
 def save(slug):
+    """Save a new Revision, creating a new Page if needed"""
     try:
-      page = model.Page.get(slug=slug)
+        page = model.Page.get(slug=slug)
     except peewee.DoesNotExist:
-      page = model.Page.create(title=request.form['title'], slug=request.form['title'])
-    rev = page.newRevision(request.form['body'])
+        page = model.Page.create(title=request.form['title'], slug=request.form['title'])
+    page.newRevision(request.form['body'])
     return redirect(url_for('index', slug=page.slug))
 
 @app.route("/.edit/<slug>", methods=['GET'])
 def edit(slug, redirectFrom=None):
+    """Show the editing form for a page"""
     revision = model.Page.latestRevision(slug)
     if revision is not None:
         return render_template('edit.html',
@@ -117,15 +121,15 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
 
     if args.syncdb:
-      logging.info("Creating tables...")
-      try:
-        model.Page.select().execute()
-      except peewee.OperationalError:
-        with app.app_context():
-          model.database.create_tables([model.Page, model.Revision, model.Softlink])
-      for page in model.Page.select():
-        page.slug = model.SlugField.slugify(page.slug)
-        page.save()
-      logging.info("OK!")
+        logging.info("Creating tables...")
+        try:
+            model.Page.select().execute()
+        except peewee.OperationalError:
+            with app.app_context():
+                model.database.create_tables([model.Page, model.Revision, model.Softlink])
+        for page in model.Page.select():
+            page.slug = model.SlugField.slugify(page.slug)
+            page.save()
+        logging.info("OK!")
     else:
-      app.run(debug=True)
+        app.run(debug=True)
