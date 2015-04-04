@@ -57,3 +57,22 @@ class Revision(BaseModel):
     page = peewee.ForeignKeyField(Page, related_name='revisions')
     body = peewee.TextField()
 
+    @property
+    def is_latest(self):
+      return Page.latestRevision(self.page.slug) == self
+
+    @property
+    def prev(self):
+      try:
+        return Revision.select().where(Revision.page == self.page, Revision.id <
+            self.id).order_by(Revision.id.desc()).limit(1)[0]
+      except IndexError:
+        return None
+
+    @property
+    def next(self):
+      try:
+        return Revision.select().where(Revision.page == self.page, Revision.id >
+            self.id).order_by(Revision.id).limit(1)[0]
+      except IndexError:
+        return None

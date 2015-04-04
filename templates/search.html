@@ -4,7 +4,7 @@
 <h1>Search results for <em>{{query}}</em>:</h1>
 <ul>
   {% for result in results %}
-    <li><a href="{{url_for('index', slug=result.slug)}}">{{result.title}}</a></li>
+    <li><a href="{{url_for('view', slug=result.slug)}}">{{result.title}}</a></li>
   {% endfor %}
 </ul>
 {% endblock %}

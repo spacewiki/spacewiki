@@ -47,15 +47,16 @@ def revision(revID):
     revision = model.Revision.get(id=revID)
     return render_template('revision.html', revision=revision)
 
-@app.route("/.save/<slug>", methods=['POST'])
+@app.route("/<slug>", methods=['POST'])
 def save(slug):
     """Save a new Revision, creating a new Page if needed"""
+    slug = model.SlugField.slugify(slug)
     try:
         page = model.Page.get(slug=slug)
     except peewee.DoesNotExist:
         page = model.Page.create(title=request.form['title'], slug=request.form['title'])
     page.newRevision(request.form['body'])
-    return redirect(url_for('index', slug=page.slug))
+    return redirect(url_for('view', slug=page.slug))
 
 @app.route("/.edit/<slug>", methods=['GET'])
 def edit(slug, redirectFrom=None):
@@ -83,9 +84,13 @@ def allPages():
 
 @app.route("/")
 @app.route("/<slug>")
-def index(slug=settings.INDEX_PAGE, redirectFrom=None):
+@app.route("/<slug>/<revision>")
+def view(slug=settings.INDEX_PAGE, revision=None, redirectFrom=None):
     lastPage = None
-    revision = model.Page.latestRevision(slug)
+    if revision is None:
+      revision = model.Page.latestRevision(slug)
+    else:
+      revision = model.Revision.get(id=revision)
 
     if 'Referer' in request.headers:
         referer = request.headers['Referer']
