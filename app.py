@@ -119,7 +119,7 @@ def view(slug=settings.INDEX_PAGE, revision=None, redirectFrom=None):
         if revision.body.startswith("#Redirect"):
             newSlug = revision.body.split(' ', 1)[1]
             logging.debug("Redirect to %s", newSlug)
-            return index(newSlug, redirectFrom=slug)
+            return view(slug=newSlug, redirectFrom=slug)
         return render_template('page.html',
             revision=revision, redirectFrom=redirectFrom)
     else:
