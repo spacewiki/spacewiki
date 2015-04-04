@@ -10,7 +10,7 @@ test:
   override:
     - nosetests
   post:
-    - pylint -f html *.py > linter.html
+    - pylint -f html *.py | tee linter.html
 deployment:
   ratchet:
     branch: master
