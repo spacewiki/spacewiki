@@ -10,13 +10,13 @@ import urllib
 import bleach
 import git
 import os
-
 import settings
+
+import model
 
 app = Flask(__name__)
 Misaka(app)
 
-database = peewee.SqliteDatabase(settings.DATABASE, threadlocals=True)
 
 @app.context_processor
 def add_git_version():
@@ -27,7 +27,7 @@ def add_git_version():
 def add_random_page():
     page = None
     try:
-        page = Page.select().order_by(peewee.fn.Random()).limit(1)[0]
+        page = model.Page.select().order_by(peewee.fn.Random()).limit(1)[0]
     except:
         pass
     return dict(random_page=page)
@@ -51,7 +51,7 @@ def do_template(match, depth):
     slug = match.groups()[0]
     if depth > 10:
       return "{{Max include depth of %s reached before [[%s]]}}"%(depth, slug)
-    replacement = Page.latestRevision(slug)
+    replacement = model.Page.latestRevision(slug)
     if replacement is None:
         return "{{[[%s]]}}"%(slug)
     return wikitemplates(replacement.body, depth=depth+1)
@@ -82,7 +82,7 @@ def wikilinks(s):
 
 @app.before_request
 def setup_db():
-    g._database = database
+    g._database = model.database
     g._database.connect()
 
 @app.teardown_appcontext
@@ -94,94 +94,46 @@ def close_db(error):
             pass
         del g._database
 
-class BaseModel(peewee.Model):
-    class Meta:
-        database = database
-
-class SlugField(peewee.CharField):
-    def coerce(self, value):
-        return self.slugify(value)
-
-    @staticmethod
-    def slugify(title):
-        return re.sub('[^\w]', '_', title.lower())
-
-class Page(BaseModel):
-    title = peewee.CharField(unique=True)
-    slug = SlugField(unique=True)
-
-    def newRevision(self, body):
-        return Revision.create(page=self, body=body)
-
-    def makeSoftlinkFrom(self, prev):
-        logging.debug("Linking from %s to %s", prev.slug, self.slug)
-        try:
-            Softlink.get(Softlink.src == prev, Softlink.dest == self)
-            logging.debug("Link exists!")
-        except peewee.DoesNotExist:
-            Softlink.create(src=prev, dest=self)
-            logging.debug("New link!")
-        Softlink.update(hits = Softlink.hits + 1).where(Softlink.src ==
-            prev, Softlink.dest == self).execute()
-
-    @classmethod
-    def latestRevision(cls, slug):
-        try:
-            return Revision.select() \
-                .join(cls) \
-                .where(cls.slug == slug) \
-                .order_by(Revision.id.desc())[0]
-        except IndexError:
-            return None
-
-class Softlink(BaseModel):
-    src = peewee.ForeignKeyField(Page, related_name='softlinks_out')
-    dest = peewee.ForeignKeyField(Page, related_name='softlinks_in')
-    hits = peewee.IntegerField(default=0)
-
-class Revision(BaseModel):
-    page = peewee.ForeignKeyField(Page, related_name='revisions')
-    body = peewee.TextField()
 
 @app.route("/.history/<slug>")
 def history(slug):
-    page = Page.get(slug=slug)
+    page = model.Page.get(slug=slug)
     return render_template('history.html', page=page)
 
 @app.route('/.revision/<revision>')
 def revision(revision):
-    revision = Revision.get(id=revision)
+    revision = model.Revision.get(id=revision)
     return render_template('revision.html', revision=revision)
 
 @app.route("/.save/<slug>", methods=['POST'])
 def save(slug):
     try:
-      page = Page.get(slug=slug)
+      page = model.Page.get(slug=slug)
     except peewee.DoesNotExist:
-      page = Page.create(title=request.form['title'], slug=request.form['title'])
+      page = model.Page.create(title=request.form['title'], slug=request.form['title'])
     rev = page.newRevision(request.form['body'])
     return redirect(url_for('index', slug=page.slug))
 
 @app.route("/.edit/<slug>", methods=['GET'])
 def edit(slug, redirectFrom=None):
-    revision = Page.latestRevision(slug)
+    revision = model.Page.latestRevision(slug)
     if revision is not None:
         return render_template('edit.html',
             revision=revision, slug=revision.page.slug,
             redirectFrom=redirectFrom)
     else:
         return render_template('404.html',
-            slug=SlugField.slugify(slug), title=slug, redirectFrom=redirectFrom)
+            slug=model.SlugField.slugify(slug), title=slug, redirectFrom=redirectFrom)
 
 @app.route("/.search")
 def search():
     query = request.args.get('q')
-    pages = Page.select().where(Page.title.contains(query))
+    pages = model.Page.select().where(model.Page.title.contains(query))
     return render_template('search.html', results=pages, query=query)
 
 @app.route("/.all-pages")
 def allPages():
-    pages = Page.select().order_by(Page.title)
+    pages = model.Page.select().order_by(model.Page.title)
     return render_template('all-pages.html',
         pages=pages)
 
@@ -189,7 +141,7 @@ def allPages():
 @app.route("/<slug>")
 def index(slug=settings.INDEX_PAGE, redirectFrom=None):
     lastPage = None
-    revision = Page.latestRevision(slug)
+    revision = model.Page.latestRevision(slug)
 
     if 'Referer' in request.headers:
         referer = request.headers['Referer']
@@ -199,7 +151,7 @@ def index(slug=settings.INDEX_PAGE, redirectFrom=None):
             logging.debug("Last page slug: %s", lastPageSlug)
             if lastPageSlug != settings.INDEX_PAGE:
                 try:
-                    lastPage = Page.get(slug=lastPageSlug)
+                    lastPage = model.Page.get(slug=lastPageSlug)
                 except peewee.DoesNotExist:
                     pass
 
@@ -227,12 +179,12 @@ if __name__ == "__main__":
     if args.syncdb:
       logging.info("Creating tables...")
       try:
-        Page.select().execute()
+        model.Page.select().execute()
       except peewee.OperationalError:
         with app.app_context():
-          database.create_tables([Page, Revision, Softlink])
-      for page in Page.select():
-        page.slug = SlugField.slugify(page.slug)
+          model.database.create_tables([model.Page, model.Revision, model.Softlink])
+      for page in model.Page.select():
+        page.slug = model.SlugField.slugify(page.slug)
         page.save()
       logging.info("OK!")
     else:
