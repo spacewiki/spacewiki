@@ -9,6 +9,17 @@ TAG_WHITELIST = [
     'img', 'ins', 'kbd', 'pre', 's', 'small', 'span', 'sub', 'sup', 'u', 'video'
 ]
 
+ATTRIBUTE_WHITELIST = {
+    '*': ['style', 'class'],
+    'a': ['href'],
+    'img': ['src', 'alt']
+}
+
+STYLE_WHITELIST = [
+    'margin', 'text-align', 'font-weight', 'size', 'color', 'background-color',
+    'padding', 'border', 'line-height', 'padding-top', 'float'
+]
+
 TEMPLATE_SYNTAX = re.compile(r'\{\{(.+?)\}\}')
 LINK_SYNTAX = re.compile(r'\[\[(.+?)\]\]')
 TITLED_LINK_SYNTAX = re.compile(r'\[\[(.+?)\|(.+?)\]\]')
@@ -18,7 +29,8 @@ def init(app):
     @app.template_filter('safetags')
     def safetags(s):
         """Strips out everything that isn't a whitelisted HTML tag"""
-        return bleach.clean(s, tags=TAG_WHITELIST, strip_comments=False)
+        return bleach.clean(s, attributes=ATTRIBUTE_WHITELIST,
+            tags=TAG_WHITELIST, styles=STYLE_WHITELIST, strip_comments=False)
 
     def do_template(match, depth):
         """Replaces a template regex match with the template contents,
