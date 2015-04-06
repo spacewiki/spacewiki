@@ -1,8 +1,10 @@
 """spacewiki database models"""
 import logging
 import peewee
+import playhouse.migrate
 import settings
 import re
+import datetime
 
 database = peewee.SqliteDatabase(settings.DATABASE, threadlocals=True)
 
@@ -23,9 +25,9 @@ class Page(BaseModel):
     title = peewee.CharField(unique=True)
     slug = SlugField(unique=True)
 
-    def newRevision(self, body):
+    def newRevision(self, body, message):
         """Creates a new Revision of this Page with the given body"""
-        return Revision.create(page=self, body=body)
+        return Revision.create(page=self, body=body, message=message)
 
     def makeSoftlinkFrom(self, prev):
         logging.debug("Linking from %s to %s", prev.slug, self.slug)
@@ -56,6 +58,8 @@ class Softlink(BaseModel):
 class Revision(BaseModel):
     page = peewee.ForeignKeyField(Page, related_name='revisions')
     body = peewee.TextField()
+    message = peewee.TextField(default='')
+    timestamp = peewee.DateTimeField(default=datetime.datetime.now)
 
     @property
     def is_latest(self):
@@ -76,3 +80,37 @@ class Revision(BaseModel):
             self.id).order_by(Revision.id).limit(1)[0]
       except IndexError:
         return None
+
+class DatabaseVersion(BaseModel):
+    schema_version = peewee.IntegerField(default=0)
+
+def syncdb(app):
+    logging.info("Creating tables...")
+    try:
+        DatabaseVersion.select().execute()
+    except peewee.OperationalError:
+        database.create_tables([DatabaseVersion])
+    try:
+        v = DatabaseVersion.select()[0]
+    except IndexError:
+        v = DatabaseVersion.create(schema_version=0)
+    v.schema_version = migrate(v.schema_version)
+    v.save()
+    logging.info("OK!")
+
+def migrate(currentRevision):
+    migrator = playhouse.migrate.SqliteMigrator(database)
+    with database.transaction():
+        if currentRevision == 0:
+            try:
+                database.create_tables([Page, Revision, Softlink])
+            except peewee.OperationalError:
+                pass
+            return migrate(1)
+        if currentRevision == 1:
+            playhouse.migrate.migrate(
+                migrator.add_column('revision', 'message', Revision.message),
+                migrator.add_column('revision', 'timestamp', Revision.timestamp)
+            )
+            return migrate(2)
+    return currentRevision

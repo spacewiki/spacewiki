@@ -57,7 +57,7 @@ def save(slug):
         page = model.Page.get(slug=slug)
     except peewee.DoesNotExist:
         page = model.Page.create(title=request.form['title'], slug=request.form['title'])
-    page.newRevision(request.form['body'])
+    page.newRevision(request.form['body'], request.form['message'])
     return redirect(url_for('view', slug=page.slug))
 
 @app.route("/<slug>/edit", methods=['GET'])
@@ -134,15 +134,6 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
 
     if args.syncdb:
-        logging.info("Creating tables...")
-        try:
-            model.Page.select().execute()
-        except peewee.OperationalError:
-            with app.app_context():
-                model.database.create_tables([model.Page, model.Revision, model.Softlink])
-        for page in model.Page.select():
-            page.slug = model.SlugField.slugify(page.slug)
-            page.save()
-        logging.info("OK!")
+        model.syncdb(app)
     else:
         app.run(debug=True)
