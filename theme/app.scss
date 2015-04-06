@@ -1,4 +1,11 @@
+$logo-bg-color: #fff;
+$logo-image: url(../logo.png);
+$logo-width: 150;
+$logo-height: 150;
+
 @import "settings";
+
+@import "site-settings";
 
 @import "foundation";
 
@@ -82,3 +89,31 @@ main {
   float: right;
   padding-top: 1em;
 }
+
+.top-bar {
+
+  .title-area {
+    margin: 0.5em 2em 0 2em;
+
+    h1 {
+      height: $logo-height + 5px;
+      width: $logo-width + 5px;
+      background-size: $logo-height $logo-width;
+      background-repeat: no-repeat;
+      background-position: center center;
+      color: transparent;
+      background-image: $logo-image;
+      background-color: $logo-bg-color;
+    }
+
+    h1:hover {
+      background-size: $logo-height + 5px $logo-width + 5px;
+    }
+
+    h1:active {
+      background-size: $logo-height - 5px $logo-width - 5px;
+    }
+  }
+}
+
+@import "site";

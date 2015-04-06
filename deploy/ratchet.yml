@@ -49,6 +49,10 @@
       file: dest=/etc/nginx/sites-enabled/spacewiki src=/etc/nginx/sites-available/spacewiki state=link
       notify:
         - Reload nginx
+    - name: Install site SCSS
+      copy: src=site-settings.scss dest=/srv/spacewiki/app/theme/_site-settings.scss
+      notify:
+        - Compile static files
     - name: Compile static files
       shell: chdir=/srv/spacewiki/app su -s /bin/sh spacewiki -c 'npm install && node ./node_modules/gulp/bin/gulp.js'
   handlers:

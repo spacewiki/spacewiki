@@ -10,7 +10,11 @@
 <header class="top-bar">
   <ul class="title-area">
     <li class="name">
-      <h1><a href="{{url_for('view')}}">{{settings.SITE_NAME}}</a></h1>
+      <a href="{{url_for('view')}}">
+        <h1>
+          {{settings.SITE_NAME}}
+        </h1>
+      </a>
     </li>
   </ul>
   <section class="top-bar-section">
