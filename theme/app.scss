@@ -1,7 +1,4 @@
-//@import "settings";
-
-$primary-color: #582A72;
-$base-font-size: 10pt;
+@import "settings";
 
 @import "foundation";
 
@@ -67,12 +64,6 @@ a {
   }
 }
 
-.side-nav li.history-nav {
-  a {
-    display:inline;
-  }
-}
-
 body {
   background-color: $secondary-color;
 }
@@ -82,9 +73,25 @@ header {
 }
 
 main {
-  background-color: #ddd;
-
   #content {
     background-color: #fff;
+  }
+
+  position: relative;
+}
+
+.page-tools {
+  color: #fff;
+  li {
+    background: $primary-color;
+    a:not(.button) {
+      background: transparent;
+    }
+  }
+
+  li.history-nav {
+    a {
+      display:inline;
+    }
   }
 }

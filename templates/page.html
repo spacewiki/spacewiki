@@ -28,8 +28,8 @@
 </ul>
 {% endblock %}
 
-{% block sidebar %}
-<ul class="side-nav">
+{% block toolbar %}
+<ul class="left page-tools">
   <li><a href="{{url_for('edit', slug=revision.page.slug)}}">Edit</a></li>
   <li class="divider"></li>
   <li class="history-nav">

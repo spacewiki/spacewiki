@@ -7,31 +7,35 @@
   </title>
 </head>
 <body>
-<header class="row">
-  <div class="small-8 columns">
-    <h1><a href="{{url_for('view')}}">{{settings.SITE_NAME}}</a></h1>
-  </div>
-  <div class="small-4 columns">
-    <p><form method="get" action="{{url_for('search')}}">
-      <div class="row collapse postfix-round">
-        <div class="small-10 columns">
-          <input type="text" name="q" placeholder="{% if random_page %}{{random_page.title}}{% endif %}">
-        </div>
-        <div class="small-2 columns">
-          <button type="submit" class="button postfix">Search</button>
-        </div>
-      </div>
-    </form>
-  </div>
+<header class="top-bar">
+  <ul class="title-area">
+    <li class="name">
+      <h1><a href="{{url_for('view')}}">{{settings.SITE_NAME}}</a></h1>
+    </li>
+  </ul>
+  <section class="top-bar-section">
+    <ul class="right">
+      <li class="has-form">
+        <form method="get" action="{{url_for('search')}}">
+          <div class="row collapse postfix-round">
+            <div class="small-9 columns">
+              <input type="text" name="q" placeholder="{% if random_page %}{{random_page.title}}{% endif %}">
+            </div>
+            <div class="small-3 columns">
+              <button type="submit" class="button postfix">Search</button>
+            </div>
+          </div>
+        </form>
+      </li>
+    </ul>
+    {% block toolbar %}
+    {% endblock %}
+  </section>
 </header>
 {% block canvas %}
 <main class="row">
-  <div class="small-10 columns" id="content">
+  <div class="small-12 columns" id="content">
     {% block content %}
-    {% endblock %}
-  </div>
-  <div class="small-2 columns" id="sidebar">
-    {% block sidebar %}
     {% endblock %}
   </div>
 </main>
