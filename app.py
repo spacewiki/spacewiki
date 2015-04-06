@@ -66,7 +66,7 @@ def edit(slug, redirectFrom=None):
     revision = model.Page.latestRevision(slug)
     if revision is not None:
         return render_template('edit.html',
-            revision=revision, slug=revision.page.slug,
+            page=revision.page, revision=revision, slug=revision.page.slug,
             redirectFrom=redirectFrom)
     else:
         return render_template('404.html',
@@ -121,7 +121,7 @@ def view(slug=settings.INDEX_PAGE, revision=None, redirectFrom=None):
             logging.debug("Redirect to %s", newSlug)
             return view(slug=newSlug, redirectFrom=slug)
         return render_template('page.html',
-            revision=revision, redirectFrom=redirectFrom)
+            revision=revision, page=revision.page, redirectFrom=redirectFrom)
     else:
         return edit(slug, redirectFrom=redirectFrom)
 

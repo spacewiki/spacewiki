@@ -18,6 +18,14 @@
     href="{{url_for('edit', slug=redirectFrom)}}">{{redirectFrom}}</a></small>
 {% endif %}
 
+{% if not revision.is_latest %}
+<ul class="pagination">
+  <li class="arrow"><a href="{{url_for('view', revision=revision.prev.id)}}">&laquo;</a></li>
+  <li class="current">Revision {{revision.id}}</li>
+  <li class="arrow"><a href="{{url_for('view', revision=revision.next.id)}}">&raquo;</a></li>
+</ul>
+{% endif %}
+
 <p>{{revision.body | wikitemplates | wikilinks | markdown | safetags | safe}}
 
 <ul class="softlinks">
@@ -25,32 +33,5 @@
 <li><a href="{{url_for('view', slug=softlink.dest.slug)}}">{{softlink.dest.title}}</a></li>
 {% endfor %}
 <br style="clear:both">
-</ul>
-{% endblock %}
-
-{% block toolbar %}
-<ul class="left page-tools">
-  <li><a href="{{url_for('edit', slug=revision.page.slug)}}">Edit</a></li>
-  <li class="divider"></li>
-  <li class="history-nav">
-    {% if revision.prev %}
-      <a href="{{url_for('view', slug=revision.page.slug, revision=revision.prev.id)}}">
-        &laquo;{{revision.prev.id}}
-      </a>
-    {% else %}
-      &laquo;❌
-    {% endif %}
-    Revision {{revision.id}}
-    {% if revision.next %}
-        <a href="{{url_for('view', slug=revision.page.slug, revision=revision.next.id)}}">
-          {{revision.next.id}}&raquo;
-        </a>
-    {% else %}
-      ❌&raquo;
-    {% endif %}
-  </li>
-  <li><a href="{{url_for('history', slug=revision.page.slug)}}">Full History</a></li>
-  <li class="divider"></li>
-  <li><a href="{{url_for('allPages')}}">All Pages</a></li>
 </ul>
 {% endblock %}

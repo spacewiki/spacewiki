@@ -29,12 +29,25 @@
       </li>
     </ul>
     {% block toolbar %}
+      <ul class="left page-tools">
+        <li><a href="{{url_for('allPages')}}">All Pages</a></li>
+      </ul>
     {% endblock %}
   </section>
 </header>
 {% block canvas %}
 <main class="row">
   <div class="small-12 columns" id="content">
+    {% block tools %}
+    <div class="button-bar tools">
+      <ul class="button-group round">
+        {% if page %}
+        <li><a class="small button" href="{{url_for('edit', slug=page.slug)}}">Edit</a></li>
+        <li><a class="small button" href="{{url_for('history', slug=page.slug)}}">History</a></li>
+        {% endif %}
+      </ul>
+    </div>
+    {% endblock %}
     {% block content %}
     {% endblock %}
   </div>

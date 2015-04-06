@@ -76,22 +76,9 @@ main {
   #content {
     background-color: #fff;
   }
-
-  position: relative;
 }
 
-.page-tools {
-  color: #fff;
-  li {
-    background: $primary-color;
-    a:not(.button) {
-      background: transparent;
-    }
-  }
-
-  li.history-nav {
-    a {
-      display:inline;
-    }
-  }
+.tools {
+  float: right;
+  padding-top: 1em;
 }
