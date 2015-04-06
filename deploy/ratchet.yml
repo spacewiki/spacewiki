@@ -23,7 +23,7 @@
         - /srv/spacewiki/app/static/lib
         - /srv/spacewiki/data
     - name: Check out spacewiki
-      git: accept_hostkey=yes dest=/srv/spacewiki/app repo=git://github.com/tdfischer/spacewiki
+      git: accept_hostkey=yes dest=/srv/spacewiki/app repo=git://github.com/tdfischer/spacewiki force=yes
       notify:
         - Compile static files
         - Reload uwsgi
