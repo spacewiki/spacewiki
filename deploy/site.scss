@@ -1,0 +1,20 @@
+body {
+  background: url(https://noisebridge.net/images/8/80/Nb-bg.png);
+}
+
+body.page-index {
+  #content {
+    background: transparent;
+  }
+}
+
+.front-page-box {
+  border: solid 1px #990000;
+  padding: 7px 8px 0px 8px;
+  width: 960px;
+  background-color: #fff;
+}
+
+.front-page-box--single {
+  margin: 6px auto 6px auto;
+}
