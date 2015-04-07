@@ -47,6 +47,7 @@
       <ul class="button-group round">
         {% if page %}
         <li><a class="small button" href="{{url_for('edit', slug=page.slug)}}">Edit</a></li>
+        <li><a class="small button" href="{{url_for('upload', slug=page.slug)}}">Attach File</a></li>
         <li><a class="small button" href="{{url_for('history', slug=page.slug)}}">History</a></li>
         {% endif %}
       </ul>

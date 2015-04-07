@@ -81,6 +81,25 @@ class Revision(BaseModel):
       except IndexError:
         return None
 
+class Attachment(BaseModel):
+    page = peewee.ForeignKeyField(Page, related_name='attachments')
+    filename = peewee.CharField(unique=True)
+    slug = SlugField(unique=True)
+
+    class Meta:
+        indexes = (
+            (('page', 'slug'), True),
+        )
+
+class AttachmentRevision(BaseModel):
+    attachment = peewee.ForeignKeyField(Attachment, related_name='revisions')
+    sha = peewee.CharField()
+
+    class Meta:
+        indexes = (
+            (('attachment', 'sha'), True),
+        )
+
 class DatabaseVersion(BaseModel):
     schema_version = peewee.IntegerField(default=0)
 
@@ -113,4 +132,10 @@ def migrate(currentRevision):
                 migrator.add_column('revision', 'timestamp', Revision.timestamp)
             )
             return migrate(2)
+        if currentRevision == 2:
+            try:
+                database.create_tables([Attachment, AttachmentRevision])
+            except peewee.OperationalError:
+                pass
+            return migrate(3)
     return currentRevision

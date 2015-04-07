@@ -27,7 +27,13 @@
 </ul>
 {% endif %}
 
-<p>{{revision.body | wikitemplates | wikilinks | markdown | safetags | safe}}
+<p>{{revision.body | wikitemplates(page.slug) | wikilinks | markdown | safetags | safe}}
+
+<ul class="attachments">
+  {% for attachment in revision.page.attachments %}
+  <li><a href="{{url_for('get_attachment', slug=revision.page.slug, fileslug=attachment.slug)}}">{{attachment.filename}}</li>
+  {% endfor %}
+</ul>
 
 <ul class="softlinks">
 {% for softlink in revision.page.softlinks_out %}

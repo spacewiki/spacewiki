@@ -2,6 +2,7 @@
 DATABASE = 'spacewiki.sqlite3'
 SITE_NAME = 'SpaceWiki'
 INDEX_PAGE = 'index'
+UPLOAD_PATH = 'uploads'
 
 ADMIN_EMAILS = None
 
