@@ -1,6 +1,8 @@
 import bleach
 import model
 import re
+import peewee
+from flask import url_for
 
 TAG_WHITELIST = [
     'ul', 'li', 'ol', 'p', 'table', 'div', 'tr', 'th', 'td', 'em', 'big', 'b',
@@ -33,21 +35,34 @@ def init(app):
         return bleach.clean(s, attributes=ATTRIBUTE_WHITELIST,
             tags=TAG_WHITELIST, styles=STYLE_WHITELIST, strip_comments=False)
 
-    def do_template(match, depth):
+    def do_attachment(pageSlug, slug):
+        print "attachment", slug
+        try:
+            attachment = model.Attachment.get(slug=slug)
+        except peewee.DoesNotExist:
+            return None
+        imgUrl = url_for('get_attachment', slug=pageSlug, fileslug=slug)
+        return '![alt](%s)'%(imgUrl)
+
+    def do_template(match, pageSlug, depth):
         """Replaces a template regex match with the template contents,
         recursively"""
         slug = match.groups()[0]
         if depth > 10:
             return "{{Max include depth of %s reached before [[%s]]}}"%(depth, slug)
-        replacement = model.Page.latestRevision(slug)
+        if slug.startswith("attachment:"):
+            imageSlug = slug.split(':', 1)[1]
+            return do_attachment(pageSlug, imageSlug)
+        else:
+            replacement = model.Page.latestRevision(slug)
         if replacement is None:
             return "{{[[%s]]}}"%(slug)
         return wikitemplates(replacement.body, depth=depth+1)
 
     @app.template_filter('wikitemplates')
-    def wikitemplates(s, depth=0):
+    def wikitemplates(s, pageSlug, depth=0):
         def do_template_with_depth(*args): #pylint: disable=missing-docstring
-            return do_template(*args, depth=depth)
+            return do_template(*args, pageSlug=pageSlug, depth=depth)
         return TEMPLATE_SYNTAX.sub(do_template_with_depth, s)
 
     def make_wikilink(match):

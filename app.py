@@ -1,13 +1,17 @@
 #!/usr/bin/env python
 import peewee
-from flask import Flask, g, render_template, request, redirect, url_for
+from flask import Flask, g, render_template, request, redirect, url_for, Response
+from werkzeug import secure_filename
 from flask.ext.misaka import Misaka
 from argparse import ArgumentParser
 import logging
+import hashlib
+import os
+import settings
+import shutil
+import tempfile
 import urlparse
 import urllib
-import settings
-import os
 
 import model
 import context
@@ -48,6 +52,58 @@ def history(slug):
     """View the revision list of a page"""
     page = model.Page.get(slug=slug)
     return render_template('history.html', page=page)
+
+@app.route("/<slug>/attach")
+def upload(slug):
+    """Show the file attachment form"""
+    page = model.Page.get(slug=slug)
+    return render_template('attach.html', page=page)
+
+@app.route("/<slug>/attach", methods=['POST'])
+def attach(slug):
+    """Handle saving a file upload"""
+    page = model.Page.get(slug=slug)
+    file = request.files['file']
+    fname = secure_filename(file.filename)
+    tmpname = os.path.join(tempfile.mkdtemp(), "upload")
+    with model.database.transaction():
+        file.save(tmpname)
+        """FIXME: Close file when done"""
+        f = open(tmpname, "r")
+        sha = hashlib.sha256()
+        sha.update(f.read())
+        hexSha = sha.hexdigest()
+        """FIXME: Namespace directories ab/cd/abcdjiofe..."""
+        savedName = os.path.join(settings.UPLOAD_PATH, hexSha+"-"+fname)
+        shutil.move(tmpname, savedName)
+        """FIXME: These db queries should be handled by the model"""
+        try:
+            attachment = model.Attachment.get(page=page, slug=fname)
+        except peewee.DoesNotExist:
+            attachment = model.Attachment.create(page=page, filename=fname, slug=fname)
+        try:
+            model.AttachmentRevision.create(attachment=attachment, sha=hexSha)
+        except peewee.IntegrityError:
+            print "Duplicate upload!"
+        print "Uploaded file %s to %s"%(fname, savedName)
+    return redirect(url_for('view', slug=page.slug))
+
+@app.route("/<slug>/file/<fileslug>")
+def get_attachment(slug, fileslug):
+    """FIXME: This select/join should be handled by the models"""
+    attachment = model.Attachment.select().join(model.Page).where(model.Attachment.slug == fileslug,
+        model.Page.slug == slug)[0]
+    latestRevision = attachment.revisions[0]
+    def generate():
+        f = open(os.path.join(settings.UPLOAD_PATH,
+          latestRevision.sha+"-"+attachment.filename), 'r')
+        buf = f.read(2048)
+        while buf:
+            yield buf
+            buf = f.read(2048)
+    """FIXME: mimetype detection"""
+    mimetype = 'image/jpeg; charset=binary'
+    return Response(generate(), mimetype=mimetype)
 
 @app.route("/<slug>", methods=['POST'])
 def save(slug):
