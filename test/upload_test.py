@@ -20,7 +20,7 @@ class UploadTestCase(unittest.TestCase):
       sha.update('')
       emptySha = sha.hexdigest()
       uploadedFile = os.path.join(app.config['UPLOAD_PATH'],
-        emptySha+'-empty.txt')
+        model.Attachment.hashPath(emptySha, 'empty.txt'))
 
       self.assertTrue(os.path.exists(uploadedFile))
       self.assertEqual(self.app.get('/index/file/empty_txt').data, '')
@@ -33,7 +33,7 @@ class UploadTestCase(unittest.TestCase):
       sha.update('FOOBAR')
       emptySha = sha.hexdigest()
       uploadedFile = os.path.join(app.config['UPLOAD_PATH'],
-        emptySha+'-foo.bar')
+        model.Attachment.hashPath(emptySha, 'foo.bar'))
 
       self.assertTrue(os.path.exists(uploadedFile))
       self.assertEqual(self.app.get('/index/file/foo_bar').data, 'FOOBAR')

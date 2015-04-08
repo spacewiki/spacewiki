@@ -77,8 +77,9 @@ def get_attachment(slug, fileslug):
         model.Page.slug == slug)[0]
     latestRevision = attachment.revisions[0]
     def generate():
-        f = open(os.path.join(app.config['UPLOAD_PATH'],
-          latestRevision.sha+"-"+attachment.filename), 'r')
+        fname = model.Attachment.hashPath(latestRevision.sha,
+            attachment.filename)
+        f = open(os.path.join(app.config['UPLOAD_PATH'], fname), 'r')
         buf = f.read(2048)
         while buf:
             yield buf

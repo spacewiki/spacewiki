@@ -46,16 +46,17 @@ class Page(BaseModel):
     def attachUpload(self, src, filename, uploadPath):
         hexSha = Attachment.hashFile(src)
         """FIXME: Namespace directories ab/cd/abcdjiofe..."""
-        savedName = os.path.join(uploadPath, hexSha+"-"+filename)
+        savedName = os.path.join(uploadPath, Attachment.hashPath(hexSha, filename))
+        os.makedirs(os.path.dirname(savedName))
         shutil.move(src, savedName)
         """FIXME: These db queries should be handled by the model"""
         try:
-            attachment = model.Attachment.get(page=self, slug=filename)
+            attachment = Attachment.get(page=self, slug=filename)
         except peewee.DoesNotExist:
-            attachment = model.Attachment.create(page=self, filename=filename,
+            attachment = Attachment.create(page=self, filename=filename,
                 slug=file)
         try:
-            model.AttachmentRevision.create(attachment=attachment, sha=hexSha)
+            AttachmentRevision.create(attachment=attachment, sha=hexSha)
         except peewee.IntegrityError:
             print "Duplicate upload!"
         print "Uploaded file %s to %s"%(filename, savedName)
@@ -112,6 +113,10 @@ class Attachment(BaseModel):
             sha = hashlib.sha256()
             sha.update(f.read())
         return sha.hexdigest()
+
+    @staticmethod
+    def hashPath(sha, src):
+        return "%s/%s/%s-%s"%(sha[0:2], sha[2:4], sha, src)
 
     class Meta:
         indexes = (
