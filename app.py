@@ -5,10 +5,8 @@ from werkzeug import secure_filename
 from flask.ext.misaka import Misaka
 from argparse import ArgumentParser
 import logging
-import hashlib
 import os
 import settings
-import shutil
 import tempfile
 import urlparse
 import urllib
@@ -18,6 +16,7 @@ import context
 import filters
 
 app = Flask(__name__)
+app.config['UPLOAD_PATH'] = settings.UPLOAD_PATH
 Misaka(app)
 context.init(app)
 filters.init(app)
@@ -68,24 +67,7 @@ def attach(slug):
     tmpname = os.path.join(tempfile.mkdtemp(), "upload")
     with model.database.transaction():
         file.save(tmpname)
-        """FIXME: Close file when done"""
-        f = open(tmpname, "r")
-        sha = hashlib.sha256()
-        sha.update(f.read())
-        hexSha = sha.hexdigest()
-        """FIXME: Namespace directories ab/cd/abcdjiofe..."""
-        savedName = os.path.join(settings.UPLOAD_PATH, hexSha+"-"+fname)
-        shutil.move(tmpname, savedName)
-        """FIXME: These db queries should be handled by the model"""
-        try:
-            attachment = model.Attachment.get(page=page, slug=fname)
-        except peewee.DoesNotExist:
-            attachment = model.Attachment.create(page=page, filename=fname, slug=fname)
-        try:
-            model.AttachmentRevision.create(attachment=attachment, sha=hexSha)
-        except peewee.IntegrityError:
-            print "Duplicate upload!"
-        print "Uploaded file %s to %s"%(fname, savedName)
+        page.attachUpload(tmpname, fname, app.config['UPLOAD_PATH'])
     return redirect(url_for('view', slug=page.slug))
 
 @app.route("/<slug>/file/<fileslug>")
@@ -95,7 +77,7 @@ def get_attachment(slug, fileslug):
         model.Page.slug == slug)[0]
     latestRevision = attachment.revisions[0]
     def generate():
-        f = open(os.path.join(settings.UPLOAD_PATH,
+        f = open(os.path.join(app.config['UPLOAD_PATH'],
           latestRevision.sha+"-"+attachment.filename), 'r')
         buf = f.read(2048)
         while buf:

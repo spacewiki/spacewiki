@@ -1,10 +1,13 @@
 """spacewiki database models"""
+import re
+import datetime
 import logging
+import hashlib
 import peewee
 import playhouse.migrate
 import settings
-import re
-import datetime
+import shutil
+import os
 
 database = peewee.SqliteDatabase(settings.DATABASE, threadlocals=True)
 
@@ -39,6 +42,23 @@ class Page(BaseModel):
             logging.debug("New link!")
         Softlink.update(hits = Softlink.hits + 1).where(Softlink.src ==
             prev, Softlink.dest == self).execute()
+
+    def attachUpload(self, src, filename, uploadPath):
+        hexSha = Attachment.hashFile(src)
+        """FIXME: Namespace directories ab/cd/abcdjiofe..."""
+        savedName = os.path.join(uploadPath, hexSha+"-"+filename)
+        shutil.move(src, savedName)
+        """FIXME: These db queries should be handled by the model"""
+        try:
+            attachment = model.Attachment.get(page=self, slug=filename)
+        except peewee.DoesNotExist:
+            attachment = model.Attachment.create(page=self, filename=filename,
+                slug=file)
+        try:
+            model.AttachmentRevision.create(attachment=attachment, sha=hexSha)
+        except peewee.IntegrityError:
+            print "Duplicate upload!"
+        print "Uploaded file %s to %s"%(filename, savedName)
 
     @classmethod
     def latestRevision(cls, slug):
@@ -85,6 +105,13 @@ class Attachment(BaseModel):
     page = peewee.ForeignKeyField(Page, related_name='attachments')
     filename = peewee.CharField(unique=True)
     slug = SlugField(unique=True)
+
+    @staticmethod
+    def hashFile(src):
+        with open(src, 'r') as f:
+            sha = hashlib.sha256()
+            sha.update(f.read())
+        return sha.hexdigest()
 
     class Meta:
         indexes = (
