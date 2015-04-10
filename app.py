@@ -131,6 +131,7 @@ if __name__ == "__main__":
         default=False, const=True)
     args = parser.parse_args()
 
+    logging.getLogger('peewee').setLevel(logging.INFO)
     logging.basicConfig(level=logging.DEBUG)
 
     if args.syncdb:
