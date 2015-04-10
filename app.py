@@ -67,7 +67,8 @@ def attach(slug):
     return redirect(url_for('view', slug=page.slug))
 
 @app.route("/<slug>/file/<fileslug>")
-def get_attachment(slug, fileslug):
+@app.route("/<slug>/file/<fileslug>/<size>")
+def get_attachment(slug, fileslug, size=None):
     """FIXME: This select/join should be handled by the models"""
     attachment = model.Attachment.select().join(model.Page).where(model.Attachment.slug == fileslug,
         model.Page.slug == slug)[0]
