@@ -38,7 +38,7 @@ def do_attachment(pageSlug, slug):
     try:
         imageSlug, size = slug.split(':', 1)
     except Exception, e:
-        print 'broken', e
+        imageSlug = slug
     try:
         attachment = model.Attachment.get(slug=imageSlug)
     except peewee.DoesNotExist:
