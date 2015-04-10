@@ -27,7 +27,7 @@
 </ul>
 {% endif %}
 
-<p>{{revision.body | wikitemplates(page.slug) | wikilinks | markdown | safetags | safe}}
+<p>{{revision.html | safe}}
 
 <ul class="attachments">
   {% for attachment in revision.page.attachments %}

@@ -2,12 +2,15 @@
 import re
 import datetime
 import logging
+import misaka
 import hashlib
 import peewee
 import playhouse.migrate
 import settings
 import shutil
 import os
+
+import filters
 
 database = peewee.SqliteDatabase(settings.DATABASE, threadlocals=True)
 
@@ -81,6 +84,21 @@ class Revision(BaseModel):
     body = peewee.TextField()
     message = peewee.TextField(default='')
     timestamp = peewee.DateTimeField(default=datetime.datetime.now)
+
+    @staticmethod
+    def markdown(s):
+        render = misaka.HtmlRenderer()
+        md = misaka.Markdown(renderer=render)
+        print "rendering markdown"
+        return md.render(s)
+
+    @property
+    def html(self):
+        return  \
+            filters.safetags(\
+            self.markdown(\
+            filters.wikilinks(\
+            filters.wikitemplates(self.body, self.page.slug))))
 
     @property
     def is_latest(self):

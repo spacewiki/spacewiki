@@ -2,7 +2,6 @@
 import peewee
 from flask import Flask, g, render_template, request, redirect, url_for, Response
 from werkzeug import secure_filename
-from flask.ext.misaka import Misaka
 from argparse import ArgumentParser
 import logging
 import os
@@ -13,13 +12,10 @@ import urllib
 
 import model
 import context
-import filters
 
 app = Flask(__name__)
 app.config['UPLOAD_PATH'] = settings.UPLOAD_PATH
-Misaka(app)
 context.init(app)
-filters.init(app)
 
 if settings.ADMIN_EMAILS:
     from logging.handlers import SMTPHandler
