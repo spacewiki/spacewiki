@@ -10,7 +10,7 @@ import settings
 import shutil
 import os
 
-import filters
+import parser
 
 database = peewee.SqliteDatabase(settings.DATABASE, threadlocals=True)
 
@@ -95,10 +95,10 @@ class Revision(BaseModel):
     @property
     def html(self):
         return  \
-            filters.safetags(\
+            parser.safetags(\
             self.markdown(\
-            filters.wikilinks(\
-            filters.wikitemplates(self.body, self.page.slug))))
+            parser.wikilinks(\
+            parser.wikitemplates(self.body, self.page.slug))))
 
     @property
     def is_latest(self):
