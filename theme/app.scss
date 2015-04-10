@@ -118,4 +118,10 @@ main {
   margin-bottom: 0;
 }
 
+img {
+  max-width: $row-width/5;
+  height: auto;
+  display: block;
+}
+
 @import "site";
