@@ -29,6 +29,8 @@
 
 <p>{{revision.html | safe}}
 
+{% if revision.page.slug != settings.INDEX_PAGE %}
+<h2>Attachments</h2>
 <ul class="attachments">
   {% for attachment in revision.page.attachments %}
   <li><a href="{{url_for('get_attachment', slug=revision.page.slug, fileslug=attachment.slug)}}">{{attachment.filename}}</li>
@@ -41,4 +43,5 @@
 {% endfor %}
 <br style="clear:both">
 </ul>
+{% endif %}
 {% endblock %}
