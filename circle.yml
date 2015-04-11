@@ -6,6 +6,7 @@ dependencies:
     - pip install ansible pylint
 test:
   pre:
+    - mkdir uploads
     - ./app.py --syncdb
   override:
     - nosetests
