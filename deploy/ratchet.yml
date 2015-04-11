@@ -22,6 +22,7 @@
         - /srv/spacewiki/app
         - /srv/spacewiki/app/static/lib
         - /srv/spacewiki/data
+        - /srv/spacewiki/data/uploads
     - name: Check out spacewiki
       git: accept_hostkey=yes dest=/srv/spacewiki/app repo=git://github.com/tdfischer/spacewiki force=yes
       notify:
