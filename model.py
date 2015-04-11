@@ -186,8 +186,9 @@ def migrate(currentRevision):
     migrator = playhouse.migrate.SqliteMigrator(database)
     with database.transaction():
         if currentRevision == 0:
-            database.create_tables([Page, Revision, Softlink])
-            return migrate(1)
+            database.create_tables([Page, Revision, Softlink, Attachment,
+              AttachmentRevision])
+            return migrate(3)
         if currentRevision == 1:
             playhouse.migrate.migrate(
                 migrator.add_column('revision', 'message', Revision.message),
