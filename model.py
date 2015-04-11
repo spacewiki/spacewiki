@@ -186,11 +186,8 @@ def migrate(currentRevision):
     migrator = playhouse.migrate.SqliteMigrator(database)
     with database.transaction():
         if currentRevision == 0:
-            try:
-                database.create_tables([Page, Revision, Softlink])
-            except peewee.OperationalError:
-                pass
-            return migrate(2)
+            database.create_tables([Page, Revision, Softlink])
+            return migrate(1)
         if currentRevision == 1:
             playhouse.migrate.migrate(
                 migrator.add_column('revision', 'message', Revision.message),
@@ -198,9 +195,6 @@ def migrate(currentRevision):
             )
             return migrate(2)
         if currentRevision == 2:
-            try:
-                database.create_tables([Attachment, AttachmentRevision])
-            except peewee.OperationalError:
-                pass
+            database.create_tables([Attachment, AttachmentRevision])
             return migrate(3)
     return currentRevision
