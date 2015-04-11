@@ -85,18 +85,14 @@ class Softlink(BaseModel):
 
 class WikiRenderer(mistune.Renderer):
     def block_html(self, html):
-        soup = bs4.BeautifulSoup(html)
-        container = soup.body.contents[0]
-        subcontents = ""
-        for c in container.contents:
-            subcontents += unicode(c)
+        firstLine, rest = html.split('\n', 1)
+        tag, tagTail = re.match('^<(.+?)>(.*)', html).groups()
+        rest = tagTail + rest
         renderer = WikiRenderer()
         md = mistune.Markdown(renderer=renderer)
-        submd = md.render(unicode(subcontents))
-        subsoup = bs4.BeautifulSoup(submd)
-        container.clear()
-        container.contents = subsoup.body.contents
-        return unicode(container)
+        submd = md.render(unicode(rest))
+        ret = "<%s>%s"%(tag, submd)
+        return ret
 
 class Revision(BaseModel):
     page = peewee.ForeignKeyField(Page, related_name='revisions')
