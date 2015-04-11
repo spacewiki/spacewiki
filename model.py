@@ -87,12 +87,15 @@ class WikiRenderer(mistune.Renderer):
     def block_html(self, html):
         soup = bs4.BeautifulSoup(html)
         container = soup.body.contents[0]
-        result = ""
-        for c in container.children:
-            renderer = WikiRenderer()
-            md = mistune.Markdown(renderer=renderer)
-            subsoup = bs4.BeautifulSoup(md.render(unicode(c)))
-            c.replace_with(subsoup.body.contents[0])
+        subcontents = ""
+        for c in container.contents:
+            subcontents += unicode(c)
+        renderer = WikiRenderer()
+        md = mistune.Markdown(renderer=renderer)
+        submd = md.render(unicode(subcontents))
+        subsoup = bs4.BeautifulSoup(submd)
+        container.clear()
+        container.contents = subsoup.body.contents
         return unicode(container)
 
 class Revision(BaseModel):
