@@ -187,7 +187,7 @@ def migrate(currentRevision):
                 database.create_tables([Page, Revision, Softlink])
             except peewee.OperationalError:
                 pass
-            return migrate(1)
+            return migrate(3)
         if currentRevision == 1:
             playhouse.migrate.migrate(
                 migrator.add_column('revision', 'message', Revision.message),
