@@ -11,7 +11,7 @@ import settings
 import shutil
 import os
 
-import parser
+import wikiformat
 
 database = peewee.SqliteDatabase(settings.DATABASE, threadlocals=True)
 
@@ -91,7 +91,7 @@ class WikiRenderer(mistune.Renderer):
         for c in container.children:
             renderer = WikiRenderer()
             md = mistune.Markdown(renderer=renderer)
-            subsoup = bs4.BeautifulSoup(md.render(str(c)))
+            subsoup = bs4.BeautifulSoup(md.render(unicode(c)))
             c.replace_with(subsoup.body.contents[0])
         return str(container)
 
@@ -110,10 +110,10 @@ class Revision(BaseModel):
     @property
     def html(self):
         return  \
-            parser.safetags(\
+            wikiformat.safetags(\
             self.markdown(\
-            parser.wikilinks(\
-            parser.wikitemplates(self.body, self.page.slug))))
+            wikiformat.wikilinks(\
+            wikiformat.wikitemplates(self.body, self.page.slug))))
 
     @property
     def is_latest(self):
