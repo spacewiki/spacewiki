@@ -63,7 +63,7 @@ def do_template(match, pageSlug, depth):
         replacement = model.Page.latestRevision(slug)
     if replacement is None:
         return "{{[[%s]]}}"%(slug)
-    return wikitemplates(replacement.body, depth=depth+1)
+    return wikitemplates(replacement.body, pageSlug, depth=depth+1)
 
 def wikitemplates(s, pageSlug, depth=0):
     def do_template_with_depth(*args): #pylint: disable=missing-docstring
