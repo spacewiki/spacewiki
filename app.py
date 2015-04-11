@@ -4,14 +4,17 @@ from flask import Flask, g, render_template, request, redirect, url_for, Respons
 from werkzeug import secure_filename
 from argparse import ArgumentParser
 import logging
+import re
 import os
 import settings
 import tempfile
 import urlparse
 import urllib
+import requests
 
 import model
 import context
+import importer
 
 app = Flask(__name__)
 app.config['UPLOAD_PATH'] = settings.UPLOAD_PATH
@@ -165,6 +168,7 @@ if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument('--syncdb', action='store_const',
         default=False, const=True)
+    parser.add_argument('--import-mediawiki', default=None)
     args = parser.parse_args()
 
     logging.getLogger('peewee').setLevel(logging.INFO)
@@ -172,5 +176,9 @@ if __name__ == "__main__":
 
     if args.syncdb:
         model.syncdb(app)
+    elif args.import_mediawiki:
+        slug = 'Main_Page'
+        url = args.import_mediawiki
+        importer.import_page(url, slug)
     else:
         app.run(debug=True)
