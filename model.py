@@ -93,7 +93,7 @@ class WikiRenderer(mistune.Renderer):
             md = mistune.Markdown(renderer=renderer)
             subsoup = bs4.BeautifulSoup(md.render(unicode(c)))
             c.replace_with(subsoup.body.contents[0])
-        return str(container)
+        return unicode(container)
 
 class Revision(BaseModel):
     page = peewee.ForeignKeyField(Page, related_name='revisions')
