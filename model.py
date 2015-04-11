@@ -48,8 +48,11 @@ class Page(BaseModel):
             prev, Softlink.dest == self).execute()
 
     def attachUpload(self, src, filename, uploadPath):
+        assert(isinstance(src, basestring))
+        assert(isinstance(filename, basestring))
+        assert(isinstance(uploadPath, basestring))
+
         hexSha = Attachment.hashFile(src)
-        """FIXME: Namespace directories ab/cd/abcdjiofe..."""
         savedName = os.path.join(uploadPath, Attachment.hashPath(hexSha, filename))
         os.makedirs(os.path.dirname(savedName))
         shutil.move(src, savedName)
@@ -58,7 +61,7 @@ class Page(BaseModel):
             attachment = Attachment.get(page=self, slug=filename)
         except peewee.DoesNotExist:
             attachment = Attachment.create(page=self, filename=filename,
-                slug=file)
+                slug=filename)
         try:
             AttachmentRevision.create(attachment=attachment, sha=hexSha)
         except peewee.IntegrityError:
@@ -187,7 +190,7 @@ def migrate(currentRevision):
                 database.create_tables([Page, Revision, Softlink])
             except peewee.OperationalError:
                 pass
-            return migrate(3)
+            return migrate(2)
         if currentRevision == 1:
             playhouse.migrate.migrate(
                 migrator.add_column('revision', 'message', Revision.message),
