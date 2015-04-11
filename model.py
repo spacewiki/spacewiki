@@ -1,9 +1,10 @@
 """spacewiki database models"""
+import bs4
 import re
 import datetime
 import logging
-import misaka
 import hashlib
+import mistune
 import peewee
 import playhouse.migrate
 import settings
@@ -79,6 +80,18 @@ class Softlink(BaseModel):
     dest = peewee.ForeignKeyField(Page, related_name='softlinks_in')
     hits = peewee.IntegerField(default=0)
 
+class WikiRenderer(mistune.Renderer):
+    def block_html(self, html):
+        soup = bs4.BeautifulSoup(html)
+        container = soup.body.contents[0]
+        result = ""
+        for c in container.children:
+            renderer = WikiRenderer()
+            md = mistune.Markdown(renderer=renderer)
+            subsoup = bs4.BeautifulSoup(md.render(str(c)))
+            c.replace_with(subsoup.body.contents[0])
+        return str(container)
+
 class Revision(BaseModel):
     page = peewee.ForeignKeyField(Page, related_name='revisions')
     body = peewee.TextField()
@@ -87,9 +100,8 @@ class Revision(BaseModel):
 
     @staticmethod
     def markdown(s):
-        render = misaka.HtmlRenderer()
-        md = misaka.Markdown(renderer=render)
-        print "rendering markdown"
+        renderer = WikiRenderer()
+        md = mistune.Markdown(renderer=renderer)
         return md.render(s)
 
     @property
