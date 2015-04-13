@@ -113,7 +113,8 @@ def view(slug=settings.INDEX_PAGE, revision=None, redirectFrom=None):
     else:
       revision = model.Revision.get(id=revision)
 
-    lastPageSlug = model.Page.parsePreviousSlugFromRequest(request)
+    lastPageSlug = model.Page.parsePreviousSlugFromRequest(request,
+    app.config['INDEX_PAGE'])
     if lastPageSlug is not None:
         lagePage = model.Page.get(slug=lastPageSlug)
 
