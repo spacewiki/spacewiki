@@ -15,9 +15,11 @@ import os
 import wikiformat
 
 database = peewee.Proxy()
+currentURI = None
 
 def setURI(u):
     database.initialize(connect(u))
+    database.connect()
 
 class BaseModel(peewee.Model):
     class Meta:

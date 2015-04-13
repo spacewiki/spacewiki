@@ -15,8 +15,9 @@ import model
 import context
 
 app = Flask(__name__)
-app.config['UPLOAD_PATH'] = settings.UPLOAD_PATH
-app.config['DATABASE'] = settings.DATABASE
+app.config.from_object('settings')
+
+model.setURI(app.config['DATABASE'])
 context.init(app)
 
 if settings.ADMIN_EMAILS:
@@ -26,24 +27,6 @@ if settings.ADMIN_EMAILS:
         settings.ADMIN_EMAILS, 'SpaceWiki error')
     mail_handler.setLevel(logging.ERROR)
     app.logger.addHandler(mail_handler)
-
-@app.before_request
-def setup_db():
-    """Connect to the database before a request is handled"""
-    model.setURI(app.config['DATABASE'])
-    g.database = model.database
-    g.database.connect()
-
-@app.teardown_appcontext
-def close_db(error): #pylint: disable=unused-argument
-    """Close the database connection when the app is shutting down"""
-    if hasattr(g, 'database'):
-        try:
-            g.database.close()
-        except: #pylint: disable=bare-except
-            pass
-        del g.database
-
 
 @app.route("/<slug>/history")
 def history(slug):
