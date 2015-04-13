@@ -10,6 +10,8 @@ import playhouse.migrate
 from playhouse.db_url import connect
 import settings
 import shutil
+import urlparse
+import urllib
 import os
 
 import wikiformat
@@ -37,6 +39,21 @@ class SlugField(peewee.CharField):
 class Page(BaseModel):
     title = peewee.CharField(unique=True)
     slug = SlugField(unique=True)
+
+    @staticmethod
+    def parsePreviousSlugFromRequest(req):
+        if 'Referer' in req.headers:
+            referer = req.headers['Referer']
+            referUrl = urlparse.urlparse(referer)
+            if referUrl.netloc == req.headers['Host']:
+                script_name = req.environ['SCRIPT_NAME']
+
+                lastPageSlug = urllib.unquote(referUrl.path[len(script_name)+1:])
+                logging.debug("Last page slug: %s", lastPageSlug)
+                return lastPageSlug
+        if 'lastSlug' in req.args:
+            return req.args.get('lastSlug')
+        return None
 
     def newRevision(self, body, message):
         """Creates a new Revision of this Page with the given body"""

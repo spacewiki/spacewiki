@@ -7,9 +7,6 @@ import logging
 import os
 import settings
 import tempfile
-import urlparse
-import urllib
-import playhouse.db_url
 
 import model
 import context
@@ -116,23 +113,10 @@ def view(slug=settings.INDEX_PAGE, revision=None, redirectFrom=None):
     else:
       revision = model.Revision.get(id=revision)
 
-    if 'Referer' in request.headers:
-        referer = request.headers['Referer']
-        referUrl = urlparse.urlparse(referer)
-        if referUrl.netloc == request.headers['Host']:
-            script_name = '/'
+    lastPageSlug = model.Page.parsePreviousSlugFromRequest(request)
+    if lastPageSlug is not None:
+        lagePage = model.Page.get(slug=lastPageSlug)
 
-            if 'SCRIPT_NAME' in os.environ:
-                script_name = os.environ['SCRIPT_NAME']
-
-            lastPageSlug = urllib.unquote(referUrl.path[len(script_name)+1:])
-            logging.debug("Last page slug: %s", lastPageSlug)
-
-            if lastPageSlug != settings.INDEX_PAGE:
-                try:
-                    lastPage = model.Page.get(slug=lastPageSlug)
-                except peewee.DoesNotExist:
-                    pass
 
     if revision is not None:
         if lastPage is not None and lastPage != revision.page:
