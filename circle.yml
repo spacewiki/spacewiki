@@ -7,7 +7,6 @@ dependencies:
 test:
   pre:
     - mkdir uploads
-    - ./app.py --syncdb
   override:
     - nosetests
   post:
