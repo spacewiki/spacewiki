@@ -9,3 +9,5 @@ bleach==1.4.1
 GitPython==0.3.6
 beautifulsoup4==4.3.2
 mistune==0.5.1
+hypothesis==1.1.1
+hypothesis-fakefactory==0.5.1
