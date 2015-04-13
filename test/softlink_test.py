@@ -16,14 +16,7 @@ FullUrl = hypothesis.strategy(FakeFactory('url'))
 
 Domain = hypothesis.strategy(FakeFactory('domain_name'))
 
-class SoftlinkTestCase(unittest.TestCase):
-    def setUp(self):
-        model.setURI('sqlite:///:memory:')
-        model.syncdb()
-        model.Page.create(title='page', slug='page')
-        model.Page.create(title='index', slug='index')
-        self.app = app.test_client()
-
+class SoftlinkParsingTestCase(unittest.TestCase):
     @hypothesis.given(Path)
     def test_parser_no_refer(self, s):
         req = werkzeug.test.EnvironBuilder(path=s)
@@ -50,3 +43,36 @@ class SoftlinkTestCase(unittest.TestCase):
         ).get_request()
         resp = model.Page.parsePreviousSlugFromRequest(req, referPage)
         self.assertEqual(req.lastSlug, referPage)
+
+class SoftlinkTestCase(unittest.TestCase):
+    def setUp(self):
+        model.setURI('sqlite:///:memory:')
+        model.syncdb()
+        model.Page.create(title='page', slug='page')
+        model.Page.create(title='index', slug='index')
+        self.app = app.test_client()
+
+    @hypothesis.given(Path, Path, Domain, Path)
+    def test_create_softlink(self, src, dest, host, prefix):
+        if src == dest:
+            return
+
+        self.app.get(
+            prefix+dest,
+            headers={
+              'Referer': 'http://'+host+prefix+src,
+              'Host': host
+            },
+            base_url = 'http://'+host+prefix
+        )
+
+        self.assertTrue(
+          model.Softlink.select() \
+            .join(model.Page, on=model.Softlink.src) \
+            .where(
+                model.Page.slug == src, 
+            ).join(model.Page, on=model.Softlink.dest) \
+            .where(
+                model.Page.slug == dest,
+            ).exists()
+        )
