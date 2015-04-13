@@ -3,7 +3,7 @@ general:
     - linter.html
 dependencies:
   post:
-    - pip install ansible pylint
+    - pip install ansible pylint coverage coveralls
 test:
   pre:
     - mkdir uploads
@@ -12,6 +12,7 @@ test:
     - nosetests
   post:
     - pylint -f html *.py | tee linter.html
+    - coveralls
 deployment:
   ratchet:
     branch: master
