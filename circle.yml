@@ -8,7 +8,7 @@ test:
   pre:
     - mkdir uploads
   override:
-    - nosetests
+    - nosetests --with-coverage
   post:
     - pylint -f html *.py | tee linter.html
     - coveralls
