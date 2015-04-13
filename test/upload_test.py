@@ -8,6 +8,8 @@ import os
 
 class UploadTestCase(unittest.TestCase):
     def setUp(self):
+        model.setURI('sqlite:///:memory:')
+        model.syncdb()
         app.config['UPLOAD_PATH'] = tempfile.mkdtemp()
         try:
             model.Page.create(title='index', slug='index')

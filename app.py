@@ -9,12 +9,14 @@ import settings
 import tempfile
 import urlparse
 import urllib
+import playhouse.db_url
 
 import model
 import context
 
 app = Flask(__name__)
 app.config['UPLOAD_PATH'] = settings.UPLOAD_PATH
+app.config['DATABASE'] = settings.DATABASE
 context.init(app)
 
 if settings.ADMIN_EMAILS:
@@ -28,6 +30,7 @@ if settings.ADMIN_EMAILS:
 @app.before_request
 def setup_db():
     """Connect to the database before a request is handled"""
+    model.setURI(app.config['DATABASE'])
     g.database = model.database
     g.database.connect()
 
@@ -171,6 +174,6 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
 
     if args.syncdb:
-        model.syncdb(app)
+        model.syncdb()
     else:
         app.run(debug=True)

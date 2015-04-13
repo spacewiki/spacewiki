@@ -1,8 +1,11 @@
 from app import app
+import model
 import unittest
 
 class UiTestCase(unittest.TestCase):
     def setUp(self):
+        model.setURI('sqlite:///:memory:')
+        model.syncdb()
         self.app = app.test_client()
 
     def test_index(self):

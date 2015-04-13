@@ -1,5 +1,5 @@
 """Spacewiki settings"""
-DATABASE = 'spacewiki.sqlite3'
+DATABASE = 'sqlite:///spacewiki.sqlite3'
 SITE_NAME = 'SpaceWiki'
 INDEX_PAGE = 'index'
 UPLOAD_PATH = 'uploads'

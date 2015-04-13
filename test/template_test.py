@@ -2,8 +2,14 @@ import model
 import wikiformat
 import unittest
 
-
 class ParserTestCase(unittest.TestCase):
+    def setUp(self):
+        model.setURI('sqlite:///:memory:')
+        model.syncdb()
+
+    def tearDown(self):
+        model.setURI('sqlite:////dev/null')
+
     def test_wikitemplates(self):
         self.assertEqual(wikiformat.wikitemplates("", ''), "")
         self.assertEqual(wikiformat.wikitemplates("{{foo}}", ''), "{{[[foo]]}}")

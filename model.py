@@ -7,13 +7,17 @@ import hashlib
 import mistune
 import peewee
 import playhouse.migrate
+from playhouse.db_url import connect
 import settings
 import shutil
 import os
 
 import wikiformat
 
-database = peewee.SqliteDatabase(settings.DATABASE, threadlocals=True)
+database = peewee.Proxy()
+
+def setURI(u):
+    database.initialize(connect(u))
 
 class BaseModel(peewee.Model):
     class Meta:
@@ -167,7 +171,7 @@ class AttachmentRevision(BaseModel):
 class DatabaseVersion(BaseModel):
     schema_version = peewee.IntegerField(default=0)
 
-def syncdb(app):
+def syncdb():
     logging.info("Creating tables...")
     try:
         DatabaseVersion.select().execute()
