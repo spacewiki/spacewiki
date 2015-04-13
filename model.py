@@ -191,14 +191,5 @@ def migrate(currentRevision):
         if currentRevision == 0:
             database.create_tables([Page, Revision, Softlink, Attachment,
               AttachmentRevision])
-            return migrate(3)
-        if currentRevision == 1:
-            playhouse.migrate.migrate(
-                migrator.add_column('revision', 'message', Revision.message),
-                migrator.add_column('revision', 'timestamp', Revision.timestamp)
-            )
-            return migrate(2)
-        if currentRevision == 2:
-            database.create_tables([Attachment, AttachmentRevision])
-            return migrate(3)
+            return migrate(1)
     return currentRevision
