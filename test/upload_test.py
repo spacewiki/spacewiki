@@ -11,11 +11,9 @@ class UploadTestCase(unittest.TestCase):
         model.setURI('sqlite:///:memory:')
         model.syncdb()
 
+        model.Page.create(title='index', slug='index')
+
         app.config['UPLOAD_PATH'] = tempfile.mkdtemp()
-        try:
-            model.Page.create(title='index', slug='index')
-        except:
-            pass
         self.app = app.test_client()
         self.app.post('/index', data={'body': '', 'message': ''})
 
