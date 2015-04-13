@@ -46,14 +46,12 @@ class Page(BaseModel):
             referer = req.headers['Referer']
             referUrl = urlparse.urlparse(referer)
             if 'Host' in req.headers:
-                logging.debug('got host %s', req.headers['Host'])
                 if referUrl.netloc == req.headers['Host']:
                     script_name = req.environ['SCRIPT_NAME']
 
                     lastPageSlug = urllib.unquote(referUrl.path[len(script_name)+1:])
                     if lastPageSlug == "":
                         lastPageSlug = default
-                    logging.debug("Last page slug: %s", lastPageSlug)
                     req.lastSlug = lastPageSlug
                     return lastPageSlug
         if 'lastSlug' in req.args:
