@@ -50,6 +50,8 @@ class Page(BaseModel):
                     script_name = req.environ['SCRIPT_NAME']
 
                     lastPageSlug = urllib.unquote(referUrl.path[len(script_name)+1:])
+                    if '/' in lastPageSlug:
+                      lastPageSlug, _ = lastPageSlug.split('/', 1)
                     if lastPageSlug == "":
                         lastPageSlug = default
                     req.lastSlug = lastPageSlug
