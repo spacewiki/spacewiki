@@ -22,6 +22,7 @@
             <li><input type="text" value="{{"{{"}}attachment:{{attachment.slug}}{{"}}"}}"></li>
           {% endfor %}
         {% endif %}
+        <li><a class="small button" href="{{url_for('upload', slug=page.slug)}}">Upload</a></li>
       </ul>
     </div>
   </div>
