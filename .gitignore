@@ -4,3 +4,6 @@ spacewiki.sqlite3
 node_modules
 local_settings.py
 uploads
+.hypothesis
+.coverage
+npm-debug.log
