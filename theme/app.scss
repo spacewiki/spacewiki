@@ -18,6 +18,11 @@ textarea {
   position: relative;
   height: 30em;
   width: 100%;
+  display: none;
+}
+
+#editor_toggle {
+  display: none;
 }
 
 #content {

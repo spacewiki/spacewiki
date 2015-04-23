@@ -10,6 +10,7 @@
   {% endif %}
   <div class="row">
     <div class="large-9 columns">
+      <label id="editor_toggle">Use ACE editor <input type="checkbox" id="editor_toggle_value"></label>
       <textarea name="body" id="body">{% if revision %}{{revision.body}}{% endif %}</textarea>
       <div id="editor"></div>
     </div>

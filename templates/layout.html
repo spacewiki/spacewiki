@@ -65,15 +65,7 @@
   </div>
 </footer>
 </body>
+<script src="{{url_for('static', filename='lib/app.min.js')}}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.1.9/ace.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.1.9/mode-markdown.js"></script>
-<script>
-  var editor = ace.edit("editor");
-  editor.setTheme("ace/theme/monokai");
-  editor.getSession().setMode("ace/mode/markdown");
-  editor.setValue(document.getElementById("body").value);
-  editor.getSession().on('change', function(e) {
-    document.getElementById('body').value = editor.getValue()
-  });
-</script>
 </html>
