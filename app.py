@@ -116,8 +116,10 @@ def view(slug=settings.INDEX_PAGE, revision=None, redirectFrom=None):
     lastPageSlug = model.Page.parsePreviousSlugFromRequest(request,
     app.config['INDEX_PAGE'])
     if lastPageSlug is not None:
-        lagePage = model.Page.get(slug=lastPageSlug)
-
+        try:
+            lastPage = model.Page.get(slug=lastPageSlug)
+        except peewee.DoesNotExist:
+            pass
 
     if revision is not None:
         if lastPage is not None and lastPage != revision.page:
