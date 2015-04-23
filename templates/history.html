@@ -1,15 +1,24 @@
 {% extends "layout.html" %}
 
 {% block content %}
+<div class="row">
+  <div class="small-12 columns">
+    <h1>History for <em>{{page.title}}</em></h1>
+  </div>
+</div>
 <table>
   <tr>
     <th>Revision</th>
+    <th>Timestamp</th>
     <th>Commit message</th>
   </tr>
   {% for rev in page.revisions %}
   <tr>
     <td>
       <a href="{{url_for('view', slug=rev.page.slug, revision=rev.id)}}">{{rev.id}}</a>
+    </td>
+    <td>
+      {{rev.timestamp}}
     </td>
     <td>
       {{rev.message}}
