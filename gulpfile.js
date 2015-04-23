@@ -5,7 +5,8 @@ var concat = require('gulp-concat');
 
 var paths = {
   scripts: [
-    'bower_components/jquery/dist/jquery.js',
+    'node_modules/jquery/dist/jquery.js',
+    'theme/js/lib/**/*.js',
     'theme/js/*.js'
   ],
   scss: ['theme/app.scss'],
