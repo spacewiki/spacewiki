@@ -7,10 +7,12 @@
       $('#body').hide();
       $('#editor').show();
       $('#editor_toggle_value')[0].checked = true;
+      $.cookie('use-ace', true);
     } else {
       $('#body').show();
       $('#editor').hide();
       $('#editor_toggle_value')[0].checked = false;
+      $.cookie('use-ace', false);
     }
   }
 
@@ -32,7 +34,12 @@
       editor.getSession().setMode("ace/mode/markdown");
       editor.getSession().on('change', syncEditorToBody);
       $('#body').change(syncBodyToEditor);
-      useACE(true);
+      $.cookie.json = true;
+      if ($.cookie('use-ace')) {
+        useACE(true);
+      } else {
+        useACE(false);
+      }
     }
     syncBodyToEditor();
     $('#editor_toggle_value').change(function() {

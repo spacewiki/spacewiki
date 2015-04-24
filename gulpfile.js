@@ -6,6 +6,7 @@ var concat = require('gulp-concat');
 var paths = {
   scripts: [
     'node_modules/jquery/dist/jquery.js',
+    'node_modules/jquery.cookie/jquery.cookie.js',
     'theme/js/lib/**/*.js',
     'theme/js/*.js'
   ],
