@@ -84,7 +84,8 @@ class Page(BaseModel):
 
         hexSha = Attachment.hashFile(src)
         savedName = os.path.join(uploadPath, Attachment.hashPath(hexSha, filename))
-        os.makedirs(os.path.dirname(savedName))
+        if not os.path.exists(os.path.dirname(savedName)):
+            os.makedirs(os.path.dirname(savedName))
         shutil.move(src, savedName)
         """FIXME: These db queries should be handled by the model"""
         try:
