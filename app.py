@@ -34,7 +34,10 @@ def history(slug):
 @app.route("/<slug>/attach")
 def upload(slug):
     """Show the file attachment form"""
-    page = model.Page.get(slug=slug)
+    try:
+        page = model.Page.get(slug=slug)
+    except peewee.DoesNotExist:
+        page = model.Page.create(title=slug, slug=slug)
     return render_template('attach.html', page=page)
 
 @app.route("/<slug>/attach", methods=['POST'])
@@ -88,8 +91,13 @@ def edit(slug, redirectFrom=None):
             page=revision.page, revision=revision, slug=revision.page.slug,
             redirectFrom=redirectFrom)
     else:
+        page = None
+        try:
+            page = model.Page.get(slug=slug)
+        except peewee.DoesNotExist:
+            pass
         return render_template('404.html',
-            slug=model.SlugField.slugify(slug), title=slug, redirectFrom=redirectFrom)
+            slug=model.SlugField.slugify(slug), title=slug, page=page, redirectFrom=redirectFrom)
 
 @app.route("/.search")
 def search():

@@ -16,13 +16,16 @@
     </div>
     <div class="large-3 columns">
       <h2>Attachments</h2>
-      <ul>
-        {% if revision %}
-          {% for attachment in revision.page.attachments %}
-            <li><input type="text" value="{{"{{"}}attachment:{{attachment.slug}}{{"}}"}}"></li>
+      <ul class="attachment-list">
+        {% if page %}
+          {% for attachment in page.attachments %}
+          <li>
+            <img src="{{url_for('get_attachment', slug=slug, fileslug=attachment.slug)}}">
+            <input type="text" value="{{"{{"}}attachment:{{attachment.slug}}{{"}}"}}">
+          </li>
           {% endfor %}
         {% endif %}
-        <li><a class="small button" href="{{url_for('upload', slug=page.slug)}}">Upload</a></li>
+        <li><a class="small button" href="{{url_for('upload', slug=slug)}}">Upload</a></li>
       </ul>
     </div>
   </div>
