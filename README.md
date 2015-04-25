@@ -37,3 +37,9 @@ others to get up and going with minimal setup:
 * Support more than sqlite
 * Image uploads
 * Crazy easy "attach photo" button for use with a mobile device/camera
+
+## License
+
+SpaceWiki is released under the terms of the GNU Affero General Public License v3
+
+![AGPLv3](https://raw.github.com/tdfischer/spacewiki/master/doc/agpl.png)
