@@ -2,11 +2,14 @@
 import peewee
 from flask import Flask, g, render_template, request, redirect, url_for, Response
 from werkzeug import secure_filename
+import werkzeug.exceptions
+import werkzeug
 from argparse import ArgumentParser
 import logging
 import os
 import settings
 import tempfile
+from PIL import Image
 
 import model
 import context
@@ -59,16 +62,44 @@ def get_attachment(slug, fileslug, size=None):
     attachment = model.Attachment.select().join(model.Page).where(model.Attachment.slug == fileslug,
         model.Page.slug == slug)[0]
     latestRevision = attachment.revisions[0]
+    maxSize = None
+
+    if size is not None:
+        try:
+            maxSize = max(0, int(size))
+        except ValueError, e:
+            maxSize = -1
+
+    if maxSize is not None and maxSize <= 0:
+        raise werkzeug.exceptions.NotFound()
+
     def generate():
         fname = model.Attachment.hashPath(latestRevision.sha,
             attachment.filename)
-        f = open(os.path.join(app.config['UPLOAD_PATH'], fname), 'r')
+        if maxSize is not None:
+            resizedFname = os.path.join(app.config['UPLOAD_PATH'], fname)+'-%s'%(maxSize)
+            if not os.path.exists(resizedFname):
+                img = Image.open(os.path.join(app.config['UPLOAD_PATH'], fname))
+                w, h = img.size
+                if w > h:
+                  scale = float(maxSize) / w
+                  w = maxSize
+                  h = h * scale
+                else:
+                  scale = float(maxSize) / h
+                  h = maxSize
+                  w = w * scale
+                img.thumbnail([w, h], Image.ANTIALIAS)
+                img.save(resizedFname, format='png')
+            f = open(resizedFname, 'r')
+        else:
+            f = open(os.path.join(app.config['UPLOAD_PATH'], fname))
         buf = f.read(2048)
         while buf:
             yield buf
             buf = f.read(2048)
     """FIXME: mimetype detection"""
-    mimetype = 'image/jpeg; charset=binary'
+    mimetype = 'image/png; charset=binary'
     return Response(generate(), mimetype=mimetype)
 
 @app.route("/<slug>", methods=['POST'])

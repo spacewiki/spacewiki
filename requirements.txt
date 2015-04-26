@@ -11,3 +11,4 @@ beautifulsoup4==4.3.2
 mistune==0.5.1
 hypothesis==1.1.1
 hypothesis-fakefactory==0.5.1
+pillow==2.8.1
