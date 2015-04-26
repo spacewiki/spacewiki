@@ -13,7 +13,16 @@
     <th>Commit message</th>
     <th>Actions</th>
   </tr>
+  {% set date = None %}
   {% for rev in page.revisions %}
+  <tr>
+    {% if rev.timestamp.date() != date %}
+      <th colspan="4">
+        {{rev.timestamp.date()}}
+      </th>
+      {% set date = rev.timestamp.date() %}
+    {% endif %}
+  </tr>
   <tr>
     <td>
       <a href="{{url_for('view', slug=rev.page.slug, revision=rev.id)}}">{{rev.id}}</a>
