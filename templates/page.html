@@ -25,6 +25,16 @@
   <li class="current">Revision {{revision.id}}</li>
   <li class="arrow"><a href="{{url_for('view', revision=revision.next.id)}}">&raquo;</a></li>
 </ul>
+
+<div class="row">
+  <div class="large-12 columns">
+    <h2>Diff between {{revision.prev.id}} (old) and {{revision.id}} (newer)</h2>
+    <div class="diff">
+{% for line in revision.diffToPrev %}<div class="{{line.type}}">{{ line.contents }}</div>
+{% endfor %}
+    </div>
+  </div>
+</div>
 {% endif %}
 
 <p>{{revision.html | safe}}

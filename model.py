@@ -1,6 +1,7 @@
 """spacewiki database models"""
 import bs4
 import re
+import difflib
 import datetime
 import logging
 import hashlib
@@ -156,6 +157,43 @@ class Revision(BaseModel):
             self.id).order_by(Revision.id.desc()).limit(1)[0]
       except IndexError:
         return None
+
+    @property
+    def diffToPrev(self):
+        prev = self.prev
+        if prev is not None:
+            ret = []
+            for line in difflib.unified_diff(prev.body.split("\n"),
+                self.body.split("\n"), lineterm="",
+                fromfile="%s@%s"%(self.page.slug,self.id),
+                tofile="%s@%s"%(self.page.slug,prev.id)):
+                if line.startswith('+++') or line.startswith('---'):
+                    lineType = 'meta'
+                elif line.startswith('@@'):
+                    lineType = 'context'
+                elif line.startswith('+'):
+                    lineType = 'addition'
+                elif line.startswith('-'):
+                    lineType = 'subtraction'
+                ret.append({'contents': line, 'type': lineType})
+            return ret
+        return difflib.unified_diff('', self.body)
+
+    @property
+    def diffToNext(self):
+        next = self.next
+        if next is not None:
+            return difflib.unified_diff(self.body, next.body)
+        return difflib.unified_diff(self.body, "")
+
+    def diffStatsToPrev(self):
+        meta = {'additions': 0, 'subtractions': 0}
+        for line in self.diffToPrev:
+            if line.startswith('+') and not line.startswith('+++'):
+                meta['additions'] += 1
+            if line.startswith('-') and not line.startswith('---'):
+                meta['subtractions'] += 1
+        return meta
 
     @property
     def next(self):

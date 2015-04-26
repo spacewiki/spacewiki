@@ -26,6 +26,8 @@
   <tr>
     <td>
       <a href="{{url_for('view', slug=rev.page.slug, revision=rev.id)}}">{{rev.id}}</a>
+      <span class="additions">+{{rev.diffStatsToPrev()['additions']}}</span>
+      <span class="subtractions">-{{rev.diffStatsToPrev()['subtractions']}}</span>
     </td>
     <td>
       {{rev.timestamp}}

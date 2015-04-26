@@ -11,6 +11,44 @@ $logo-height: 150;
 
 @import "lightbox";
 
+.additions {
+  color: #0a0;
+}
+
+.diff {
+  background-color: #eee;
+  padding: 1em;
+  font-family: monospace;
+
+  div {
+    white-space: pre;
+  }
+
+  .meta {
+    background-color: #aaa;
+    color: #000;
+  }
+
+  .context {
+    background-color: #fa5;
+    color: #a20;
+  }
+
+  .addition {
+    background-color: #dfd;
+    color: #030;
+  }
+
+  .subtraction {
+    background-color: #fdd;
+    color: #300;
+  }
+}
+
+.subtractions {
+  color: #a00;
+}
+
 textarea {
   height: 30em;
   font-family: monospace;
