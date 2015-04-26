@@ -11,6 +11,7 @@
     <th>Revision</th>
     <th>Timestamp</th>
     <th>Commit message</th>
+    <th>Actions</th>
   </tr>
   {% for rev in page.revisions %}
   <tr>
@@ -22,6 +23,9 @@
     </td>
     <td>
       {{rev.message}}
+    </td>
+    <td>
+      <a href="{{url_for('revert', slug=page.slug, revision=rev.id)}}">Revert</a>
     </td>
   </tr>
   {% endfor %}
