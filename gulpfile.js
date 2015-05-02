@@ -2,6 +2,7 @@ var gulp = require('gulp');
 var sass = require('gulp-sass');
 var uglify = require('gulp-uglify');
 var concat = require('gulp-concat');
+var copy = require('gulp-copy');
 
 var paths = {
   scripts: [
@@ -14,6 +15,11 @@ var paths = {
   images: ['theme/img/**/*'],
   content_img: ['content/pictures/**/*']
 };
+
+gulp.task('images', function() {
+  return gulp.src(paths.images)
+    .pipe(copy('static/img/', {prefix: 2}));
+});
 
 gulp.task('scripts', function() {
   return gulp.src(paths.scripts)
@@ -30,4 +36,4 @@ gulp.task('scss', function() {
     .pipe(gulp.dest('static/lib/'));
 });
 
-gulp.task('default', ['scss', 'scripts']);
+gulp.task('default', ['scss', 'scripts', 'images']);
