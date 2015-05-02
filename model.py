@@ -158,40 +158,69 @@ class Revision(BaseModel):
       except IndexError:
         return None
 
+    @classmethod
+    def _makeDiff(cls, r1, r2):
+        if r1 is None:
+            d = difflib.unified_diff(
+                "",
+                r2.body.split("\n"),
+                lineterm="",
+                fromfile="%s@%s"%(r2.page.slug, 0),
+                tofile="%s@%s"%(r2.page.slug, r2.id))
+        elif r2 is None:
+            d = difflib.unified_diff(
+                r1.body.split("\n"),
+                "",
+                lineterm="",
+                fromfile="%s@%s"%(r1.page.slug, r1.id),
+                tofile="%s@%s"%(r1.page.slug, 0))
+        else:
+            d = difflib.unified_diff(
+                r1.body.split("\n"),
+                r2.body.split("\n"),
+                lineterm="",
+                fromfile="%s@%s"%(r1.page.slug, r1.id),
+                tofile="%s@%s"%(r2.page.slug, r2.id))
+        return cls._parseDiff(d)
+
+    @staticmethod
+    def _parseDiff(diff):
+        ret = []
+        for line in diff:
+            if line.startswith('+++') or line.startswith('---'):
+                lineType = 'meta'
+            elif line.startswith('@@'):
+                lineType = 'context'
+            elif line.startswith('+'):
+                lineType = 'addition'
+            elif line.startswith('-'):
+                lineType = 'subtraction'
+            ret.append({'contents': line, 'type': lineType})
+        return ret
+
+    def diffTo(self, prev):
+        return self._makeDiff(self, prev)
+
     @property
     def diffToPrev(self):
         prev = self.prev
         if prev is not None:
-            ret = []
-            for line in difflib.unified_diff(prev.body.split("\n"),
-                self.body.split("\n"), lineterm="",
-                fromfile="%s@%s"%(self.page.slug,self.id),
-                tofile="%s@%s"%(self.page.slug,prev.id)):
-                if line.startswith('+++') or line.startswith('---'):
-                    lineType = 'meta'
-                elif line.startswith('@@'):
-                    lineType = 'context'
-                elif line.startswith('+'):
-                    lineType = 'addition'
-                elif line.startswith('-'):
-                    lineType = 'subtraction'
-                ret.append({'contents': line, 'type': lineType})
-            return ret
-        return difflib.unified_diff('', self.body)
+            return self.diffTo(prev)
+        return self._makeDiff(None, self)
 
     @property
     def diffToNext(self):
         next = self.next
         if next is not None:
-            return difflib.unified_diff(self.body, next.body)
-        return difflib.unified_diff(self.body, "")
+          return self.diffTo(next)
+        return self._makeDiff(self, None)
 
     def diffStatsToPrev(self):
         meta = {'additions': 0, 'subtractions': 0}
         for line in self.diffToPrev:
-            if line.startswith('+') and not line.startswith('+++'):
+            if line['type'] == 'addition':
                 meta['additions'] += 1
-            if line.startswith('-') and not line.startswith('---'):
+            if line['type'] == 'subtraction':
                 meta['subtractions'] += 1
         return meta
 

@@ -180,6 +180,14 @@ def view(slug=settings.INDEX_PAGE, revision=None, redirectFrom=None):
     else:
         return edit(slug, redirectFrom=redirectFrom)
 
+@app.route('/<slug>/<start>..<end>')
+def diff(slug, start, end):
+    fromRev = model.Revision.get(id=start)
+    toRev = model.Revision.get(id=end)
+    return render_template('diff.html',
+        fromRev=fromRev, toRev=toRev,
+        diff=fromRev.diffTo(toRev), page=fromRev.page)
+
 if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument('--syncdb', action='store_const',

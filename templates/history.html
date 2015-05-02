@@ -36,7 +36,18 @@
       {{rev.message}}
     </td>
     <td>
-      <a href="{{url_for('revert', slug=page.slug, revision=rev.id)}}">Revert</a>
+      <a href="{{url_for('revert', slug=page.slug, revision=rev.id)}}"
+        class="button">Revert</a>
+      <a href="{{url_for('view', slug=rev.page.slug, revision=rev.id)}}"
+        class="button">View</a>
+      {% if rev.prev %}
+        <a href="{{url_for('diff', slug=rev.page.slug, start=rev.prev.id, end=rev.id)}}"
+          class="button">Diff against {{rev.prev.id}}</a>
+      {% endif %}
+      {% if rev.next %}
+        <a href="{{url_for('diff', slug=rev.page.slug, start=rev.next.id, end=rev.id)}}"
+          class="button">Diff against {{rev.next.id}}</a>
+      {% endif %}
     </td>
   </tr>
   {% endfor %}

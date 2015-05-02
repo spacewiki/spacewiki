@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+
+{% block subtitle %}
+{{page.title}}
+{% endblock %}
+
+{% block bodyclass %}page-{{page.slug}}{% endblock %}
+
+{% block content %}
+
+<h1>
+  {{page.title}}
+</h1>
+
+<div class="row">
+  <div class="large-12 columns">
+    <h2>Diff from {{fromRev.id}} to {{toRev.id}}</h2>
+    <div class="diff">
+{% for line in diff %}<div class="{{line.type}}">{{ line.contents }}</div>
+{% endfor %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
