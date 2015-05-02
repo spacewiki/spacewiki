@@ -50,7 +50,7 @@ def do_attachment(pageSlug, slug):
             size=size)
     fullUrl = url_for('get_attachment', slug=pageSlug, fileslug=imageSlug)
         
-    return '[![alt](%s)](%s)'%(imgUrl, fullUrl)
+    return '[![%s](%s)](%s)'%(imageSlug, imgUrl, fullUrl)
 
 def do_template(match, pageSlug, depth):
     """Replaces a template regex match with the template contents,
