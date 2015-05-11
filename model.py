@@ -14,6 +14,7 @@ import shutil
 import urlparse
 import urllib
 import os
+import slugify
 
 import wikiformat
 
@@ -35,7 +36,7 @@ class SlugField(peewee.CharField):
     @staticmethod
     def slugify(title):
         """Translates a string into a reduced character set"""
-        return re.sub(r'[^\w]', '_', title.lower())
+        return slugify.slugify(unicode(title))
 
 class Page(BaseModel):
     title = peewee.CharField(unique=True)

@@ -80,6 +80,7 @@ def make_wikilink(match):
     else:
         title = groups[1]
         link = groups[0]
+    link = model.SlugField.slugify(link)
     if model.Page.select().where(model.Page.slug == link).exists():
         return "[%s](%s)"%(title, link)
     else:
