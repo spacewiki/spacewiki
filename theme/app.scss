@@ -11,6 +11,10 @@ $logo-height: 150;
 
 @import "lightbox";
 
+body {
+  background: url(../img/noise.png);
+}
+
 .additions {
   color: #0a0;
 }
