@@ -59,11 +59,11 @@
       notify:
         - Compile static files
     - name: Compile static files
-      shell: chdir=/srv/spacewiki/app su -s /bin/sh spacewiki -c 'npm install && node ./node_modules/gulp/bin/gulp.js'
+      shell: chdir=/srv/spacewiki/app su -s /bin/sh spacewiki -c make
   handlers:
     - name: Reload nginx
       shell: service nginx configtest && service nginx reload
     - name: Reload uwsgi
       service: name=uwsgi state=reloaded
     - name: Compile static files
-      shell: chdir=/srv/spacewiki/app su -s /bin/sh spacewiki -c 'npm install && node ./node_modules/gulp/bin/gulp.js'
+      shell: chdir=/srv/spacewiki/app su -s /bin/sh spacewiki -c make

@@ -2,11 +2,17 @@ general:
   artifacts:
     - linter.html
 dependencies:
+  pre:
+    - gem install sass
+    - sudo apt-get install pngcrush gifsicle uglifyjs
+    - npm install -g uglify-js
+    - make submodules
   post:
     - pip install ansible pylint coverage coveralls
 test:
   pre:
     - mkdir uploads
+    - make
   override:
     - nosetests --with-coverage
   post:

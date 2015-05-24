@@ -1,0 +1,3 @@
+[submodule "theme/lib/foundation"]
+	path = theme/lib/foundation
+	url = git://github.com/zurb/foundation

@@ -7,3 +7,4 @@ uploads
 .hypothesis
 .coverage
 npm-debug.log
+.sass-cache
