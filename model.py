@@ -270,7 +270,7 @@ def syncdb():
     logging.info("Creating tables...")
     try:
         DatabaseVersion.select().execute()
-    except peewee.OperationalError:
+    except peewee.OperationalError, peewee.ProgrammingError:
         database.create_tables([DatabaseVersion])
     try:
         v = DatabaseVersion.select()[0]
