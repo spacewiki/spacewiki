@@ -14,9 +14,9 @@ test:
     - mkdir uploads
     - make
   override:
-    - nosetests --with-coverage
+    - make test
   post:
-    - pylint -f html *.py | tee linter.html
+    - make lint
     - coveralls
 deployment:
   ratchet:

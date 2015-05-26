@@ -12,7 +12,15 @@ IMAGES_OUT 	:= $(patsubst theme/img/%,static/img/%,$(IMAGES))
 
 CSS_OUT			:= $(patsubst theme/%.scss,static/lib/%.css,$(CSS))
 
+.PHONY: test all
+
 all: scss images scripts
+
+test:
+	nosetests --with-coverage
+
+lint:
+	pylint -f html *.py | tee linter.html
 
 submodules:
 	git submodule update --init
