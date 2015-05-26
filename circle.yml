@@ -12,7 +12,7 @@ dependencies:
 test:
   pre:
     - mkdir uploads
-    - make
+    - make static
   override:
     - make test
   post:

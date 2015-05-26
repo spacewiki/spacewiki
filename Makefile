@@ -12,9 +12,14 @@ IMAGES_OUT 	:= $(patsubst theme/img/%,static/img/%,$(IMAGES))
 
 CSS_OUT			:= $(patsubst theme/%.scss,static/lib/%.css,$(CSS))
 
-.PHONY: test all
+.PHONY: test all static syncdb
 
-all: scss images scripts
+all: static syncdb
+
+static: scss images scripts
+
+syncdb:
+	./app.py --syncdb
 
 test:
 	nosetests --with-coverage

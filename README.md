@@ -29,7 +29,7 @@ others to get up and going with minimal setup:
 
 ## Setup
 
-    $ ./app.py --syncdb
+    $ make
     $ ./app.py
 
 ## TODO
