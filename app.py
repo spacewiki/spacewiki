@@ -17,7 +17,6 @@ import context
 app = Flask(__name__)
 app.config.from_object('settings')
 
-model.setURI(app.config['DATABASE'])
 app.register_blueprint(context.bp)
 
 if settings.ADMIN_EMAILS:

@@ -9,21 +9,25 @@ import mistune
 import peewee
 import playhouse.migrate
 from playhouse.db_url import connect
-import settings
 import shutil
 import urlparse
 import urllib
 import os
 import slugify
+from werkzeug.local import LocalProxy
+from flask import g, current_app
+from flask.ext.script import Manager
 
 import wikiformat
 
-database = peewee.Proxy()
-currentURI = None
+def get_db():
+    db = getattr(g, '_database', None)
+    if db is None:
+        logging.debug("New db at %s!"%(current_app.config['DATABASE']))
+        g._database = db = connect(current_app.config['DATABASE'])
+    return db
 
-def setURI(u):
-    database.initialize(connect(u))
-    database.connect()
+database = LocalProxy(get_db)
 
 class BaseModel(peewee.Model):
     class Meta:
