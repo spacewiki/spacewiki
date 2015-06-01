@@ -8,10 +8,10 @@ import os
 
 class UploadTestCase(unittest.TestCase):
     def setUp(self):
-        model.setURI('sqlite:///:memory:')
-        model.syncdb()
-
-        model.Page.create(title='index', slug='index')
+        app.config['DATABASE'] = 'sqlite:///:memory:'
+        with app.app_context():
+            model.database.connect()
+            model.syncdb()
 
         app.config['UPLOAD_PATH'] = tempfile.mkdtemp()
         self.app = app.test_client()

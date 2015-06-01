@@ -4,8 +4,10 @@ import unittest
 
 class UiTestCase(unittest.TestCase):
     def setUp(self):
-        model.setURI('sqlite:///:memory:')
-        model.syncdb()
+        app.config['DATABASE'] = 'sqlite:///:memory:'
+        with app.app_context():
+          model.database.connect()
+          model.syncdb()
         self.app = app.test_client()
 
     def test_index(self):

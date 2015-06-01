@@ -46,10 +46,12 @@ class SoftlinkParsingTestCase(unittest.TestCase):
 
 class SoftlinkTestCase(unittest.TestCase):
     def setUp(self):
-        model.setURI('sqlite:///:memory:')
-        model.syncdb()
-        model.Page.create(title='page', slug='page')
-        model.Page.create(title='index', slug='index')
+        app.config['DATABASE'] = 'sqlite:///:memory:'
+        with app.app_context():
+            model.database.connect()
+            model.syncdb()
+            model.Page.create(title='page', slug='page')
+            model.Page.create(title='index', slug='index')
         self.app = app.test_client()
 
     @hypothesis.given(Path, Path, Domain, Path)

@@ -1,14 +1,13 @@
 import model
 import wikiformat
 import unittest
+from app import app
 
 class ParserTestCase(unittest.TestCase):
     def setUp(self):
-        model.setURI('sqlite:///:memory:')
-        model.syncdb()
-
-    def tearDown(self):
-        model.setURI('sqlite:////dev/null')
+        app.config['DATABASE'] = 'sqlite:///:memory:'
+        with app.app_context():
+            model.syncdb()
 
     def test_wikitemplates(self):
         self.assertEqual(wikiformat.wikitemplates("", ''), "")
