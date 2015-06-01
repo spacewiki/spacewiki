@@ -88,6 +88,8 @@ class Page(BaseModel):
         assert(isinstance(filename, basestring))
         assert(isinstance(uploadPath, basestring))
 
+        logging.info("Attaching upload", src, filename, uploadPath)
+
         hexSha = Attachment.hashFile(src)
         savedName = os.path.join(uploadPath, Attachment.hashPath(hexSha, filename))
         if not os.path.exists(os.path.dirname(savedName)):
@@ -100,10 +102,12 @@ class Page(BaseModel):
             attachment = Attachment.create(page=self, filename=filename,
                 slug=filename)
         try:
+            AttachmentRevision.get(attachment=attachment, sha=hexSha)
+            print "Got revision"
+        except peewee.DoesNotExist:
+            print "Does not exist"
             AttachmentRevision.create(attachment=attachment, sha=hexSha)
-        except peewee.IntegrityError:
-            print "Duplicate upload!"
-        print "Uploaded file %s to %s"%(filename, savedName)
+        logging.info("Uploaded file %s to %s"%(filename, savedName))
 
     @classmethod
     def latestRevision(cls, slug):
@@ -270,17 +274,22 @@ class AttachmentRevision(BaseModel):
 class DatabaseVersion(BaseModel):
     schema_version = peewee.IntegerField(default=0)
 
+MANAGER = Manager(usage='Database tools')
+
+@MANAGER.command
 def syncdb():
+    """Creates and updates database schema"""
     logging.info("Creating tables...")
     try:
         DatabaseVersion.select().execute()
-    except peewee.ProgrammingError:
-        database.create_tables([DatabaseVersion])
     except peewee.OperationalError:
+        logging.debug("Creating initial database version table")
         database.create_tables([DatabaseVersion])
     try:
         v = DatabaseVersion.select()[0]
+        logging.debug("Current database is at %s", v.schema_version)
     except IndexError:
+        logging.debug("Creating initial schema version of 0")
         v = DatabaseVersion.create(schema_version=0)
     v.schema_version = migrate(v.schema_version)
     v.save()
@@ -288,6 +297,7 @@ def syncdb():
 
 def migrate(currentRevision):
     migrator = playhouse.migrate.SqliteMigrator(database)
+    logging.info("Applying migration %d", currentRevision)
     with database.transaction():
         if currentRevision == 0:
             database.create_tables([Page, Revision, Softlink, Attachment,

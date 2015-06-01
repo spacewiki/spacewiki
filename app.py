@@ -10,12 +10,17 @@ import os
 import settings
 import tempfile
 from PIL import Image
+from flask.ext.script import Manager, Shell, Server
 
 import model
 import context
 
 app = Flask(__name__)
 app.config.from_object('settings')
+manager = Manager(app)
+manager.add_command("runserver", Server())
+manager.add_command("shell", Shell())
+manager.add_command('db', model.MANAGER)
 
 app.register_blueprint(context.bp)
 
@@ -188,15 +193,7 @@ def diff(slug, start, end):
         diff=fromRev.diffTo(toRev), page=fromRev.page)
 
 if __name__ == "__main__":
-    parser = ArgumentParser()
-    parser.add_argument('--syncdb', action='store_const',
-        default=False, const=True)
-    args = parser.parse_args()
-
     logging.getLogger('peewee').setLevel(logging.INFO)
     logging.basicConfig(level=logging.DEBUG)
 
-    if args.syncdb:
-        model.syncdb()
-    else:
-        app.run(debug=True)
+    manager.run()
