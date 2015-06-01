@@ -257,6 +257,14 @@ class Attachment(BaseModel):
     def hashPath(sha, src):
         return "%s/%s/%s-%s"%(sha[0:2], sha[2:4], sha, src)
 
+    @classmethod
+    def findAttachment(cls, pageSlug, fileSlug):
+        try:
+            return Attachment.select().join(Page).where(Attachment.slug == fileSlug, Page.slug ==
+                pageSlug).get()
+        except peewee.DoesNotExist:
+            return None
+
     class Meta:
         indexes = (
             (('page', 'slug'), True),

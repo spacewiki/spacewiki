@@ -45,7 +45,7 @@ def history(slug):
     page = model.Page.get(slug=slug)
     return render_template('history.html', page=page)
 
-@app.route("/<slug>/attach")
+@app.route("/<slug>/attach", methods=['GET'])
 def upload(slug):
     """Show the file attachment form"""
     try:
@@ -69,9 +69,9 @@ def attach(slug):
 @app.route("/<slug>/file/<fileslug>")
 @app.route("/<slug>/file/<fileslug>/<size>")
 def get_attachment(slug, fileslug, size=None):
-    """FIXME: This select/join should be handled by the models"""
-    attachment = model.Attachment.select().join(model.Page).where(model.Attachment.slug == fileslug,
-        model.Page.slug == slug)[0]
+    attachment = model.Attachment.findAttachment(slug, fileslug)
+    if attachment is None:
+        return Response(status=404)
     latestRevision = attachment.revisions[0]
     maxSize = None
 
