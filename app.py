@@ -57,7 +57,12 @@ def upload(slug):
 @app.route("/<slug>/attach", methods=['POST'])
 def attach(slug):
     """Handle saving a file upload"""
-    page = model.Page.get(slug=slug)
+    try:
+        page = model.Page.get(slug=slug)
+        logging.debug("Attaching file to existing page: %s", page.slug)
+    except peewee.DoesNotExist:
+        page = model.Page.create(title=slug, slug=slug)
+        logging.debug("Created new page for attachment: %s", page.slug)
     file = request.files['file']
     fname = secure_filename(file.filename)
     tmpname = os.path.join(tempfile.mkdtemp(), "upload")
@@ -71,6 +76,7 @@ def attach(slug):
 def get_attachment(slug, fileslug, size=None):
     attachment = model.Attachment.findAttachment(slug, fileslug)
     if attachment is None:
+        logging.info("No attachment %s on %s", fileslug, slug)
         return Response(status=404)
     latestRevision = attachment.revisions[0]
     maxSize = None
@@ -116,11 +122,12 @@ def get_attachment(slug, fileslug, size=None):
 @app.route("/<slug>", methods=['POST'])
 def save(slug):
     """Save a new Revision, creating a new Page if needed"""
-    slug = model.SlugField.slugify(slug)
     try:
         page = model.Page.get(slug=slug)
+        logging.debug("Updating existing page: %s", page.slug)
     except peewee.DoesNotExist:
         page = model.Page.create(title=request.form['title'], slug=request.form['title'])
+        logging.debug("Created new page: %s (%s)", page.title, page.slug)
     page.newRevision(request.form['body'], request.form['message'])
     return redirect(url_for('view', slug=page.slug))
 

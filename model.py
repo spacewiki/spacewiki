@@ -70,6 +70,7 @@ class Page(BaseModel):
 
     def newRevision(self, body, message):
         """Creates a new Revision of this Page with the given body"""
+        logging.debug("Creating new revision on %s", self.slug)
         return Revision.create(page=self, body=body, message=message)
 
     def makeSoftlinkFrom(self, prev):
@@ -88,7 +89,7 @@ class Page(BaseModel):
         assert(isinstance(filename, basestring))
         assert(isinstance(uploadPath, basestring))
 
-        logging.info("Attaching upload", src, filename, uploadPath)
+        logging.info("Attaching upload %s (%s), saved at %s", src, filename, uploadPath)
 
         hexSha = Attachment.hashFile(src)
         savedName = os.path.join(uploadPath, Attachment.hashPath(hexSha, filename))
@@ -98,15 +99,17 @@ class Page(BaseModel):
         """FIXME: These db queries should be handled by the model"""
         try:
             attachment = Attachment.get(page=self, slug=filename)
+            logging.debug("Updating existing attachment: %s", attachment.slug)
         except peewee.DoesNotExist:
             attachment = Attachment.create(page=self, filename=filename,
                 slug=filename)
+            logging.debug("Creating new attachment: %s", attachment.slug)
         try:
             AttachmentRevision.get(attachment=attachment, sha=hexSha)
-            print "Got revision"
+            logging.debug("Duplicate file upload: %s", attachment.slug)
         except peewee.DoesNotExist:
-            print "Does not exist"
             AttachmentRevision.create(attachment=attachment, sha=hexSha)
+            logging.debug("New upload: %s -> %s", attachment.slug, hexSha)
         logging.info("Uploaded file %s to %s"%(filename, savedName))
 
     @classmethod
@@ -260,10 +263,14 @@ class Attachment(BaseModel):
     @classmethod
     def findAttachment(cls, pageSlug, fileSlug):
         try:
-            return Attachment.select().join(Page).where(Attachment.slug == fileSlug, Page.slug ==
-                pageSlug).get()
+            page = Page.get(slug=pageSlug)
         except peewee.DoesNotExist:
             return None
+        try:
+            attachment = Attachment.get(slug=fileSlug)
+        except peewee.DoesNotExist:
+            return None
+        return attachment
 
     class Meta:
         indexes = (

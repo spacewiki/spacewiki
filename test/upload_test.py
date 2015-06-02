@@ -15,7 +15,6 @@ class UploadTestCase(unittest.TestCase):
 
         app.config['UPLOAD_PATH'] = tempfile.mkdtemp()
         self.app = app.test_client()
-        self.app.post('/index', data={'body': '', 'message': ''})
 
     def test_empty_upload(self):
       self.app.post('/index/attach', data={
@@ -28,8 +27,8 @@ class UploadTestCase(unittest.TestCase):
         model.Attachment.hashPath(emptySha, 'empty.txt'))
 
       self.assertTrue(os.path.exists(uploadedFile))
-      resp = self.app.get('/index/file/empty_txt')
-      self.assertEqual(resp.status, 200)
+      resp = self.app.get('/index/file/empty.txt')
+      self.assertEqual(resp.status_code, 200)
       self.assertEqual(resp.data, '')
 
     def test_simple_upload(self):
@@ -43,6 +42,6 @@ class UploadTestCase(unittest.TestCase):
         model.Attachment.hashPath(emptySha, 'foo.bar'))
 
       self.assertTrue(os.path.exists(uploadedFile))
-      resp = self.app.get('/index/file/foo_bar')
-      self.assertEqual(resp.status, 200)
+      resp = self.app.get('/index/file/foo.bar')
+      self.assertEqual(resp.status_code, 200)
       self.assertEqual(resp.data, 'FOOBAR')
