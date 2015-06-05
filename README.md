@@ -32,6 +32,13 @@ others to get up and going with minimal setup:
     $ make
     $ ./app.py
 
+## Dependencies
+
+* gifsicle
+* pngcrush
+* sass >= 3.4.3
+* uglifyjs
+
 ## TODO
 
 * Support more than sqlite
