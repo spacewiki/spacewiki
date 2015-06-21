@@ -10,18 +10,12 @@ import os
 import settings
 import tempfile
 from PIL import Image
-from flask.ext.script import Manager, Shell, Server
 
 import model
 import context
 
 app = Flask(__name__)
 app.config.from_object('settings')
-manager = Manager(app)
-manager.add_command("runserver", Server())
-manager.add_command("shell", Shell())
-manager.add_command('db', model.MANAGER)
-
 app.register_blueprint(context.bp)
 
 if settings.ADMIN_EMAILS:
@@ -198,9 +192,3 @@ def diff(slug, start, end):
     return render_template('diff.html',
         fromRev=fromRev, toRev=toRev,
         diff=fromRev.diffTo(toRev), page=fromRev.page)
-
-if __name__ == "__main__":
-    logging.getLogger('peewee').setLevel(logging.INFO)
-    logging.basicConfig(level=logging.DEBUG)
-
-    manager.run()
