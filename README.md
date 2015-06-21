@@ -27,12 +27,32 @@ others to get up and going with minimal setup:
   unfamiliar with Softlinks, [check out how Everything2 does
   it](http://everything2.com/title/Soft+link)
 
-## Setup
+## Docker Installation
+
+spacewiki is distributed as a Docker container. To use:
+
+    $ docker run -p 5000:5000 tdfischer/spacewiki
+
+The Docker container starts ./manage.py runserver, which defaults to serving
+spacewiki on 0.0.0.0;5000. The app is installed in /srv/spacewiki/. To drop in a
+custom configuration, try:
+
+    $ docker run -v my_local_settings.py:/srv/spacewiki/local_settings.py:ro \
+      -p 5000:500 tdfischer/spacewiki
+
+## wsgi Notes
+
+The recommended way to run spacewiki is with Docker, but there is nothing
+stopping you from running it on your own. Spacewiki uses flask + peewee and aims
+to keep a minimal set of dependencies. The UI uses Foundation and requires
+building with sass + uglifyjs + gifsicle + pngcrush.
+
+### Setup
 
     $ make
-    $ ./app.py
+    $ ./manage.py runserver
 
-## Dependencies
+### Dependencies
 
 * gifsicle
 * pngcrush
