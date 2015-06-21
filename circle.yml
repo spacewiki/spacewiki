@@ -1,23 +1,28 @@
+machine:
+  services:
+    - docker
+
 general:
   artifacts:
     - linter.html
+
 dependencies:
-  pre:
-    - gem install sass
-    - sudo apt-get install pngcrush gifsicle uglifyjs
-    - npm install -g uglify-js
-    - make submodules
-  post:
-    - pip install ansible pylint coverage coveralls
-test:
-  pre:
-    - mkdir uploads
-    - make static
   override:
-    - make test
-  post:
-    - make lint
-    - coveralls
+    - make submodules
+    - docker pull fedora:22
+    - pip install 'docker-compose<1.3'
+
+test:
+  override:
+    - docker build -t spacewiki_app .
+    - docker run -v `pwd`:/srv/spacewiki/ spacewiki_app make docker_test
+    - docker run -v `pwd`:/srv/spacewiki/ spacewiki_app make lint
+    - docker run -d -p 5000:5000 spacewiki_app
+    - sleep 5
+    - curl http://localhost:5000/
+    - docker login -u $DOCKER_USERNAME -e $DOCKER_EMAIL -p $DOCKER_PASSWORD
+    - docker tag spacewiki_app tdfischer/spacewiki
+    - docker push tdfischer/spacewiki
 deployment:
   ratchet:
     branch: master

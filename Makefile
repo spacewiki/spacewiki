@@ -24,6 +24,10 @@ syncdb:
 test:
 	nosetests --with-coverage
 
+docker_test:
+	pip install nose
+	nosetests --with-coverage
+
 lint:
 	pylint -f html *.py | tee linter.html
 
