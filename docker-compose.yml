@@ -1,0 +1,6 @@
+app:
+  build: .
+  ports:
+    - "5000:5000"
+  volumes:
+    - .:/srv/spacewiki/
