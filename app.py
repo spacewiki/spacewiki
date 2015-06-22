@@ -160,9 +160,9 @@ def allPages():
     return render_template('all-pages.html',
         pages=pages)
 
-@app.route("/")
-@app.route("/<slug>")
-@app.route("/<slug>/<revision>")
+@app.route("/", methods=['GET'])
+@app.route("/<slug>", methods=['GET'])
+@app.route("/<slug>/<revision>", methods=['GET'])
 def view(slug=settings.INDEX_PAGE, revision=None, redirectFrom=None):
     lastPage = None
     if revision is None:
