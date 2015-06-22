@@ -16,19 +16,22 @@ import os
 import slugify
 import crypt
 from werkzeug.local import LocalProxy
-from flask import g, current_app
+from flask import g, current_app, Blueprint
 from flask.ext.script import Manager
 
 import wikiformat
 
+bp = Blueprint('model', __name__)
+
+@bp.before_app_request
 def get_db():
     db = getattr(g, '_database', None)
     if db is None:
         logging.debug("New db at %s!"%(current_app.config['DATABASE']))
         g._database = db = connect(current_app.config['DATABASE'])
-    return db
+    database.initialize(db)
 
-database = LocalProxy(get_db)
+database = peewee.Proxy()
 
 class BaseModel(peewee.Model):
     class Meta:
@@ -309,19 +312,21 @@ MANAGER = Manager(usage='Database tools')
 def syncdb():
     """Creates and updates database schema"""
     logging.info("Creating tables...")
-    try:
-        DatabaseVersion.select().execute()
-    except peewee.OperationalError:
-        logging.debug("Creating initial database version table")
-        database.create_tables([DatabaseVersion])
-    try:
-        v = DatabaseVersion.select()[0]
-        logging.debug("Current database is at version %s", v.schema_version)
-    except IndexError:
-        logging.debug("Creating initial schema version of 0")
-        v = DatabaseVersion.create(schema_version=0)
-    v.schema_version = run_migrations(v.schema_version)
-    v.save()
+    with current_app.app_context():
+        get_db()
+        try:
+            DatabaseVersion.select().execute()
+        except peewee.OperationalError:
+            logging.debug("Creating initial database version table")
+            database.create_tables([DatabaseVersion])
+        try:
+            v = DatabaseVersion.select()[0]
+            logging.debug("Current database is at version %s", v.schema_version)
+        except IndexError:
+            logging.debug("Creating initial schema version of 0")
+            v = DatabaseVersion.create(schema_version=0)
+        v.schema_version = run_migrations(v.schema_version)
+        v.save()
     logging.info("OK!")
 
 MIGRATIONS = (

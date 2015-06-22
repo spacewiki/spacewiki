@@ -17,6 +17,7 @@ import context
 app = Flask(__name__)
 app.config.from_object('settings')
 app.register_blueprint(context.bp)
+app.register_blueprint(model.bp)
 
 if settings.ADMIN_EMAILS:
     from logging.handlers import SMTPHandler
