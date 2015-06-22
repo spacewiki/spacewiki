@@ -11,13 +11,14 @@
     <th>Revision</th>
     <th>Timestamp</th>
     <th>Commit message</th>
+    <th>Author</th>
     <th>Actions</th>
   </tr>
   {% set date = None %}
   {% for rev in page.revisions %}
   <tr>
     {% if rev.timestamp.date() != date %}
-      <th colspan="4">
+      <th colspan="5">
         {{rev.timestamp.date()}}
       </th>
       {% set date = rev.timestamp.date() %}
@@ -36,8 +37,9 @@
       {{rev.message}}
     </td>
     <td>
-      <a href="{{url_for('revert', slug=page.slug, revision=rev.id)}}"
-        class="button">Revert</a>
+      {{rev.author}}
+    </td>
+    <td>
       <a href="{{url_for('view', slug=rev.page.slug, revision=rev.id)}}"
         class="button">View</a>
       {% if rev.prev %}

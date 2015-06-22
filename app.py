@@ -26,11 +26,15 @@ if settings.ADMIN_EMAILS:
     mail_handler.setLevel(logging.ERROR)
     app.logger.addHandler(mail_handler)
 
-@app.route("/<slug>/revert/<revision>")
-def revert(slug, revision):
+@app.route("/<slug>/revert", methods=['POST'])
+def revert(slug):
+    revision = request.form['revision']
+    message = request.form['message']
+    author = request.form['author']
     page = model.Page.get(slug=slug)
     oldRevision = model.Revision.get(page=page, id=revision)
-    page.newRevision(oldRevision.body, "Revert to revision %s from %s"%(oldRevision.id, oldRevision.timestamp))
+    page.newRevision(oldRevision.body, "Revert to revision %s from %s: %s"
+        %(oldRevision.id, oldRevision.timestamp, message), author)
     return redirect(url_for('view', slug=page.slug))
 
 @app.route("/<slug>/history")
@@ -122,7 +126,8 @@ def save(slug):
     except peewee.DoesNotExist:
         page = model.Page.create(title=request.form['title'], slug=request.form['title'])
         logging.debug("Created new page: %s (%s)", page.title, page.slug)
-    page.newRevision(request.form['body'], request.form['message'])
+    page.newRevision(request.form['body'], request.form['message'],
+        request.form['author'])
     return redirect(url_for('view', slug=page.slug))
 
 @app.route("/<slug>/edit", methods=['GET'])

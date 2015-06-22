@@ -25,6 +25,15 @@
   <li class="current">Revision {{revision.id}}</li>
   <li class="arrow"><a href="{{url_for('view', slug=page.slug, revision=revision.next.id)}}">&raquo;</a></li>
 </ul>
+<form method="post" action="{{url_for('revert', slug=page.slug)}}">
+<fieldset>
+  <caption>Revert to this revision</caption>
+  <input type="hidden" name="revision" value="{{revision.id}}">
+  <label>Commit message: <input type="text" name="message"></label>
+  <label>Nym: <input type="text" name="author"></label>
+  <button type="submit">Save</button>
+</fieldset>
+</form>
 {% endif %}
 
 <p>{{revision.html | safe}}
