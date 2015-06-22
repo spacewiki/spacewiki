@@ -14,6 +14,7 @@ import urlparse
 import urllib
 import os
 import slugify
+import crypt
 from werkzeug.local import LocalProxy
 from flask import g, current_app
 from flask.ext.script import Manager
@@ -42,6 +43,17 @@ class SlugField(peewee.CharField):
         """Translates a string into a reduced character set"""
         return slugify.slugify(unicode(title))
 
+class TripcodeField(peewee.CharField):
+    def coerce(self, value):
+        return self.tripcode(value)
+
+    @staticmethod
+    def tripcode(value):
+        tokens = value.split('#', 1)
+        if len(tokens) == 1:
+            return tokens[0]
+        return tokens[0]+'#'+crypt.crypt(tokens[0], tokens[1])
+
 class Page(BaseModel):
     title = peewee.CharField(unique=True)
     slug = SlugField(unique=True)
@@ -68,10 +80,11 @@ class Page(BaseModel):
         req.lastSlug = None
         return None
 
-    def newRevision(self, body, message):
+    def newRevision(self, body, message, author):
         """Creates a new Revision of this Page with the given body"""
         logging.debug("Creating new revision on %s", self.slug)
-        return Revision.create(page=self, body=body, message=message)
+        return Revision.create(page=self, body=body, message=message,
+            author=author)
 
     def makeSoftlinkFrom(self, prev):
         logging.debug("Linking from %s to %s", prev.slug, self.slug)
@@ -143,6 +156,7 @@ class Revision(BaseModel):
     body = peewee.TextField()
     message = peewee.TextField(default='')
     timestamp = peewee.DateTimeField(default=datetime.datetime.now)
+    author = TripcodeField(default='Anonymous')
 
     @staticmethod
     def markdown(s):
