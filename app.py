@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import peewee
-from flask import Flask, g, render_template, request, redirect, url_for, Response
+from flask import Flask, g, render_template, request, redirect, url_for, Response, current_app
 from werkzeug import secure_filename
 import werkzeug.exceptions
 import werkzeug
@@ -62,7 +62,7 @@ def attach(slug):
     tmpname = os.path.join(tempfile.mkdtemp(), "upload")
     with model.database.transaction():
         file.save(tmpname)
-        page.attachUpload(tmpname, fname, app.config['UPLOAD_PATH'])
+        page.attachUpload(tmpname, fname, current_app.config['UPLOAD_PATH'])
     return redirect(url_for('view', slug=page.slug))
 
 @app.route("/<slug>/file/<fileslug>")
@@ -88,9 +88,9 @@ def get_attachment(slug, fileslug, size=None):
         fname = model.Attachment.hashPath(latestRevision.sha,
             attachment.filename)
         if maxSize is not None:
-            resizedFname = os.path.join(app.config['UPLOAD_PATH'], fname)+'-%s'%(maxSize)
+            resizedFname = os.path.join(current_app.config['UPLOAD_PATH'], fname)+'-%s'%(maxSize)
             if not os.path.exists(resizedFname):
-                img = Image.open(os.path.join(app.config['UPLOAD_PATH'], fname))
+                img = Image.open(os.path.join(current_app.config['UPLOAD_PATH'], fname))
                 w, h = img.size
                 if w > h:
                   scale = float(maxSize) / w
@@ -104,7 +104,7 @@ def get_attachment(slug, fileslug, size=None):
                 img.save(resizedFname, format='png')
             f = open(resizedFname, 'r')
         else:
-            f = open(os.path.join(app.config['UPLOAD_PATH'], fname))
+            f = open(os.path.join(current_app.config['UPLOAD_PATH'], fname))
         buf = f.read(2048)
         while buf:
             yield buf
@@ -165,7 +165,7 @@ def view(slug=settings.INDEX_PAGE, revision=None, redirectFrom=None):
       revision = model.Revision.get(id=revision)
 
     lastPageSlug = model.Page.parsePreviousSlugFromRequest(request,
-    app.config['INDEX_PAGE'])
+    current_app.config['INDEX_PAGE'])
     if lastPageSlug is not None:
         try:
             lastPage = model.Page.get(slug=lastPageSlug)
