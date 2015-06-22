@@ -316,20 +316,40 @@ def syncdb():
         database.create_tables([DatabaseVersion])
     try:
         v = DatabaseVersion.select()[0]
-        logging.debug("Current database is at %s", v.schema_version)
+        logging.debug("Current database is at version %s", v.schema_version)
     except IndexError:
         logging.debug("Creating initial schema version of 0")
         v = DatabaseVersion.create(schema_version=0)
-    v.schema_version = migrate(v.schema_version)
+    v.schema_version = run_migrations(v.schema_version)
     v.save()
     logging.info("OK!")
 
-def migrate(currentRevision):
+MIGRATIONS = (
+    lambda m: (
+        m.add_column('revision', 'author', Revision.author),
+    ),
+)
+
+def run_migrations(currentRevision):
     migrator = playhouse.migrate.SqliteMigrator(database)
-    logging.info("Applying migration %d", currentRevision)
-    with database.transaction():
-        if currentRevision == 0:
-            database.create_tables([Page, Revision, Softlink, Attachment,
-              AttachmentRevision])
-            return migrate(1)
+
+    for model in (Page, Revision, Softlink, Attachment, AttachmentRevision):
+        with database.transaction():
+            try:
+                model.get(id=0)
+            except peewee.OperationalError:
+                logging.debug("Creating table for %s", model.__name__)
+                database.create_tables([model])
+            except model.DoesNotExist:
+                pass
+
+    if currentRevision == 0:
+      return len(MIGRATIONS)
+
+    for migration in MIGRATIONS[currentRevision:]:
+        with database.transaction():
+            logging.debug("Applying migration %d", currentRevision)
+            playhouse.migrate.migrate(*migration(migrator))
+            currentRevision += 1
+
     return currentRevision
