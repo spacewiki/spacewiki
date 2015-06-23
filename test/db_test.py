@@ -1,4 +1,4 @@
 
 def test():
   """Sanity check that app compiles"""
-  import app
+  from spacewiki import app

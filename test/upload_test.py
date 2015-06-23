@@ -1,5 +1,5 @@
-import model
-from app import app
+from spacewiki import model
+from spacewiki.app import app
 import unittest
 import tempfile
 import hashlib
@@ -8,9 +8,8 @@ import os
 
 class UploadTestCase(unittest.TestCase):
     def setUp(self):
-        app.config['DATABASE'] = 'sqlite:///:memory:'
+        app.config['DATABASE'] = 'sqlite:///'+tempfile.mkdtemp()+'/test.sqlite3'
         with app.app_context():
-            model.database.connect()
             model.syncdb()
 
         app.config['UPLOAD_PATH'] = tempfile.mkdtemp()

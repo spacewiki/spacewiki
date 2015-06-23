@@ -1,12 +1,12 @@
-from app import app
-import model
+from spacewiki.app import app
+from spacewiki import model
 import unittest
+import tempfile
 
 class UiTestCase(unittest.TestCase):
     def setUp(self):
-        app.config['DATABASE'] = 'sqlite:///:memory:'
+        app.config['DATABASE'] = 'sqlite:///'+tempfile.mkdtemp()+'/test.sqlite3'
         with app.app_context():
-          model.database.connect()
           model.syncdb()
         self.app = app.test_client()
 

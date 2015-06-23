@@ -1,7 +1,7 @@
-import model
-import wikiformat
+from spacewiki import model
+from spacewiki import wikiformat
 import unittest
-from app import app
+from spacewiki.app import app
 
 class ParserTestCase(unittest.TestCase):
     def setUp(self):
@@ -18,5 +18,5 @@ class ParserTestCase(unittest.TestCase):
             page = model.Page.create(title='recursive', slug='recursive')
         except:
             page = model.Page.get(slug='recursive')
-        page.newRevision('{{recursive}}', '')
+        page.newRevision('{{recursive}}', '', '')
         self.assertEqual(wikiformat.wikitemplates("{{recursive}}", ''), "{{Max include depth of 11 reached before [[recursive]]}}")

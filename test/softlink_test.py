@@ -1,9 +1,10 @@
 import werkzeug.test
 import unittest
-import model
-from app import app
+from spacewiki import model
+from spacewiki.app import app
 import logging
 import hypothesis
+import tempfile
 import string
 from hypothesis.extra.fakefactory import FakeFactory
 
@@ -46,9 +47,8 @@ class SoftlinkParsingTestCase(unittest.TestCase):
 
 class SoftlinkTestCase(unittest.TestCase):
     def setUp(self):
-        app.config['DATABASE'] = 'sqlite:///:memory:'
+        app.config['DATABASE'] = 'sqlite:///'+tempfile.mkdtemp()+'/test.sqlite3'
         with app.app_context():
-            model.database.connect()
             model.syncdb()
             model.Page.create(title='page', slug='page')
             model.Page.create(title='index', slug='index')
