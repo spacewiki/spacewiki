@@ -186,4 +186,16 @@ img {
   }
 }
 
+
+.hacker-emblem {
+  content: " ";
+  display: inline-block;
+  min-width: 1em;
+  min-height: 1em;
+  font-size: inherit;
+  background: url(../img/glider.svg) no-repeat center center;
+  background-size: contain;
+  box-sizing: border-box;
+}
+
 @import "site";

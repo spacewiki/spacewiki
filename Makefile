@@ -52,6 +52,9 @@ static/img/%.png: theme/img/%.png
 static/img/%.gif: theme/img/%.gif
 	gifsicle < $< > $@
 
+static/img/%.svg: theme/img/%.svg
+	cp $< $@
+
 $(SCRIPTS_OUT): $(SCRIPTS)
 	uglifyjs $^ -o $@
 

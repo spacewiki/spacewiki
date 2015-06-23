@@ -2,6 +2,7 @@
 <html>
 <head>
 <link rel="stylesheet" href="{{url_for('static', filename='lib/app.css')}}">
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
   <title>
     {% block title %}{% block subtitle %}{% endblock %} - {{settings.SITE_NAME}}{% endblock %}
   </title>
@@ -26,7 +27,7 @@
               <input type="text" name="q" placeholder="{% if random_page %}{{random_page.title}}{% endif %}">
             </div>
             <div class="small-3 columns">
-              <button type="submit" class="button postfix">Search</button>
+              <button type="submit" class="button postfix"><i class="fa fa-search"></i> Search</button>
             </div>
           </div>
         </form>
@@ -34,7 +35,7 @@
     </ul>
     {% block toolbar %}
       <ul class="left page-tools">
-        <li><a href="{{url_for('allPages')}}">All Pages</a></li>
+        <li><a href="{{url_for('allPages')}}"><i class="fa fa-globe"></i> All Pages</a></li>
       </ul>
     {% endblock %}
   </section>
@@ -46,10 +47,10 @@
     <div class="button-bar tools">
       <ul class="button-group round">
         {% if page %}
-          <li><a class="small button" href="{{url_for('view', slug=page.slug)}}">View</a></li>
-          <li><a class="small button" href="{{url_for('edit', slug=page.slug)}}">Edit</a></li>
-          <li><a class="small button" href="{{url_for('upload', slug=page.slug)}}">Attach File</a></li>
-          <li><a class="small button" href="{{url_for('history', slug=page.slug)}}">History</a></li>
+          <li><a class="small button" href="{{url_for('view', slug=page.slug)}}"><i class="fa fa-eye"></i> View</a></li>
+          <li><a class="small button" href="{{url_for('edit', slug=page.slug)}}"><i class="fa fa-pencil"></i> Edit</a></li>
+          <li><a class="small button" href="{{url_for('upload', slug=page.slug)}}"><i class="fa fa-paperclip"></i> Attach File</a></li>
+          <li><a class="small button" href="{{url_for('history', slug=page.slug)}}"><i class="fa fa-history"></i> History</a></li>
         {% endif %}
       </ul>
     </div>
@@ -61,8 +62,8 @@
 {% endblock %}
 <footer class="row">
   <div class="small-12 columns">
-    <p class="plug">Powered by <a href="https://github.com/tdfischer/spacewiki">SpaceWiki</a>
-    <p class="version">Running <a href="https://github.com/tdfischer/spacewiki/commit/{{git_version}}">{{git_version}}</a>
+    <p class="plug">Powered by <i class="hacker-emblem"></i> <a href="https://github.com/tdfischer/spacewiki">SpaceWiki</a>
+    <p class="version">Running <i class="fa fa-code-fork"></i> <a href="https://github.com/tdfischer/spacewiki/commit/{{git_version}}">{{git_version}}</a> 
   </div>
 </footer>
 </body>
