@@ -147,8 +147,14 @@ def save(slug):
     session.save()
     return redirect(url_for('view', slug=page.slug))
 
+@app.route("/preview", methods=['POST'])
+def preview():
+    """Render some markup as HTML"""
+    return model.Revision.render_text(request.form['body'],
+        request.form['slug'])
+
 @app.route("/<slug>/edit", methods=['GET'])
-def edit(slug, redirectFrom=None):
+def edit(slug, redirectFrom=None, preview=None):
     """Show the editing form for a page"""
     revision = model.Page.latestRevision(slug)
     if revision is not None:

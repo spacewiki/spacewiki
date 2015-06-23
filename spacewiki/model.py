@@ -177,19 +177,23 @@ class Revision(BaseModel):
         md = mistune.Markdown(renderer=renderer)
         return md.render(s)
 
-    @property
-    def html(self):
+    @classmethod
+    def render_text(cls, body, slug):
         try:
             return  \
                 wikiformat.safetags(\
-                self.markdown(\
+                cls.markdown(\
                 wikiformat.wikilinks(\
-                wikiformat.wikitemplates(self.body, self.page.slug))))
+                wikiformat.wikitemplates(body, slug))))
         except Exception, e:
             return "Error in processing wikitext:" + \
                 "<pre>" + \
                 traceback.format_exc() + \
                 "</pre>"
+
+    @property
+    def html(self):
+        return self.render_text(self.body, self.page.slug)
 
     @property
     def is_latest(self):
