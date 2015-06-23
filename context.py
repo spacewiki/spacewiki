@@ -4,7 +4,7 @@ import model
 import os
 import peewee
 import settings
-from flask import Blueprint
+from flask import Blueprint, current_app, request
 
 bp = Blueprint('context', __name__)
 
@@ -28,3 +28,13 @@ def add_random_page():
 def add_site_settings():
     """Adds the contents of settings.py to the template context"""
     return dict(settings=settings)
+
+@bp.app_context_processor
+def add_default_author():
+    """Adds the default author to the template context"""
+    session = request.environ['beaker.session']
+    if 'author' in session:
+        author = session['author']
+    else:
+        author = 'Anonymous'
+    return dict(DEFAULT_AUTHOR=author)

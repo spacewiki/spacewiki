@@ -14,3 +14,4 @@ hypothesis-fakefactory==0.5.1
 pillow==2.8.1
 slugify==0.0.1
 flask-script==2.0.5
+Beaker==1.7.0

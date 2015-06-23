@@ -10,6 +10,7 @@ import os
 import settings
 import tempfile
 from PIL import Image
+from beaker.middleware import SessionMiddleware
 
 import model
 import context
@@ -18,6 +19,15 @@ app = Flask(__name__)
 app.config.from_object('settings')
 app.register_blueprint(context.bp)
 app.register_blueprint(model.bp)
+
+if settings.TEMP_DIR is None:
+    settings.TEMP_DIR = tempfile.mkdtemp(prefix='spacewiki')
+
+app.wsgi_app = SessionMiddleware(app.wsgi_app, {
+  'session.type': 'file',
+  'session.cookie_expires': False,
+  'session.data_dir': settings.TEMP_DIR
+})
 
 if settings.ADMIN_EMAILS:
     from logging.handlers import SMTPHandler
@@ -36,6 +46,9 @@ def revert(slug):
     oldRevision = model.Revision.get(page=page, id=revision)
     page.newRevision(oldRevision.body, "Revert to revision %s from %s: %s"
         %(oldRevision.id, oldRevision.timestamp, message), author)
+    session = request.environ['beaker.session']
+    session['author'] = author
+    session.save()
     return redirect(url_for('view', slug=page.slug))
 
 @app.route("/<slug>/history")
@@ -129,6 +142,9 @@ def save(slug):
         logging.debug("Created new page: %s (%s)", page.title, page.slug)
     page.newRevision(request.form['body'], request.form['message'],
         request.form['author'])
+    session = request.environ['beaker.session']
+    session['author'] = request.form['author']
+    session.save()
     return redirect(url_for('view', slug=page.slug))
 
 @app.route("/<slug>/edit", methods=['GET'])
