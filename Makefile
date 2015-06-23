@@ -2,7 +2,8 @@ CSS 		:= theme/app.scss
 
 IMAGES 	:= $(wildcard theme/img/*)
 
-SCRIPTS := $(wildcard theme/js/*.js) \
+SCRIPTS := theme/js/lib/jquery.js \
+					 $(wildcard theme/js/*.js) \
 					 $(wildcard theme/js/lib/*.js) \
 					 $(wildcard theme/js/lib/ace/*.js)
 
