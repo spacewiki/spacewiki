@@ -103,30 +103,31 @@ def get_attachment(slug, fileslug, size=None):
         raise werkzeug.exceptions.NotFound()
 
     def generate():
-        fname = model.Attachment.hashPath(latestRevision.sha,
-            attachment.filename)
-        if maxSize is not None:
-            resizedFname = os.path.join(current_app.config['UPLOAD_PATH'], fname)+'-%s'%(maxSize)
-            if not os.path.exists(resizedFname):
-                img = Image.open(os.path.join(current_app.config['UPLOAD_PATH'], fname))
-                w, h = img.size
-                if w > h:
-                  scale = float(maxSize) / w
-                  w = maxSize
-                  h = h * scale
-                else:
-                  scale = float(maxSize) / h
-                  h = maxSize
-                  w = w * scale
-                img.thumbnail([w, h], Image.ANTIALIAS)
-                img.save(resizedFname, format='png')
-            f = open(resizedFname, 'r')
-        else:
-            f = open(os.path.join(current_app.config['UPLOAD_PATH'], fname))
-        buf = f.read(2048)
-        while buf:
-            yield buf
+        with app.app_context():
+            fname = model.Attachment.hashPath(latestRevision.sha,
+                attachment.filename)
+            if maxSize is not None:
+                resizedFname = os.path.join(current_app.config['UPLOAD_PATH'], fname)+'-%s'%(maxSize)
+                if not os.path.exists(resizedFname):
+                    img = Image.open(os.path.join(current_app.config['UPLOAD_PATH'], fname))
+                    w, h = img.size
+                    if w > h:
+                      scale = float(maxSize) / w
+                      w = maxSize
+                      h = h * scale
+                    else:
+                      scale = float(maxSize) / h
+                      h = maxSize
+                      w = w * scale
+                    img.thumbnail([w, h], Image.ANTIALIAS)
+                    img.save(resizedFname, format='png')
+                f = open(resizedFname, 'r')
+            else:
+                f = open(os.path.join(current_app.config['UPLOAD_PATH'], fname))
             buf = f.read(2048)
+            while buf:
+                yield buf
+                buf = f.read(2048)
     """FIXME: mimetype detection"""
     mimetype = 'image/png; charset=binary'
     return Response(generate(), mimetype=mimetype)
