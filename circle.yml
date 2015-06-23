@@ -20,11 +20,10 @@ test:
     - docker run -d -p 5000:5000 spacewiki_app
     - sleep 5
     - curl http://localhost:5000/
-    - docker login -u $DOCKER_USERNAME -e $DOCKER_EMAIL -p $DOCKER_PASSWORD
-    - docker tag spacewiki_app tdfischer/spacewiki
-    - docker push tdfischer/spacewiki
 deployment:
-  ratchet:
+  docker:
     branch: master
     commands:
-      - ansible-playbook -i deploy/hosts.txt deploy/ratchet.yml -u spacewiki-deploy
+      - docker login -u $DOCKER_USERNAME -e $DOCKER_EMAIL -p $DOCKER_PASSWORD
+      - docker tag spacewiki_app tdfischer/spacewiki
+      - docker push tdfischer/spacewiki
