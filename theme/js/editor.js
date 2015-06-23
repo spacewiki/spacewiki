@@ -16,9 +16,15 @@
     }
   }
 
-  function syncBodyToEditor() {
-    editor.setValue($('#body').val());
+  function updatePreview() {
+    $.post('/preview', {'body': $('#body').val(), 'slug': 'preview'}).then(function (data) {
+      $('.preview').html(data);
+    });
+  }
 
+  function syncBodyToEditor() {
+    if (editor)
+      editor.setValue($('#body').val());
   }
 
   function syncEditorToBody() {
@@ -27,7 +33,7 @@
 
   $(document).ready(function() {
     if ($('#editor').length > 0) {
-      if (ace) {
+      if (typeof(ace) != 'undefined') {
         $('#editor_toggle').show();
         editor = ace.edit("editor");
         editor.setTheme("ace/theme/monokai");
@@ -45,6 +51,8 @@
       $('#editor_toggle_value').change(function() {
         useACE($('#editor_toggle_value')[0].checked);
       });
+      $('#body').change(updatePreview);
+      updatePreview();
     }
   });
 })();
