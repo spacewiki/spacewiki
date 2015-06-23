@@ -19,7 +19,7 @@ all: static syncdb
 static: scss images scripts
 
 syncdb:
-	./app.py --syncdb
+	./manage.py db syncdb
 
 test:
 	nosetests --with-coverage
