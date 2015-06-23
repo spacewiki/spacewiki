@@ -1,6 +1,7 @@
 """spacewiki database models"""
 import bs4
 import re
+import traceback
 import difflib
 import datetime
 import logging
@@ -145,13 +146,22 @@ class Softlink(BaseModel):
 
 class WikiRenderer(mistune.Renderer):
     def block_html(self, html):
-        firstLine, rest = html.split('\n', 1)
-        tag, tagTail = re.match('^<(.+?)>(.*)', html).groups()
-        rest = tagTail + rest
+        tokens = html.split('\n', 1)
+        if len(tokens) == 2:
+            firstLine, rest = html.split('\n', 1)
+        else:
+            firstLine = html
+            rest = ""
+        tags = re.match('^<(.+?)>(.*)', html)
         renderer = WikiRenderer()
         md = mistune.Markdown(renderer=renderer)
-        submd = md.render(unicode(rest))
-        ret = "<%s>%s"%(tag, submd)
+        if tags:
+            tag, tagTail = tags.groups()
+            rest = tagTail + rest
+            submd = md.render(unicode(rest))
+            ret = "<%s>%s"%(tag, submd)
+        else:
+            ret = firstLine + md.render(unicode(rest.lstrip()))
         return ret
 
 class Revision(BaseModel):
@@ -169,11 +179,17 @@ class Revision(BaseModel):
 
     @property
     def html(self):
-        return  \
-            wikiformat.safetags(\
-            self.markdown(\
-            wikiformat.wikilinks(\
-            wikiformat.wikitemplates(self.body, self.page.slug))))
+        try:
+            return  \
+                wikiformat.safetags(\
+                self.markdown(\
+                wikiformat.wikilinks(\
+                wikiformat.wikitemplates(self.body, self.page.slug))))
+        except Exception, e:
+            return "Error in processing wikitext:" + \
+                "<pre>" + \
+                traceback.format_exc() + \
+                "</pre>"
 
     @property
     def is_latest(self):
