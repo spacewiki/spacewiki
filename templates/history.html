@@ -6,7 +6,7 @@
     <h1>History for <em>{{page.title}}</em></h1>
   </div>
 </div>
-<table>
+<table class="history">
   <tr>
     <th>Revision</th>
     <th>Timestamp</th>
@@ -16,14 +16,14 @@
   </tr>
   {% set date = None %}
   {% for rev in page.revisions %}
-  <tr>
-    {% if rev.timestamp.date() != date %}
-      <th colspan="5">
-        {{rev.timestamp.date()}}
-      </th>
-      {% set date = rev.timestamp.date() %}
-    {% endif %}
-  </tr>
+  {% if rev.timestamp.date() != date %}
+    <tr class="timestamp">
+        <th colspan="5">
+          {{rev.timestamp.date()}}
+        </th>
+        {% set date = rev.timestamp.date() %}
+    </tr>
+  {% endif %}
   <tr>
     <td>
       <a href="{{url_for('view', slug=rev.page.slug, revision=rev.id)}}">{{rev.id}}</a>
@@ -44,11 +44,7 @@
         class="button">View</a>
       {% if rev.prev %}
         <a href="{{url_for('diff', slug=rev.page.slug, start=rev.prev.id, end=rev.id)}}"
-          class="button">Diff against {{rev.prev.id}}</a>
-      {% endif %}
-      {% if rev.next %}
-        <a href="{{url_for('diff', slug=rev.page.slug, start=rev.next.id, end=rev.id)}}"
-          class="button">Diff against {{rev.next.id}}</a>
+          class="button">Diff</a>
       {% endif %}
     </td>
   </tr>

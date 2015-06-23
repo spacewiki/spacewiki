@@ -177,4 +177,13 @@ img {
   display: block;
 }
 
+.history {
+  width: 100%;
+
+  .timestamp th {
+    text-align: center;
+    font-size: large;
+  }
+}
+
 @import "site";
