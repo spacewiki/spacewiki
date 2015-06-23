@@ -1,9 +1,13 @@
 #!/usr/bin/env python
 from flask.ext.script import Manager, Shell
-import model
+from spacewiki import model
 import logging
+import sys
+import os.path
 
-from app import app
+sys.path.append(os.path.dirname(__file__))
+
+from spacewiki.app import app
 
 manager = Manager(app)
 manager.add_command("shell", Shell())

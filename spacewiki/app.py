@@ -7,7 +7,6 @@ import werkzeug
 from argparse import ArgumentParser
 import logging
 import os
-import settings
 import tempfile
 from PIL import Image
 from beaker.middleware import SessionMiddleware
@@ -15,25 +14,25 @@ from beaker.middleware import SessionMiddleware
 import model
 import context
 
-app = Flask(__name__)
-app.config.from_object('settings')
+app = Flask(__name__, template_folder='../templates', static_folder='../static')
+app.config.from_object('spacewiki.settings')
 app.register_blueprint(context.bp)
 app.register_blueprint(model.bp)
 
-if settings.TEMP_DIR is None:
-    settings.TEMP_DIR = tempfile.mkdtemp(prefix='spacewiki')
+if app.config['TEMP_DIR'] is None:
+    app.config['TEMP_DIR'] = tempfile.mkdtemp(prefix='spacewiki')
 
 app.wsgi_app = SessionMiddleware(app.wsgi_app, {
   'session.type': 'file',
   'session.cookie_expires': False,
-  'session.data_dir': settings.TEMP_DIR
+  'session.data_dir': app.config['TEMP_DIR']
 })
 
-if settings.ADMIN_EMAILS:
+if app.config['ADMIN_EMAILS']:
     from logging.handlers import SMTPHandler
     mail_handler = SMTPHandler('127.0.0.1',
         'spacewiki@localhost',
-        settings.ADMIN_EMAILS, 'SpaceWiki error')
+        app.config['ADMIN_EMAILS'], 'SpaceWiki error')
     mail_handler.setLevel(logging.ERROR)
     app.logger.addHandler(mail_handler)
 
@@ -180,7 +179,7 @@ def allPages():
 @app.route("/", methods=['GET'])
 @app.route("/<slug>", methods=['GET'])
 @app.route("/<slug>/<revision>", methods=['GET'])
-def view(slug=settings.INDEX_PAGE, revision=None, redirectFrom=None):
+def view(slug=app.config['INDEX_PAGE'], revision=None, redirectFrom=None):
     lastPage = None
     if revision is None:
       revision = model.Page.latestRevision(slug)
