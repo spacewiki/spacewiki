@@ -57,7 +57,7 @@ static/img/%.svg: theme/img/%.svg
 	cp $< $@
 
 $(SCRIPTS_OUT): $(SCRIPTS)
-	uglifyjs $^ -o $@
+	uglifyjs $^ -o $@ --source-map $@.map -p relative
 
 static/lib/%.css: theme/%.scss static/lib theme/lib/foundation
 	sass --scss -I theme/lib/foundation/scss/ $< $@
