@@ -8,7 +8,8 @@ TAG_WHITELIST = [
     'ul', 'li', 'ol', 'p', 'table', 'div', 'tr', 'th', 'td', 'em', 'big', 'b',
     'strong', 'a', 'abbr', 'aside', 'audio', 'blockquote', 'br', 'button', 'code',
     'dd', 'del', 'dfn', 'dl', 'dt', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'i',
-    'img', 'ins', 'kbd', 'pre', 's', 'small', 'span', 'sub', 'sup', 'u', 'video'
+    'img', 'ins', 'kbd', 'pre', 's', 'small', 'span', 'sub', 'sup', 'u',
+    'video', 'section', 'input', 'form'
 ]
 
 ATTRIBUTE_WHITELIST = {
