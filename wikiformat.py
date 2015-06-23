@@ -13,9 +13,11 @@ TAG_WHITELIST = [
 ]
 
 ATTRIBUTE_WHITELIST = {
-    '*': ['style', 'class'],
+    '*': ['style', 'class', 'id', 'tabindex', 'name'],
     'a': ['href'],
-    'img': ['src', 'alt']
+    'img': ['src', 'alt'],
+    'form': ['action', 'method'],
+    'input': ['type', 'placeholder', 'value'],
 }
 
 STYLE_WHITELIST = [
