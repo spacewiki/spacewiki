@@ -1,8 +1,8 @@
 import bleach
-import model
-import re
-import peewee
 from flask import url_for
+import model
+import peewee
+import re
 
 TAG_WHITELIST = [
     'ul', 'li', 'ol', 'p', 'table', 'div', 'tr', 'th', 'td', 'em', 'big', 'b',

@@ -1,15 +1,14 @@
 #!/usr/bin/env python
-import peewee
-from flask import Flask, g, render_template, request, redirect, url_for, Response, current_app
-from werkzeug import secure_filename
-import werkzeug.exceptions
-import werkzeug
 from argparse import ArgumentParser
+from beaker.middleware import SessionMiddleware
+from flask import Flask, g, render_template, request, redirect, url_for, Response, current_app
 import logging
 import os
-import tempfile
+import peewee
 from PIL import Image
-from beaker.middleware import SessionMiddleware
+import tempfile
+import werkzeug
+import werkzeug.exceptions
 
 import model
 import context
@@ -75,7 +74,7 @@ def attach(slug):
         page = model.Page.create(title=slug, slug=slug)
         logging.debug("Created new page for attachment: %s", page.slug)
     file = request.files['file']
-    fname = secure_filename(file.filename)
+    fname = werkzeug.secure_filename(file.filename)
     tmpname = os.path.join(tempfile.mkdtemp(), "upload")
     with model.database.transaction():
         file.save(tmpname)

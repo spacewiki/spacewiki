@@ -1,24 +1,24 @@
 """spacewiki database models"""
 import bs4
-import re
-import traceback
+import crypt
 import difflib
 import datetime
+from flask import g, current_app, Blueprint
+from flask.ext.script import Manager
 import logging
 import hashlib
 import mistune
+import os
 import peewee
 import playhouse.migrate
 from playhouse.db_url import connect
+import re
 import shutil
+import slugify
+import traceback
 import urlparse
 import urllib
-import os
-import slugify
-import crypt
 from werkzeug.local import LocalProxy
-from flask import g, current_app, Blueprint
-from flask.ext.script import Manager
 
 import wikiformat
 

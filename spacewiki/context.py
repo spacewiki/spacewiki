@@ -1,10 +1,10 @@
 """Various context processors"""
+from flask import Blueprint, current_app, request
 import git
 import model
 import os
 import peewee
 import settings
-from flask import Blueprint, current_app, request
 
 bp = Blueprint('context', __name__)
 
