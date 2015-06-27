@@ -1,21 +1,20 @@
 #!/usr/bin/env python
-from argparse import ArgumentParser
 from beaker.middleware import SessionMiddleware
-from flask import Flask, g, render_template, request, redirect, Response, current_app
+from flask import Flask
 import logging
-import peewee
 import tempfile
-import werkzeug
-import werkzeug.exceptions
 
-import model
 import context
-import uploads
-import pages
 import history
+import model
+import pages
 import specials
+import uploads
 
-app = Flask(__name__, template_folder='../templates', static_folder='../static')
+app = Flask(__name__,
+            template_folder='../templates',
+            static_folder='../static')
+
 app.config.from_object('spacewiki.settings')
 app.register_blueprint(context.bp)
 app.register_blueprint(model.bp)
@@ -35,8 +34,10 @@ app.wsgi_app = SessionMiddleware(app.wsgi_app, {
 
 if app.config['ADMIN_EMAILS']:
     from logging.handlers import SMTPHandler
+
     mail_handler = SMTPHandler('127.0.0.1',
-        'spacewiki@localhost',
-        app.config['ADMIN_EMAILS'], 'SpaceWiki error')
+                               'spacewiki@localhost',
+                               app.config['ADMIN_EMAILS'],
+                               'SpaceWiki error')
     mail_handler.setLevel(logging.ERROR)
     app.logger.addHandler(mail_handler)
