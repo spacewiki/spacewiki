@@ -4,7 +4,7 @@
 <h1>All Pages</h1>
 <ul>
   {% for page in pages %}
-    <li><a href="{{url_for('view', slug=page.slug)}}">{{page.title}}</a></li>
+    <li><a href="{{url_for('pages.view', slug=page.slug)}}">{{page.title}}</a></li>
   {% endfor %}
 </ul>
 {% endblock %}

@@ -3,7 +3,7 @@
 {% block content %}
 <h1>Attach file to {{page.title}}</h1>
 
-<form method="post" action="{{url_for('attach', slug=page.slug)}}" enctype="multipart/form-data">
+<form method="post" action="{{url_for('uploads.attach', slug=page.slug)}}" enctype="multipart/form-data">
   <input type="file" name="file">
   <button type="submit">Attach</button>
 </form>

@@ -1,4 +1,4 @@
-<form method="post" action="{{url_for('save', slug=slug)}}">
+<form method="post" action="{{url_for('pages.save', slug=slug)}}">
   {% if title %}
   <div class="row">
     <div class="large-12 columns">
@@ -21,12 +21,12 @@
         {% if page %}
           {% for attachment in page.attachments %}
           <li>
-            <img src="{{url_for('get_attachment', slug=slug, fileslug=attachment.slug)}}">
+            <img src="{{url_for('uploads.get_attachment', slug=slug, fileslug=attachment.slug)}}">
             <input type="text" value="{{"{{"}}attachment:{{attachment.slug}}{{"}}"}}">
           </li>
           {% endfor %}
         {% endif %}
-        <li><a class="small button" href="{{url_for('upload', slug=slug)}}">Upload</a></li>
+        <li><a class="small button" href="{{url_for('uploads.upload', slug=slug)}}">Upload</a></li>
       </ul>
     </div>
   </div>

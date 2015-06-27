@@ -16,16 +16,16 @@
 
 {% if redirectFrom %}
 <p><small>Redirected from <a
-    href="{{url_for('edit', slug=redirectFrom)}}">{{redirectFrom}}</a></small>
+    href="{{url_for('pages.edit', slug=redirectFrom)}}">{{redirectFrom}}</a></small>
 {% endif %}
 
 {% if not revision.is_latest %}
 <ul class="pagination">
-  <li class="arrow"><a href="{{url_for('view', slug=page.slug, revision=revision.prev.id)}}">&laquo;</a></li>
+  <li class="arrow"><a href="{{url_for('pages.view', slug=page.slug, revision=revision.prev.id)}}">&laquo;</a></li>
   <li class="current">Revision {{revision.id}}</li>
-  <li class="arrow"><a href="{{url_for('view', slug=page.slug, revision=revision.next.id)}}">&raquo;</a></li>
+  <li class="arrow"><a href="{{url_for('pages.view', slug=page.slug, revision=revision.next.id)}}">&raquo;</a></li>
 </ul>
-<form method="post" action="{{url_for('revert', slug=page.slug)}}">
+<form method="post" action="{{url_for('history.revert', slug=page.slug)}}">
 <fieldset>
   <caption>Revert to this revision</caption>
   <input type="hidden" name="revision" value="{{revision.id}}">
@@ -42,13 +42,13 @@
 <h2>Attachments</h2>
 <ul class="attachments">
   {% for attachment in revision.page.attachments %}
-  <li><a data-title="{{attachment.filename}}" data-lightbox="page-attachments" href="{{url_for('get_attachment', slug=revision.page.slug, fileslug=attachment.slug)}}">{{attachment.filename}}</a></li>
+  <li><a data-title="{{attachment.filename}}" data-lightbox="page-attachments" href="{{url_for('uploads.get_attachment', slug=revision.page.slug, fileslug=attachment.slug)}}">{{attachment.filename}}</a></li>
   {% endfor %}
 </ul>
 
 <ul class="softlinks">
 {% for softlink in revision.page.softlinks_out %}
-<li><a href="{{url_for('view', slug=softlink.dest.slug)}}">{{softlink.dest.title}}</a></li>
+<li><a href="{{url_for('pages.view', slug=softlink.dest.slug)}}">{{softlink.dest.title}}</a></li>
 {% endfor %}
 <br style="clear:both">
 </ul>

@@ -47,11 +47,11 @@ def do_attachment(pageSlug, slug):
     except peewee.DoesNotExist:
         return None
     if size is None:
-        imgUrl = url_for('get_attachment', slug=pageSlug, fileslug=imageSlug)
+        imgUrl = url_for('uploads.get_attachment', slug=pageSlug, fileslug=imageSlug)
     else:
-        imgUrl = url_for('get_attachment', slug=pageSlug, fileslug=imageSlug,
+        imgUrl = url_for('uploads.get_attachment', slug=pageSlug, fileslug=imageSlug,
             size=size)
-    fullUrl = url_for('get_attachment', slug=pageSlug, fileslug=imageSlug)
+    fullUrl = url_for('uploads.get_attachment', slug=pageSlug, fileslug=imageSlug)
         
     return '[![%s](%s)](%s)'%(imageSlug, imgUrl, fullUrl)
 

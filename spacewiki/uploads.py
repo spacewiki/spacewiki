@@ -34,7 +34,7 @@ def attach(slug):
     with model.database.transaction():
         file.save(tmpname)
         page.attachUpload(tmpname, fname, current_app.config['UPLOAD_PATH'])
-    return redirect(url_for('view', slug=page.slug))
+    return redirect(url_for('pages.view', slug=page.slug))
 
 @bp.route("/<slug>/file/<fileslug>")
 @bp.route("/<slug>/file/<fileslug>/<size>")
@@ -55,32 +55,31 @@ def get_attachment(slug, fileslug, size=None):
     if maxSize is not None and maxSize <= 0:
         raise werkzeug.exceptions.NotFound()
 
-    def generate():
-        with bp.app_context():
-            fname = model.Attachment.hashPath(latestRevision.sha,
-                attachment.filename)
-            if maxSize is not None:
-                resizedFname = os.path.join(current_app.config['UPLOAD_PATH'], fname)+'-%s'%(maxSize)
-                if not os.path.exists(resizedFname):
-                    img = Image.open(os.path.join(current_app.config['UPLOAD_PATH'], fname))
-                    w, h = img.size
-                    if w > h:
-                      scale = float(maxSize) / w
-                      w = maxSize
-                      h = h * scale
-                    else:
-                      scale = float(maxSize) / h
-                      h = maxSize
-                      w = w * scale
-                    img.thumbnail([w, h], Image.ANTIALIAS)
-                    img.save(resizedFname, format='png')
-                f = open(resizedFname, 'r')
-            else:
-                f = open(os.path.join(current_app.config['UPLOAD_PATH'], fname))
+    def generate(prefix):
+        fname = model.Attachment.hashPath(latestRevision.sha,
+            attachment.filename)
+        if maxSize is not None:
+            resizedFname = os.path.join(prefix, fname)+'-%s'%(maxSize)
+            if not os.path.exists(resizedFname):
+                img = Image.open(os.path.join(prefix, fname))
+                w, h = img.size
+                if w > h:
+                  scale = float(maxSize) / w
+                  w = maxSize
+                  h = h * scale
+                else:
+                  scale = float(maxSize) / h
+                  h = maxSize
+                  w = w * scale
+                img.thumbnail([w, h], Image.ANTIALIAS)
+                img.save(resizedFname, format='png')
+            f = open(resizedFname, 'r')
+        else:
+            f = open(os.path.join(prefix, fname))
+        buf = f.read(2048)
+        while buf:
+            yield buf
             buf = f.read(2048)
-            while buf:
-                yield buf
-                buf = f.read(2048)
     """FIXME: mimetype detection"""
     mimetype = 'image/png; charset=binary'
-    return Response(generate(), mimetype=mimetype)
+    return Response(generate(current_app.config['UPLOAD_PATH']), mimetype=mimetype)
