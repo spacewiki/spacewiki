@@ -1,5 +1,5 @@
 from spacewiki import model
-from spacewiki.app import app
+from spacewiki.app import APP as app
 import unittest
 import tempfile
 import hashlib

@@ -1,5 +1,4 @@
 """spacewiki database models"""
-import bs4
 import crypt
 import difflib
 import datetime
@@ -7,38 +6,41 @@ from flask import g, current_app, Blueprint
 from flask.ext.script import Manager
 import logging
 import hashlib
-import mistune
 import os
 import peewee
 import playhouse.migrate
 from playhouse.db_url import connect
-import re
 import shutil
 import slugify
 import traceback
 import urlparse
 import urllib
-from werkzeug.local import LocalProxy
 
 import spacewiki
 
-bp = Blueprint('model', __name__)
+BLUEPRINT = Blueprint('model', __name__)
 
-@bp.before_app_request
+
+@BLUEPRINT.before_app_request
 def get_db():
+    """Sets up the database"""
     db = getattr(g, '_database', None)
     if db is None:
-        logging.debug("New db at %s!"%(current_app.config['DATABASE']))
+        logging.debug("New db at %s!", current_app.config['DATABASE'])
         g._database = db = connect(current_app.config['DATABASE'])
-    database.initialize(db)
+    DATABASE.initialize(db)
 
-database = peewee.Proxy()
+DATABASE = peewee.Proxy()
+
 
 class BaseModel(peewee.Model):
-    class Meta:
-        database = database
+    """Base class for SpaceWiki models, so all models share the same database"""
+    class Meta:  # pylint: disable=missing-docstring,no-init,old-style-class,too-few-public-methods
+        database = DATABASE
+
 
 class SlugField(peewee.CharField):
+    """Normalizes strings into a url-friendly 'slug'"""
     def coerce(self, value):
         return self.slugify(value)
 
@@ -47,18 +49,23 @@ class SlugField(peewee.CharField):
         """Translates a string into a reduced character set"""
         return slugify.slugify(unicode(title))
 
+
 class TripcodeField(peewee.CharField):
+    """Hashes tripcodes from specially formatted strings"""
     def coerce(self, value):
         return self.tripcode(value)
 
     @staticmethod
     def tripcode(value):
+        """Parses a string and returns the tripcode-ified version"""
         tokens = value.split('#', 1)
         if len(tokens) == 1:
             return tokens[0]
         return tokens[0]+'#'+crypt.crypt(tokens[0], tokens[1])
 
+
 class Page(BaseModel):
+    """A wiki page"""
     title = peewee.CharField(unique=True)
     slug = SlugField(unique=True)
 
@@ -66,18 +73,20 @@ class Page(BaseModel):
     def parsePreviousSlugFromRequest(req, default):
         if 'Referer' in req.headers:
             referer = req.headers['Referer']
-            referUrl = urlparse.urlparse(referer)
+            refer_url = urlparse.urlparse(referer)
             if 'Host' in req.headers:
-                if referUrl.netloc == req.headers['Host']:
+                if refer_url.netloc == req.headers['Host']:
                     script_name = req.environ['SCRIPT_NAME']
 
-                    lastPageSlug = urllib.unquote(referUrl.path[len(script_name)+1:])
-                    if '/' in lastPageSlug:
-                      lastPageSlug, _ = lastPageSlug.split('/', 1)
-                    if lastPageSlug == "":
-                        lastPageSlug = default
-                    req.lastSlug = lastPageSlug
-                    return lastPageSlug
+                    last_page_slug = urllib.unquote(
+                        refer_url.path[len(script_name)+1:]
+                    )
+                    if '/' in last_page_slug:
+                        last_page_slug, _ = last_page_slug.split('/', 1)
+                    if last_page_slug == "":
+                        last_page_slug = default
+                    req.lastSlug = last_page_slug
+                    return last_page_slug
         if 'lastSlug' in req.args:
             req.lastSlug = req.args.get('lastSlug')
             return req.lastSlug
@@ -88,46 +97,55 @@ class Page(BaseModel):
         """Creates a new Revision of this Page with the given body"""
         logging.debug("Creating new revision on %s", self.slug)
         return Revision.create(page=self, body=body, message=message,
-            author=author)
+                               author=author)
 
     def makeSoftlinkFrom(self, prev):
         logging.debug("Linking from %s to %s", prev.slug, self.slug)
+
         try:
             Softlink.get(Softlink.src == prev, Softlink.dest == self)
             logging.debug("Link exists!")
         except peewee.DoesNotExist:
             Softlink.create(src=prev, dest=self)
             logging.debug("New link!")
-        Softlink.update(hits = Softlink.hits + 1).where(Softlink.src ==
-            prev, Softlink.dest == self).execute()
+
+        Softlink.update(hits=Softlink.hits + 1) \
+                .where(Softlink.src == prev, Softlink.dest == self) \
+                .execute()
 
     def attachUpload(self, src, filename, uploadPath):
-        assert(isinstance(src, basestring))
-        assert(isinstance(filename, basestring))
-        assert(isinstance(uploadPath, basestring))
+        assert isinstance(src, basestring)
+        assert isinstance(filename, basestring)
+        assert isinstance(uploadPath, basestring)
 
-        logging.info("Attaching upload %s (%s), saved at %s", src, filename, uploadPath)
+        logging.info("Attaching upload %s (%s), saved at %s",
+                     src, filename, uploadPath)
 
-        hexSha = Attachment.hashFile(src)
-        savedName = os.path.join(uploadPath, Attachment.hashPath(hexSha, filename))
-        if not os.path.exists(os.path.dirname(savedName)):
-            os.makedirs(os.path.dirname(savedName))
-        shutil.move(src, savedName)
-        """FIXME: These db queries should be handled by the model"""
+        hex_sha = Attachment.hashFile(src)
+        saved_name = os.path.join(uploadPath,
+                                 Attachment.hashPath(hex_sha, filename))
+
+        if not os.path.exists(os.path.dirname(saved_name)):
+            os.makedirs(os.path.dirname(saved_name))
+        shutil.move(src, saved_name)
+
+        # FIXME: These db queries should be handled by the model
         try:
             attachment = Attachment.get(page=self, slug=filename)
             logging.debug("Updating existing attachment: %s", attachment.slug)
         except peewee.DoesNotExist:
             attachment = Attachment.create(page=self, filename=filename,
-                slug=filename)
+                                           slug=filename)
             logging.debug("Creating new attachment: %s", attachment.slug)
+
         try:
-            AttachmentRevision.get(attachment=attachment, sha=hexSha)
+            AttachmentRevision.get(attachment=attachment, sha=hex_sha)
             logging.debug("Duplicate file upload: %s", attachment.slug)
         except peewee.DoesNotExist:
-            AttachmentRevision.create(attachment=attachment, sha=hexSha)
-            logging.debug("New upload: %s -> %s", attachment.slug, hexSha)
-        logging.info("Uploaded file %s to %s"%(filename, savedName))
+            AttachmentRevision.create(attachment=attachment, sha=hex_sha)
+            logging.debug("New upload: %s -> %s", attachment.slug, hex_sha)
+
+        logging.info("Uploaded file %s to %s", filename, saved_name)
 
     @classmethod
     def latestRevision(cls, slug):
@@ -135,36 +153,20 @@ class Page(BaseModel):
             return Revision.select() \
                 .join(cls) \
                 .where(cls.slug == slug) \
-                .order_by(Revision.id.desc())[0]
+                .order_by(Revision.id.desc())[0]  # pylint: disable=no-member
         except IndexError:
             return None
 
+
 class Softlink(BaseModel):
+    """An organic automatically generated link between pages"""
     src = peewee.ForeignKeyField(Page, related_name='softlinks_out')
     dest = peewee.ForeignKeyField(Page, related_name='softlinks_in')
     hits = peewee.IntegerField(default=0)
 
-class WikiRenderer(mistune.Renderer):
-    def block_html(self, html):
-        tokens = html.split('\n', 1)
-        if len(tokens) == 2:
-            firstLine, rest = html.split('\n', 1)
-        else:
-            firstLine = html
-            rest = ""
-        tags = re.match('^<(.+?)>(.*)', html)
-        renderer = WikiRenderer()
-        md = mistune.Markdown(renderer=renderer)
-        if tags:
-            tag, tagTail = tags.groups()
-            rest = tagTail + rest
-            submd = md.render(unicode(rest))
-            ret = "<%s>%s"%(tag, submd)
-        else:
-            ret = firstLine + md.render(unicode(rest.lstrip()))
-        return ret
 
 class Revision(BaseModel):
+    """A page revision"""
     page = peewee.ForeignKeyField(Page, related_name='revisions')
     body = peewee.TextField()
     message = peewee.TextField(default='')
@@ -190,54 +192,61 @@ class Revision(BaseModel):
 
     @property
     def is_latest(self):
-      return Page.latestRevision(self.page.slug) == self
+        """Returns True if this is the latest revision of a page, false
+        otherwise"""
+        return Page.latestRevision(self.page.slug) == self  # pylint: disable=no-member
 
     @property
     def prev(self):
-      try:
-        return Revision.select().where(Revision.page == self.page, Revision.id <
-            self.id).order_by(Revision.id.desc()).limit(1)[0]
-      except IndexError:
-        return None
+        """Returns the previous revision if there is one, None otherwise"""
+        try:
+            return Revision.select() \
+                           .where(Revision.page == self.page,
+                                  Revision.id < self.id) \
+                           .order_by(Revision.id.desc()) \
+                           .limit(1)[0]
+        except IndexError:
+            return None
 
     @classmethod
     def _makeDiff(cls, r1, r2):
         if r1 is None:
-            d = difflib.unified_diff(
-                "",
-                r2.body.split("\n"),
-                lineterm="",
-                fromfile="%s@%s"%(r2.page.slug, 0),
-                tofile="%s@%s"%(r2.page.slug, r2.id))
+            diff = difflib.unified_diff("",
+                                        r2.body.split("\n"),
+                                        lineterm="",
+                                        fromfile="%s@%s" % (r2.page.slug, 0),
+                                        tofile="%s@%s" % (r2.page.slug, r2.id))
         elif r2 is None:
-            d = difflib.unified_diff(
-                r1.body.split("\n"),
-                "",
-                lineterm="",
-                fromfile="%s@%s"%(r1.page.slug, r1.id),
-                tofile="%s@%s"%(r1.page.slug, 0))
+            diff = difflib.unified_diff(r1.body.split("\n"),
+                                        "",
+                                        lineterm="",
+                                        fromfile="%s@%s" % (
+                                            r1.page.slug,
+                                            r1.id),
+                                        tofile="%s@%s" % (r1.page.slug, 0))
         else:
-            d = difflib.unified_diff(
-                r1.body.split("\n"),
-                r2.body.split("\n"),
-                lineterm="",
-                fromfile="%s@%s"%(r1.page.slug, r1.id),
-                tofile="%s@%s"%(r2.page.slug, r2.id))
-        return cls._parseDiff(d)
+            diff = difflib.unified_diff(r1.body.split("\n"),
+                                        r2.body.split("\n"),
+                                        lineterm="",
+                                        fromfile="%s@%s" % (
+                                            r1.page.slug,
+                                            r1.id),
+                                        tofile="%s@%s" % (r2.page.slug, r2.id))
+        return cls._parseDiff(diff)
 
     @staticmethod
     def _parseDiff(diff):
         ret = []
         for line in diff:
             if line.startswith('+++') or line.startswith('---'):
-                lineType = 'meta'
+                line_type = 'meta'
             elif line.startswith('@@'):
-                lineType = 'context'
+                line_type = 'context'
             elif line.startswith('+'):
-                lineType = 'addition'
+                line_type = 'addition'
             elif line.startswith('-'):
-                lineType = 'subtraction'
-            ret.append({'contents': line, 'type': lineType})
+                line_type = 'subtraction'
+            ret.append({'contents': line, 'type': line_type})
         return ret
 
     def diffTo(self, prev):
@@ -245,16 +254,20 @@ class Revision(BaseModel):
 
     @property
     def diffToPrev(self):
-        prev = self.prev
-        if prev is not None:
-            return self.diffTo(prev)
+        prev_rev = self.prev
+
+        if prev_rev is not None:
+            return self.diffTo(prev_rev)
+
         return self._makeDiff(None, self)
 
     @property
     def diffToNext(self):
-        next = self.next
-        if next is not None:
-          return self.diffTo(next)
+        next_rev = self.next
+
+        if next_rev is not None:
+            return self.diffTo(next_rev)
+
         return self._makeDiff(self, None)
 
     def diffStatsToPrev(self):
@@ -268,13 +281,19 @@ class Revision(BaseModel):
 
     @property
     def next(self):
-      try:
-        return Revision.select().where(Revision.page == self.page, Revision.id >
-            self.id).order_by(Revision.id).limit(1)[0]
-      except IndexError:
-        return None
+        """Returns the next revision if one exists, None otherwise"""
+        try:
+            return Revision.select() \
+                           .where(Revision.page == self.page,
+                                  Revision.id > self.id) \
+                           .order_by(Revision.id) \
+                           .limit(1)[0]
+        except IndexError:
+            return None
+
 
 class Attachment(BaseModel):
+    """A file attached to a page"""
     page = peewee.ForeignKeyField(Page, related_name='attachments')
     filename = peewee.CharField(unique=True)
     slug = SlugField(unique=True)
@@ -288,12 +307,12 @@ class Attachment(BaseModel):
 
     @staticmethod
     def hashPath(sha, src):
-        return "%s/%s/%s-%s"%(sha[0:2], sha[2:4], sha, src)
+        return "%s/%s/%s-%s" % (sha[0:2], sha[2:4], sha, src)
 
     @classmethod
     def findAttachment(cls, pageSlug, fileSlug):
         try:
-            page = Page.get(slug=pageSlug)
+            Page.get(slug=pageSlug)
         except peewee.DoesNotExist:
             return None
         try:
@@ -302,24 +321,30 @@ class Attachment(BaseModel):
             return None
         return attachment
 
-    class Meta:
+    class Meta:  # pylint: disable=missing-docstring,no-init,old-style-class,too-few-public-methods
         indexes = (
             (('page', 'slug'), True),
         )
 
+
 class AttachmentRevision(BaseModel):
+    """A revision of an uploaded file"""
     attachment = peewee.ForeignKeyField(Attachment, related_name='revisions')
     sha = peewee.CharField()
 
-    class Meta:
+    class Meta:  # pylint: disable=missing-docstring,no-init,old-style-class,too-few-public-methods
         indexes = (
             (('attachment', 'sha'), True),
         )
 
+
 class DatabaseVersion(BaseModel):
+    """That all-too-familiar hack to encode the schema version in the
+    database"""
     schema_version = peewee.IntegerField(default=0)
 
 MANAGER = Manager(usage='Database tools')
+
 
 @MANAGER.command
 def syncdb():
@@ -331,15 +356,16 @@ def syncdb():
             DatabaseVersion.select().execute()
         except peewee.OperationalError:
             logging.debug("Creating initial database version table")
-            database.create_tables([DatabaseVersion])
+            DATABASE.create_tables([DatabaseVersion])
         try:
-            v = DatabaseVersion.select()[0]
-            logging.debug("Current database is at version %s", v.schema_version)
+            version = DatabaseVersion.select()[0]
+            logging.debug("Current database is at version %s",
+                          version.schema_version)
         except IndexError:
             logging.debug("Creating initial schema version of 0")
-            v = DatabaseVersion.create(schema_version=0)
-        v.schema_version = run_migrations(v.schema_version)
-        v.save()
+            version = DatabaseVersion.create(schema_version=0)
+        version.schema_version = run_migrations(version.schema_version)
+        version.save()
     logging.info("OK!")
 
 MIGRATIONS = (
@@ -348,26 +374,28 @@ MIGRATIONS = (
     ),
 )
 
-def run_migrations(currentRevision):
-    migrator = playhouse.migrate.SqliteMigrator(database)
+
+def run_migrations(current_revision):
+    """Runs migrations starting at current_revision"""
+    migrator = playhouse.migrate.SqliteMigrator(DATABASE)
 
     for model in (Page, Revision, Softlink, Attachment, AttachmentRevision):
-        with database.transaction():
+        with DATABASE.transaction():
             try:
                 model.get(id=0)
             except peewee.OperationalError:
                 logging.debug("Creating table for %s", model.__name__)
-                database.create_tables([model])
+                DATABASE.create_tables([model])
             except model.DoesNotExist:
                 pass
 
-    if currentRevision == 0:
-      return len(MIGRATIONS)
+    if current_revision == 0:
+        return len(MIGRATIONS)
 
-    for migration in MIGRATIONS[currentRevision:]:
-        with database.transaction():
-            logging.debug("Applying migration %d", currentRevision)
+    for migration in MIGRATIONS[current_revision:]:
+        with DATABASE.transaction():
+            logging.debug("Applying migration %d", current_revision)
             playhouse.migrate.migrate(*migration(migrator))
-            currentRevision += 1
+            current_revision += 1
 
-    return currentRevision
+    return current_revision

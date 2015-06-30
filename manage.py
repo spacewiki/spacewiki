@@ -7,20 +7,20 @@ import os.path
 
 sys.path.append(os.path.dirname(__file__))
 
-from spacewiki.app import app
+from spacewiki.app import APP
 
-manager = Manager(app)
-manager.add_command("shell", Shell())
-manager.add_command('db', model.MANAGER)
+MANAGER = Manager(APP)
+MANAGER.add_command("shell", Shell())
+MANAGER.add_command('db', model.MANAGER)
 
-@manager.command
+@MANAGER.command
 def runserver():
+    """Runs an HTTP server on *:5000"""
     from werkzeug.serving import run_simple
-    run_simple('0.0.0.0', 5000, app, use_debugger=True, use_reloader=True)
+    run_simple('0.0.0.0', 5000, APP, use_debugger=True, use_reloader=True)
 
 if __name__ == "__main__":
     logging.getLogger('peewee').setLevel(logging.INFO)
     logging.basicConfig(level=logging.DEBUG)
 
-    manager.run()
-
+    MANAGER.run()

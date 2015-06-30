@@ -1,7 +1,7 @@
 import werkzeug.test
 import unittest
 from spacewiki import model
-from spacewiki.app import app
+from spacewiki.app import APP as app
 import logging
 import hypothesis
 import tempfile

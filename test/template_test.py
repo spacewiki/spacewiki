@@ -1,7 +1,7 @@
 from spacewiki import model, wikiformat
 from spacewiki.wikiformat import directives
 import unittest
-from spacewiki.app import app
+from spacewiki.app import APP as app
 
 class ParserTestCase(unittest.TestCase):
     def setUp(self):
@@ -19,7 +19,7 @@ class ParserTestCase(unittest.TestCase):
     def test_recursive_templates(self):
         try:
             page = model.Page.create(title='recursive', slug='recursive')
-        except:
+        except model.Page.DoesNotExist:
             page = model.Page.get(slug='recursive')
         page.newRevision('{{recursive}}', '', '')
         self.assertEqual(directives.render("{{recursive}}", ''),

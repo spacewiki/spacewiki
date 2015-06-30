@@ -1,3 +1,5 @@
+"""Page attachments and uploads"""
+
 from flask import current_app, Blueprint, render_template, request, redirect, url_for, Response
 import logging
 import peewee
@@ -6,11 +8,12 @@ import os
 import tempfile
 import werkzeug
 
-import model
+from spacewiki import model
 
-bp = Blueprint('uploads', __name__)
+BLUEPRINT = Blueprint('uploads', __name__)
 
-@bp.route("/<slug>/attach", methods=['GET'])
+
+@BLUEPRINT.route("/<slug>/attach", methods=['GET'])
 def upload(slug):
     """Show the file attachment form"""
     try:
@@ -19,7 +22,8 @@ def upload(slug):
         page = model.Page.create(title=slug, slug=slug)
     return render_template('attach.html', page=page)
 
-@bp.route("/<slug>/attach", methods=['POST'])
+
+@BLUEPRINT.route("/<slug>/attach", methods=['POST'])
 def attach(slug):
     """Handle saving a file upload"""
     try:
@@ -28,58 +32,61 @@ def attach(slug):
     except peewee.DoesNotExist:
         page = model.Page.create(title=slug, slug=slug)
         logging.debug("Created new page for attachment: %s", page.slug)
-    file = request.files['file']
-    fname = werkzeug.secure_filename(file.filename)
+    uploaded_file = request.files['file']
+    fname = werkzeug.secure_filename(uploaded_file.filename)
     tmpname = os.path.join(tempfile.mkdtemp(), "upload")
-    with model.database.transaction():
-        file.save(tmpname)
+    with model.DATABASE.transaction():
+        uploaded_file.save(tmpname)
         page.attachUpload(tmpname, fname, current_app.config['UPLOAD_PATH'])
     return redirect(url_for('pages.view', slug=page.slug))
 
-@bp.route("/<slug>/file/<fileslug>")
-@bp.route("/<slug>/file/<fileslug>/<size>")
+
+@BLUEPRINT.route("/<slug>/file/<fileslug>")
+@BLUEPRINT.route("/<slug>/file/<fileslug>/<size>")
 def get_attachment(slug, fileslug, size=None):
+    """Renders a file attachment, usually an image"""
     attachment = model.Attachment.findAttachment(slug, fileslug)
     if attachment is None:
         logging.info("No attachment %s on %s", fileslug, slug)
         return Response(status=404)
-    latestRevision = attachment.revisions[0]
-    maxSize = None
+    latest_revision = attachment.revisions[0]
+    max_size = None
 
     if size is not None:
         try:
-            maxSize = max(0, int(size))
-        except ValueError, e:
-            maxSize = -1
+            max_size = max(0, int(size))
+        except ValueError:
+            max_size = -1
 
-    if maxSize is not None and maxSize <= 0:
+    if max_size is not None and max_size <= 0:
         raise werkzeug.exceptions.NotFound()
 
     def generate(prefix):
-        fname = model.Attachment.hashPath(latestRevision.sha,
-            attachment.filename)
-        if maxSize is not None:
-            resizedFname = os.path.join(prefix, fname)+'-%s'%(maxSize)
-            if not os.path.exists(resizedFname):
+        """Generator that streams a file's contents"""
+        fname = model.Attachment.hashPath(latest_revision.sha,
+                                          attachment.filename)
+        if max_size is not None:
+            resized_fname = os.path.join(prefix, fname)+'-%s' % (max_size)
+            if not os.path.exists(resized_fname):
                 img = Image.open(os.path.join(prefix, fname))
-                w, h = img.size
-                if w > h:
-                  scale = float(maxSize) / w
-                  w = maxSize
-                  h = h * scale
+                width, height = img.size
+                if width > height:
+                    scale = float(max_size) / width
+                    width = max_size
+                    height = height * scale
                 else:
-                  scale = float(maxSize) / h
-                  h = maxSize
-                  w = w * scale
-                img.thumbnail([w, h], Image.ANTIALIAS)
-                img.save(resizedFname, format='png')
-            f = open(resizedFname, 'r')
+                    scale = float(max_size) / height
+                    height = max_size
+                    width = width * scale
+                img.thumbnail([width, height], Image.ANTIALIAS)
+                img.save(resized_fname, format='png')
+            upload_fh = open(resized_fname, 'r')
         else:
-            f = open(os.path.join(prefix, fname))
-        buf = f.read(2048)
+            upload_fh = open(os.path.join(prefix, fname))
+        buf = upload_fh.read(2048)
         while buf:
             yield buf
-            buf = f.read(2048)
-    """FIXME: mimetype detection"""
+            buf = upload_fh.read(2048)
+    # FIXME: mimetype detection
     mimetype = 'image/png; charset=binary'
     return Response(generate(current_app.config['UPLOAD_PATH']), mimetype=mimetype)

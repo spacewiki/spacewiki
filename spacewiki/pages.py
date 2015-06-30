@@ -1,78 +1,102 @@
-from flask import Blueprint, request, current_app, redirect, url_for, render_template
+"""Routes related to viewing and editing pages"""
+
+from flask import (Blueprint, request, current_app, redirect, url_for,
+                   render_template)
+import logging
 import peewee
 
-import model
+from spacewiki import model
 
-bp = Blueprint('pages', __name__)
+BLUEPRINT = Blueprint('pages', __name__)
 
-@bp.route("/<slug>", methods=['POST'])
+
+@BLUEPRINT.route("/<slug>", methods=['POST'])
 def save(slug):
     """Save a new Revision, creating a new Page if needed"""
     try:
         page = model.Page.get(slug=slug)
         logging.debug("Updating existing page: %s", page.slug)
     except peewee.DoesNotExist:
-        page = model.Page.create(title=request.form['title'], slug=request.form['title'])
+        page = model.Page.create(title=request.form['title'],
+                                 slug=request.form['title'])
         logging.debug("Created new page: %s (%s)", page.title, page.slug)
     page.newRevision(request.form['body'], request.form['message'],
-        request.form['author'])
+                     request.form['author'])
     session = request.environ['beaker.session']
     session['author'] = request.form['author']
     session.save()
+
     return redirect(url_for('pages.view', slug=page.slug))
 
-@bp.route("/preview", methods=['POST'])
+
+@BLUEPRINT.route("/preview", methods=['POST'])
 def preview():
     """Render some markup as HTML"""
     return model.Revision.render_text(request.form['body'],
-        request.form['slug'])
+                                      request.form['slug'])
 
-@bp.route("/<slug>/edit", methods=['GET'])
+
+@BLUEPRINT.route("/<slug>/edit", methods=['GET'])
 def edit(slug, redirectFrom=None, preview=None):
     """Show the editing form for a page"""
     revision = model.Page.latestRevision(slug)
     if revision is not None:
         return render_template('edit.html',
-            page=revision.page, revision=revision, slug=revision.page.slug,
-            redirectFrom=redirectFrom)
+                               page=revision.page, revision=revision,
+                               slug=revision.page.slug,
+                               redirectFrom=redirectFrom)
     else:
         page = None
+
         try:
             page = model.Page.get(slug=slug)
         except peewee.DoesNotExist:
             pass
-        return render_template('404.html',
-            slug=model.SlugField.slugify(slug), title=slug, page=page, redirectFrom=redirectFrom)
 
-@bp.route("/", methods=['GET'])
-@bp.route("/<slug>", methods=['GET'])
-@bp.route("/<slug>/<revision>", methods=['GET'])
+        return render_template('404.html',
+                               slug=model.SlugField.slugify(slug),
+                               title=slug, page=page,
+                               redirectFrom=redirectFrom)
+
+
+@BLUEPRINT.route("/", methods=['GET'])
+@BLUEPRINT.route("/<slug>", methods=['GET'])
+@BLUEPRINT.route("/<slug>/<revision>", methods=['GET'])
 def view(slug=None, revision=None, redirectFrom=None):
     if slug is None:
         slug = current_app.config['INDEX_PAGE']
-    lastPage = None
-    if revision is None:
-      revision = model.Page.latestRevision(slug)
-    else:
-      revision = model.Revision.get(id=revision)
 
-    lastPageSlug = model.Page.parsePreviousSlugFromRequest(request,
-    current_app.config['INDEX_PAGE'])
-    if lastPageSlug is not None:
+    last_page = None
+
+    if revision is None:
+        revision = model.Page.latestRevision(slug)
+    else:
+        revision = model.Revision.get(id=revision)
+
+    last_page_slug = \
+        model.Page.parsePreviousSlugFromRequest(
+            request,
+            current_app.config['INDEX_PAGE']
+        )
+
+    if last_page_slug is not None:
         try:
-            lastPage = model.Page.get(slug=lastPageSlug)
+            last_page = model.Page.get(slug=last_page_slug)
         except peewee.DoesNotExist:
             pass
 
     if revision is not None:
-        if lastPage is not None and lastPage != revision.page:
-            revision.page.makeSoftlinkFrom(lastPage)
+        if last_page is not None and last_page != revision.page:
+            revision.page.makeSoftlinkFrom(last_page)
 
         if revision.body.startswith("#Redirect"):
-            newSlug = revision.body.split(' ', 1)[1]
-            logging.debug("Redirect to %s", newSlug)
-            return view(slug=newSlug, redirectFrom=slug)
+            new_slug = revision.body.split(' ', 1)[1]
+            logging.debug("Redirect to %s", new_slug)
+
+            return view(slug=new_slug, redirectFrom=slug)
+
         return render_template('page.html',
-            revision=revision, page=revision.page, redirectFrom=redirectFrom)
+                               revision=revision, page=revision.page,
+                               redirectFrom=redirectFrom)
     else:
         return edit(slug, redirectFrom=redirectFrom)
