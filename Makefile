@@ -22,6 +22,8 @@ static: scss images scripts
 syncdb:
 	./manage.py db syncdb
 
+check: test
+
 test:
 	nosetests --with-coverage
 
