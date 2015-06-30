@@ -4,3 +4,4 @@ app:
     - "5000:5000"
   volumes:
     - .:/srv/spacewiki/
+  command: "/srv/spacewiki/manage.py runserver -h 0.0.0.0 -r -d"
