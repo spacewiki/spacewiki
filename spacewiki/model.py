@@ -20,7 +20,7 @@ import urlparse
 import urllib
 from werkzeug.local import LocalProxy
 
-import wikiformat
+import spacewiki
 
 bp = Blueprint('model', __name__)
 
@@ -172,20 +172,11 @@ class Revision(BaseModel):
     author = TripcodeField(default='Anonymous')
 
     @staticmethod
-    def markdown(s):
-        renderer = WikiRenderer()
-        md = mistune.Markdown(renderer=renderer)
-        return md.render(s)
-
-    @classmethod
-    def render_text(cls, body, slug):
+    def render_text(body, slug):
+        """Renders a string of wiki text as HTML"""
         try:
-            return  \
-                wikiformat.safetags(\
-                cls.markdown(\
-                wikiformat.wikilinks(\
-                wikiformat.wikitemplates(body, slug))))
-        except Exception, e:
+            return spacewiki.wikiformat.render_wikitext(body, slug)
+        except Exception:  # pylint: disable=broad-except
             return "Error in processing wikitext:" + \
                 "<pre>" + \
                 traceback.format_exc() + \
@@ -193,7 +184,9 @@ class Revision(BaseModel):
 
     @property
     def html(self):
-        return self.render_text(self.body, self.page.slug)
+        """Renders this revision's body (which is wikitext) as HTML"""
+        return self.render_text(self.body,
+                                self.page.slug)  # pylint: disable=no-member
 
     @property
     def is_latest(self):
