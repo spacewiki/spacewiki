@@ -16,4 +16,4 @@ ADD . /srv/spacewiki/
 
 RUN make static
 
-CMD ["/srv/spacewiki/manage.py", "runserver"]
+CMD ["/srv/spacewiki/manage.py", "runserver", "-h", "0.0.0.0"]
