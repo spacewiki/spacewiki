@@ -13,7 +13,7 @@ from spacewiki import model
 BLUEPRINT = Blueprint('uploads', __name__)
 
 
-@BLUEPRINT.route("/<slug>/attach", methods=['GET'])
+@BLUEPRINT.route("/<path:slug>/attach", methods=['GET'])
 def upload(slug):
     """Show the file attachment form"""
     try:
@@ -23,7 +23,7 @@ def upload(slug):
     return render_template('attach.html', page=page)
 
 
-@BLUEPRINT.route("/<slug>/attach", methods=['POST'])
+@BLUEPRINT.route("/<path:slug>/attach", methods=['POST'])
 def attach(slug):
     """Handle saving a file upload"""
     try:
@@ -41,8 +41,8 @@ def attach(slug):
     return redirect(url_for('pages.view', slug=page.slug))
 
 
-@BLUEPRINT.route("/<slug>/file/<fileslug>")
-@BLUEPRINT.route("/<slug>/file/<fileslug>/<size>")
+@BLUEPRINT.route("/<path:slug>/file/<fileslug>")
+@BLUEPRINT.route("/<path:slug>/file/<fileslug>/<size>")
 def get_attachment(slug, fileslug, size=None):
     """Renders a file attachment, usually an image"""
     attachment = model.Attachment.findAttachment(slug, fileslug)

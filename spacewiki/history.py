@@ -7,7 +7,7 @@ from spacewiki import model
 BLUEPRINT = Blueprint('history', __name__)
 
 
-@BLUEPRINT.route("/<slug>/revert", methods=['POST'])
+@BLUEPRINT.route("/<path:slug>/revert", methods=['POST'])
 def revert(slug):
     """Handles reverting pages to previous revisions"""
     revision = request.form['revision']
@@ -28,14 +28,14 @@ def revert(slug):
     return redirect(url_for('pages.view', slug=page.slug))
 
 
-@BLUEPRINT.route("/<slug>/history")
+@BLUEPRINT.route("/<path:slug>/history")
 def history(slug):
     """View the revision list of a page"""
     page = model.Page.get(slug=slug)
     return render_template('history.html', page=page)
 
 
-@BLUEPRINT.route('/<slug>/<start>..<end>')
+@BLUEPRINT.route('/<path:slug>/<start>..<end>')
 def diff(slug, start, end):  # pylint: disable=unused-argument
     """Renders the view for differences between page revisions"""
     from_rev = model.Revision.get(id=start)

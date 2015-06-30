@@ -10,9 +10,12 @@ from spacewiki import model
 BLUEPRINT = Blueprint('pages', __name__)
 
 
-@BLUEPRINT.route("/<slug>", methods=['POST'])
-def save(slug):
+@BLUEPRINT.route("/", methods=['POST'])
+@BLUEPRINT.route("/<path:slug>", methods=['POST'])
+def save(slug=None):
     """Save a new Revision, creating a new Page if needed"""
+    if slug is None:
+        slug = current_app.config['INDEX_PAGE']
     try:
         page = model.Page.get(slug=slug)
         logging.debug("Updating existing page: %s", page.slug)
@@ -36,7 +39,7 @@ def preview():
                                       request.form['slug'])
 
 
-@BLUEPRINT.route("/<slug>/edit", methods=['GET'])
+@BLUEPRINT.route("/<path:slug>/edit", methods=['GET'])
 def edit(slug, redirectFrom=None, preview=None):
     """Show the editing form for a page"""
     revision = model.Page.latestRevision(slug)
@@ -53,15 +56,17 @@ def edit(slug, redirectFrom=None, preview=None):
         except peewee.DoesNotExist:
             pass
 
+        _, title = model.SlugField.split_title(slug)
+
         return render_template('404.html',
-                               slug=model.SlugField.slugify(slug),
-                               title=slug, page=page,
+                               slug=slug,
+                               title=title, page=page,
                                redirectFrom=redirectFrom)
 
 
 @BLUEPRINT.route("/", methods=['GET'])
-@BLUEPRINT.route("/<slug>", methods=['GET'])
-@BLUEPRINT.route("/<slug>/<revision>", methods=['GET'])
+@BLUEPRINT.route("/<path:slug>", methods=['GET'])
+@BLUEPRINT.route("/<path:slug>@<revision>", methods=['GET'])
 def view(slug=None, revision=None, redirectFrom=None):
     if slug is None:
         slug = current_app.config['INDEX_PAGE']
