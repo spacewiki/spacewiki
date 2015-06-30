@@ -157,6 +157,14 @@ class Page(BaseModel):
         except IndexError:
             return None
 
+    @property
+    def subpages(self):
+        return Page.select() \
+                   .where(Page.slug.regexp(self.slug+'/.+'))
+
+    @property
+    def parent_slugs(self):
+        return self.slug.split('/')[0:-1]
 
 class Softlink(BaseModel):
     """An organic automatically generated link between pages"""
