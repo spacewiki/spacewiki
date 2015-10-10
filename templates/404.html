@@ -3,7 +3,7 @@
 {% block canvas %}
 <main class="row">
   <div class="small-12 columns">
-    <h1>Editing <em>{{slug}}/{{title}}</em></h1>
+    <h1>Editing <em>{{slug}}</em></h1>
     {% if redirectFrom %}
     <p><small>Redirected from <a
         href="{{url_for('pages.edit', slug=redirectFrom)}}">{{redirectFrom}}</a></small>

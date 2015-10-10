@@ -20,8 +20,10 @@ def save(slug=None):
         page = model.Page.get(slug=slug)
         logging.debug("Updating existing page: %s", page.slug)
     except peewee.DoesNotExist:
-        page = model.Page.create(title=request.form['title'],
-                                 slug=request.form['title'])
+        slug, title = model.SlugField.mangle_full_slug(slug, request.form['title'])
+        print "Saving '%s' at '%s'" %(title, slug)
+        page = model.Page.create(title=title,
+                                 slug=slug)
         logging.debug("Created new page: %s (%s)", page.title, page.slug)
     page.newRevision(request.form['body'], request.form['message'],
                      request.form['author'])

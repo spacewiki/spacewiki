@@ -26,7 +26,6 @@ def get_db():
     """Sets up the database"""
     db = getattr(g, '_database', None)
     if db is None:
-        logging.debug("New db at %s!", current_app.config['DATABASE'])
         g._database = db = connect(current_app.config['DATABASE'])
     DATABASE.initialize(db)
 
@@ -47,7 +46,22 @@ class SlugField(peewee.CharField):
     @staticmethod
     def slugify(title):
         """Translates a string into a reduced character set"""
-        return slugify.slugify(unicode(title))
+        parts = unicode(title).split('/')
+        return '/'.join(map(slugify.slugify, parts)).rstrip('/')
+
+    @classmethod
+    def split_title(cls, title):
+        parts = unicode(title).split('/')
+        slug = cls.slugify('/'.join(parts[0:-1]))
+        title = parts[-1]
+        return (slug, title)
+
+    @classmethod
+    def mangle_full_slug(cls, slug, title):
+        subslug, title = cls.split_title(title)
+        if slug == '':
+          return (subslug, title)
+        return ('/'.join((slug, subslug)), title)
 
 
 class TripcodeField(peewee.CharField):
@@ -66,7 +80,7 @@ class TripcodeField(peewee.CharField):
 
 class Page(BaseModel):
     """A wiki page"""
-    title = peewee.CharField(unique=True)
+    title = peewee.CharField(unique=False)
     slug = SlugField(unique=True)
 
     @staticmethod
@@ -163,8 +177,13 @@ class Page(BaseModel):
                    .where(Page.slug.regexp(self.slug+'/.+'))
 
     @property
-    def parent_slugs(self):
-        return self.slug.split('/')[0:-1]
+    def parent_tree(self):
+        ret = []
+        buf = []
+        for r in self.slug.split('/')[0:-1]:
+          buf.append(r)
+          ret.append({'title': r, 'slug': '/'.join(buf)})
+        return ret
 
 class Softlink(BaseModel):
     """An organic automatically generated link between pages"""
@@ -331,7 +350,7 @@ class Attachment(BaseModel):
 
     class Meta:  # pylint: disable=missing-docstring,no-init,old-style-class,too-few-public-methods
         indexes = (
-            (('page', 'slug'), True),
+            (('slug','page'), True),
         )
 
 
@@ -380,6 +399,9 @@ MIGRATIONS = (
     lambda m: (
         m.add_column('revision', 'author', Revision.author),
     ),
+    lambda m: (
+        m.drop_index('page', 'page_title'),
+    ),
 )
 
 
@@ -402,7 +424,7 @@ def run_migrations(current_revision):
 
     for migration in MIGRATIONS[current_revision:]:
         with DATABASE.transaction():
-            logging.debug("Applying migration %d", current_revision)
+            logging.info("Applying migration %d", current_revision)
             playhouse.migrate.migrate(*migration(migrator))
             current_revision += 1
 

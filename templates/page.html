@@ -10,8 +10,8 @@
 
 {% if revision.page.slug != settings.INDEX_PAGE or not revision.is_latest %}
 <h1>
-{% for p in revision.page.parent_slugs %}
-<a href="{{url_for('pages.view', slug=p)}}">{{p}}/</a>
+{% for p in revision.page.parent_tree %}
+<a href="{{url_for('pages.view', slug=p.slug)}}">{{p.title}}/</a>
 {% endfor %}
   {{revision.page.title}}
 </h1>
