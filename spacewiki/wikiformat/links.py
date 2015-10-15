@@ -1,5 +1,6 @@
 """Implementation of wiki links in SpaceWiki's wikitext"""
 import re
+import flask
 
 from spacewiki import model
 
@@ -18,9 +19,9 @@ def make_wikilink(match):
         link = groups[0]
     link = model.SlugField.slugify(link)
     if model.Page.select().where(model.Page.slug == link).exists():
-        return "[%s](%s)" % (title, link)
+        return "[%s](%s)" % (title, flask.url_for('pages.view', slug=link))
     else:
-        return "[%s<sup>?</sup>](%s)" % (title, link)
+        return "[%s<sup>?</sup>](%s)" % (title, flask.url_for('pages.view', slug=link))
 
 
 def render(text):
