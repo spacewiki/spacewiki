@@ -1,0 +1,25 @@
+pre code {
+  border: none;
+  background: none;
+  padding: 0.125rem;
+}
+
+pre {
+  border: #dfdfdf;
+  background-color: #f8f8f8;
+  padding: 0;
+}
+
+.page-index {
+  .name h1 {
+    display: none;
+  }
+
+  #content {
+    background: none;
+  }
+}
+
+main #content {
+  padding: 30px;
+}
