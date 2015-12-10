@@ -413,9 +413,9 @@ MIGRATIONS = (
     ),
 )
 
-
 def run_migrations(current_revision):
     """Runs migrations starting at current_revision"""
+    logging.debug("Current database is at version %s", current_revision)
     migrator = playhouse.migrate.SqliteMigrator(DATABASE)
 
     for model in (Page, Revision, Softlink, Attachment, AttachmentRevision):
@@ -424,12 +424,12 @@ def run_migrations(current_revision):
                 model.get(id=0)
             except peewee.OperationalError:
                 logging.debug("Creating table for %s", model.__name__)
-                DATABASE.create_tables([model])
+                try:
+                    DATABASE.create_tables([model])
+                except peewee.OperationalError:
+                    pass
             except model.DoesNotExist:
                 pass
-
-    if current_revision == 0:
-        return len(MIGRATIONS)
 
     for migration in MIGRATIONS[current_revision:]:
         with DATABASE.transaction():
@@ -437,4 +437,5 @@ def run_migrations(current_revision):
             playhouse.migrate.migrate(*migration(migrator))
             current_revision += 1
 
+    logging.debug("Database is now at version %s", current_revision)
     return current_revision
