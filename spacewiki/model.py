@@ -99,8 +99,9 @@ class Page(BaseModel):
                     script_name = req.environ['SCRIPT_NAME']
 
                     last_page_slug = urllib.unquote(
-                        refer_url.path[len(script_name)+1:]
+                        refer_url.path.replace(script_name, '', 1)
                     )
+                    logging.debug("script_name: %s referrer: %s", script_name, last_page_slug)
                     if '/' in last_page_slug:
                         last_page_slug, _ = last_page_slug.split('/', 1)
                     if last_page_slug == "":
@@ -121,6 +122,10 @@ class Page(BaseModel):
 
     def makeSoftlinkFrom(self, prev):
         logging.debug("Linking from %s to %s", prev.slug, self.slug)
+
+        if prev == self:
+            logging.debug("Refusing to link %s to itself", prev.slug)
+            return
 
         try:
             Softlink.get(Softlink.src == prev, Softlink.dest == self)
