@@ -116,6 +116,8 @@ def view(slug=None, revision=None, extension=None, redirectFrom=None,
     if revision is not None:
         if last_page is not None and last_page != revision.page:
             revision.page.makeSoftlinkFrom(last_page)
+        elif last_page is not None:
+            logging.debug("Could not parse referrer: %s", last_page_slug)
 
         if revision.body.startswith("#Redirect"):
             new_slug = revision.body.split(' ', 1)[1]
