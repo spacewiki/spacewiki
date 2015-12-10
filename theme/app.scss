@@ -221,4 +221,23 @@ a.template-edit:hover {
   opacity: 1;
 }
 
+.page-index {
+  .panel-irc {
+    background-color: $primary-color;
+    border-radius: 5px;
+    color: #fff;
+    h1 {
+      color: #fff;
+    }
+    a {
+      color: lighten($primary-color, 35%);
+    }
+  }
+
+  .panel-about {
+    border: 1px solid $primary-color; 
+    border-radius: 5px;
+  }
+}
+
 @import "site";
