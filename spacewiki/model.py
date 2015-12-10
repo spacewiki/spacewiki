@@ -15,6 +15,7 @@ import slugify
 import traceback
 import urlparse
 import urllib
+import hashlib
 
 import spacewiki
 
@@ -77,7 +78,10 @@ class TripcodeField(peewee.CharField):
         tokens = value.split('#', 1)
         if len(tokens) == 1:
             return tokens[0]
-        return tokens[0]+'#'+crypt.crypt(tokens[0], tokens[1])
+        token_hash = hashlib.sha1()
+        token_hash.update(tokens[0])
+        token_hash.update(tokens[1])
+        return tokens[0]+'#'+token_hash.hexdigest()
 
 
 class Page(BaseModel):
