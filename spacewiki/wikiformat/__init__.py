@@ -26,7 +26,7 @@ ATTRIBUTE_WHITELIST = {
 STYLE_WHITELIST = [
     'margin', 'text-align', 'font-weight', 'size', 'color', 'background-color',
     'padding', 'border', 'line-height', 'padding-top', 'float', 'margin-left',
-    'position'
+    'position', 'border-bottom', 'border-top', 'border-left', 'border-right'
 ]
 
 def safetags(text):
