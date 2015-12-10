@@ -63,8 +63,9 @@
         <ul class="softlinks">
         {% for softlink in revision.page.softlinks_out %}
         <li><a href="{{url_for('pages.view', slug=softlink.dest.slug)}}">{{softlink.dest.title}}</a></li>
-        {% else %}
-        <li><em>None yet</em></li>
+        {% endfor %}
+        {% for softlink in revision.page.softlinks_in %}
+        <li><a href="{{url_for('pages.view', slug=softlink.dest.slug)}}">{{softlink.dest.title}}</a></li>
         {% endfor %}
         <br style="clear:both">
         </ul>
