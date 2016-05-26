@@ -51,6 +51,7 @@ class SlugField(peewee.CharField):
 
     @classmethod
     def split_title(cls, title):
+        """Splits apart the parent slug from the title, eg some/parent/Title"""
         parts = unicode(title).split('/')
         slug = cls.slugify('/'.join(parts[0:-1]))
         title = parts[-1]
