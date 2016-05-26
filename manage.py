@@ -23,14 +23,15 @@ def import_docs():
     for root, dirs, files in os.walk(doc_path):
         for fname in files:
             if fname.endswith(".md"):
-                title = 'docs/' + '.'.join(fname.split(".")[0:-1])
+                title = '.'.join(fname.split(".")[0:-1])
+                slug = 'docs/' + title
             else:
                 continue
             logging.info("Importing %s", fname)
             try:
                 p = model.Page.get(slug=title)
             except model.Page.DoesNotExist:
-                p = model.Page.create(title=title, slug=title)
+                p = model.Page.create(title=title, slug=slug)
             p.newRevision(open(fname, 'r').read(), 'Imported from %s' % fname, 'SpaceWiki')
 
 if __name__ == "__main__":
