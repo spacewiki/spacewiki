@@ -14,13 +14,17 @@ BLUEPRINT = Blueprint('pages', __name__)
 @BLUEPRINT.route("/<path:slug>", methods=['POST'])
 def save(slug=None):
     """Save a new Revision, creating a new Page if needed"""
+    slug = request.form['slug']
+    title = request.form['title']
     if slug is None:
         slug = current_app.config['INDEX_PAGE']
     try:
         page = model.Page.get(slug=slug)
         logging.debug("Updating existing page: %s", page.slug)
+        page.title = title
+        page.slug = slug
+        page.save()
     except peewee.DoesNotExist:
-        slug, title = model.SlugField.mangle_full_slug(slug, request.form['title'])
         print "Saving '%s' at '%s'" %(title, slug)
         page = model.Page.create(title=title,
                                  slug=slug)
@@ -47,7 +51,8 @@ def edit(slug, redirectFrom=None, preview=None):
     revision = model.Page.latestRevision(slug)
     if revision is not None:
         return render_template('edit.html',
-                               page=revision.page, revision=revision,
+                               page=revision.page, title=revision.page.title,
+                               revision=revision,
                                slug=revision.page.slug,
                                redirectFrom=redirectFrom)
     else:

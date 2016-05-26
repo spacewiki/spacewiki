@@ -1,14 +1,17 @@
 <form method="post" action="{{url_for('pages.save', slug=slug)}}">
-  {% if title %}
   <div class="row">
     <div class="large-12 columns">
       <label>Title
-        <p><em>Fix any spelling or capitalization errors here before saving</em>
+        <p><em>Fix any spelling or capitalization errors here before
+          saving.</em>Currently: {{title}}
         <input type="text" value="{{title}}" name="title">
+      </label>
+      <label>URL
+        <p><em>Change the URL before saving.</em> Currently: {{slug}}
+        <input type="text" value="{{slug}}" name="slug">
       </label>
     </div>
   </div>
-  {% endif %}
   <div class="row">
     <div class="large-9 columns">
       <label id="editor_toggle">Use ACE editor <input type="checkbox" id="editor_toggle_value"></label>
