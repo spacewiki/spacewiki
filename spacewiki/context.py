@@ -47,3 +47,14 @@ def add_default_author():
     else:
         author = 'Anonymous'
     return dict(DEFAULT_AUTHOR=author)
+
+@BLUEPRINT.app_context_processor
+def add_nav_pages():
+    pages = []
+    nav_page = model.Page.latestRevision('.spacewiki/navigation-list')
+    if nav_page:
+        for link in nav_page.body.split('\n'):
+            pageRev = model.Page.latestRevision(link)
+            if pageRev:
+                pages.append(pageRev.page)
+    return dict(NAVIGATION_PAGES=pages)

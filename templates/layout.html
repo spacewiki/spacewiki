@@ -35,6 +35,9 @@
     {% block toolbar %}
       <ul class="left page-tools">
         <li><a href="{{url_for('specials.allPages')}}"><i class="fa fa-globe"></i> All Pages</a></li>
+        {% for nav in NAVIGATION_PAGES %}
+          <li><a href="{{url_for('pages.view', slug=nav.slug)}}">{{nav.title}}</a></li>
+        {% endfor %}
       </ul>
     {% endblock %}
   </section>
