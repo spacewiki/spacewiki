@@ -52,7 +52,8 @@ def do_template(match, pageSlug, depth):
         replacement = model.Page.latestRevision(slug)
     if replacement is None:
         return "{{[[%s]]}}" % (slug,)
-    return render(replacement.body, pageSlug, depth=depth+1)
+    return '<a class="template-edit" href="'+replacement.page.slug+'">Edit Template</a>'+render(replacement.body, pageSlug,
+            depth=depth+1)
 
 
 def render(s, pageSlug, depth=0):

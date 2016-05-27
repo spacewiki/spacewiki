@@ -202,4 +202,23 @@ img {
   border: 1px solid #aaa;
 }
 
+a.template-edit {
+  font-size: 5pt;
+  position: absolute;
+  top: -5pt;
+  opacity: 0.25;
+}
+
+.x-spacewiki-template {
+  position: relative;
+}
+
+.x-spacewiki-template.callout {
+  background-color: $secondary-color;
+}
+
+a.template-edit:hover {
+  opacity: 1;
+}
+
 @import "site";
