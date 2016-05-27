@@ -1,7 +1,7 @@
 """Routes related to viewing and editing pages"""
 
 from flask import (Blueprint, request, current_app, redirect, url_for,
-                   render_template)
+                   render_template, make_response, send_from_directory)
 import logging
 import peewee
 
@@ -72,11 +72,18 @@ def edit(slug, redirectFrom=None, preview=None):
 
 
 @BLUEPRINT.route("/", methods=['GET'])
+@BLUEPRINT.route("/.<string:extension>", methods=['GET'])
 @BLUEPRINT.route("/<path:slug>", methods=['GET'])
+@BLUEPRINT.route("/<path:slug>.<string:extension>", methods=['GET'])
 @BLUEPRINT.route("/<path:slug>@<revision>", methods=['GET'])
-def view(slug=None, revision=None, redirectFrom=None):
+@BLUEPRINT.route("/<path:slug>@<revision>.<string:extension>", methods=['GET'])
+def view(slug=None, revision=None, extension=None, redirectFrom=None):
     if slug is None:
         slug = current_app.config['INDEX_PAGE']
+
+    if slug.startswith('static/'):
+        static_path = slug[len('static/'):] + '.' + extension
+        return current_app.send_static_file(static_path)
 
     last_page = None
 
@@ -84,6 +91,13 @@ def view(slug=None, revision=None, redirectFrom=None):
         revision = model.Page.latestRevision(slug)
     else:
         revision = model.Revision.get(id=revision)
+    
+    if revision is not None and extension is not None:
+        extension = extension.lower()
+        if extension == "md":
+            return make_response(revision.body, 200, {'Content-type': 'text/plain'})
+        else:
+            raise KeyError
 
     last_page_slug = \
         model.Page.parsePreviousSlugFromRequest(
