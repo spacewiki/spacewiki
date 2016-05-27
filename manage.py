@@ -28,6 +28,9 @@ def import_docs():
             else:
                 continue
             logging.info("Importing %s", fname)
+            if title == 'README':
+                title = 'SpaceWiki Documentation'
+                slug = 'docs'
             try:
                 p = model.Page.get(slug=slug)
             except model.Page.DoesNotExist:
