@@ -174,9 +174,7 @@ class Page(BaseModel):
 
     @property
     def subpages(self):
-        return Page.select() \
-                   .where(Page.slug.startswith(self.slug+'/') & Page.id !=
-                           self.id)
+        return Page.select().where(peewee.SQL('slug LIKE ?', self.slug+'/%'))
 
     @property
     def parent_tree(self):
