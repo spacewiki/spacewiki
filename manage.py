@@ -29,7 +29,7 @@ def import_docs():
                 continue
             logging.info("Importing %s", fname)
             try:
-                p = model.Page.get(slug=title)
+                p = model.Page.get(slug=slug)
             except model.Page.DoesNotExist:
                 p = model.Page.create(title=title, slug=slug)
             p.newRevision(open(fname, 'r').read(), 'Imported from %s' % fname, 'SpaceWiki')
