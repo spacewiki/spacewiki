@@ -35,7 +35,7 @@ def import_docs():
                 p = model.Page.get(slug=slug)
             except model.Page.DoesNotExist:
                 p = model.Page.create(title=title, slug=slug)
-            p.newRevision(open(fname, 'r').read(), 'Imported from %s' % fname, 'SpaceWiki')
+            p.newRevision(open(os.path.sep.join((root, fname)), 'r').read(), 'Imported from %s' % fname, 'SpaceWiki')
 
 if __name__ == "__main__":
     logging.getLogger('peewee').setLevel(logging.INFO)
