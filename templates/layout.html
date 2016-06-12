@@ -64,7 +64,19 @@
   </div>
   </div>
 <main class="row">
-  <div class="small-12 columns" id="content">
+  <div class="small-12 columns content">
+    {% block tools %}
+    <div class="button-bar tools">
+      <ul class="button-group round">
+        {% if page %}
+          <li><a class="small button" href="{{url_for('pages.view', slug=page.slug)}}"><i class="fa fa-eye"></i> View</a></li>
+          <li><a class="small button" href="{{url_for('pages.edit', slug=page.slug)}}"><i class="fa fa-pencil"></i> Edit</a></li>
+          <li><a class="small button" href="{{url_for('uploads.upload', slug=page.slug)}}"><i class="fa fa-paperclip"></i> Attach File</a></li>
+          <li><a class="small button" href="{{url_for('history.history', slug=page.slug)}}"><i class="fa fa-history"></i> History</a></li>
+        {% endif %}
+      </ul>
+    </div>
+    {% endblock %}
     {% block content %}
     {% endblock %}
   </div>
