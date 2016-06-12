@@ -31,7 +31,7 @@
     $('#body').val(editor.getValue());
   }
 
-  $(document).ready(function() {
+  window.require(['ace/ace', 'ace/theme/monokai', 'ace/mode/markdown'], function(ace) {
     if ($('#editor').length > 0) {
       if (typeof(ace) != 'undefined') {
         $('#editor_toggle').show();
