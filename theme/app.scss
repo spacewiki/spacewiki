@@ -349,4 +349,12 @@ p.warning {
   }
 }
 
+.editor-row {
+  .human-marker {
+    width: 4px;
+    height: 1em;
+    z-index: 100;
+  }
+}
+
 @import "site";
