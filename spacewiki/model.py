@@ -373,6 +373,7 @@ class AttachmentRevision(BaseModel):
         indexes = (
             (('attachment', 'sha'), True),
         )
+        order_by = ('-id',)
 
 
 class DatabaseVersion(BaseModel):

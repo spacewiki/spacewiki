@@ -44,3 +44,21 @@ class UploadTestCase(unittest.TestCase):
       resp = self.app.get('/index/file/foo.bar')
       self.assertEqual(resp.status_code, 200)
       self.assertEqual(resp.data, 'FOOBAR')
+
+    def test_upload_upate(self):
+        self.app.post('/index/attach', data={
+          'file': (StringIO('FOOBAR'), 'foo.bar')
+        })
+        self.app.post('/index/attach', data={
+          'file': (StringIO('BARFOO'), 'foo.bar')
+        })
+        sha = hashlib.sha256()
+        sha.update('BARFOO')
+        emptySha = sha.hexdigest()
+        uploadedFile = os.path.join(app.config['UPLOAD_PATH'],
+          model.Attachment.hashPath(emptySha, 'foo.bar'))
+
+        self.assertTrue(os.path.exists(uploadedFile))
+        resp = self.app.get('/index/file/foo.bar')
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.data, 'BARFOO')
