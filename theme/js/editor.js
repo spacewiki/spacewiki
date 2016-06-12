@@ -33,6 +33,9 @@
 
   $(document).ready(function() {
     $(document).foundation();
+  });
+
+  window.require(['ace/ace', 'ace/theme/monokai', 'ace/mode/markdown'], function(ace) {
     if ($('#editor').length > 0) {
       if (typeof(ace) != 'undefined') {
         $('#editor_toggle').show();
