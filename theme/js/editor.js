@@ -17,7 +17,7 @@
   }
 
   function updatePreview() {
-    $.post('/preview', {'body': $('#body').val(), 'slug': 'preview'}).then(function (data) {
+    $.post('/preview', {'body': $('#body').val(), 'slug': $('#slug').val()}).then(function (data) {
       $('.preview').html(data);
     });
   }
