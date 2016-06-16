@@ -6,6 +6,13 @@
     <h1>Editing <em>{{revision.page.title}}</em></h1>
   </div>
 </div>
+{% if collision %}
+<div class="row">
+  <div class="small-12 columns">
+    <p class="warning">{{collision}}</p>
+  </div>
+</div>
+{% endif %}
 <div class="row">
   <div class="small-12 columns">
     {% include "_editor.html" %}

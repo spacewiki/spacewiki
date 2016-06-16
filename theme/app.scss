@@ -240,4 +240,11 @@ a.template-edit:hover {
   }
 }
 
+p.warning {
+  background-color: lighten($warning-color, 35%);
+  border: 1px solid $warning-color;
+  color: #000;
+  padding: 1em;
+}
+
 @import "site";

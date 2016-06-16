@@ -11,18 +11,24 @@ BLUEPRINT = Blueprint('pages', __name__)
 
 
 @BLUEPRINT.route("/", methods=['POST'])
-@BLUEPRINT.route("/<path:slug>", methods=['POST'])
+@BLUEPRINT.route("/<path:slug>/edit", methods=['POST'])
 def save(slug=None):
     """Save a new Revision, creating a new Page if needed"""
-    slug = request.form['slug']
+    newslug = request.form['slug']
     title = request.form['title']
     if slug is None:
         slug = current_app.config['INDEX_PAGE']
     try:
+        oldPage = model.Page.get(slug=newslug)
+        logging.debug("Attempted rename of %s to %s", slug, newslug)
+        return edit(slug, collision="Cannot change URL! Something already exists there.")
+    except peewee.DoesNotExist:
+        pass
+    try:
         page = model.Page.get(slug=slug)
         logging.debug("Updating existing page: %s", page.slug)
         page.title = title
-        page.slug = slug
+        page.slug = newslug
         page.save()
     except peewee.DoesNotExist:
         print "Saving '%s' at '%s'" %(title, slug)
@@ -46,7 +52,7 @@ def preview():
 
 
 @BLUEPRINT.route("/<path:slug>/edit", methods=['GET'])
-def edit(slug, redirectFrom=None, preview=None):
+def edit(slug, redirectFrom=None, preview=None, collision=None):
     """Show the editing form for a page"""
     revision = model.Page.latestRevision(slug)
     if revision is not None:
@@ -54,7 +60,8 @@ def edit(slug, redirectFrom=None, preview=None):
                                page=revision.page, title=revision.page.title,
                                revision=revision,
                                slug=revision.page.slug,
-                               redirectFrom=redirectFrom)
+                               redirectFrom=redirectFrom,
+                               collision=collision)
     else:
         page = None
 
