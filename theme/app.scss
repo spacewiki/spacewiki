@@ -255,4 +255,11 @@ a.template-edit:hover {
   opacity: 1;
 }
 
+p.warning {
+  background-color: lighten($warning-color, 35%);
+  border: 1px solid $warning-color;
+  color: #000;
+  padding: 1em;
+}
+
 @import "site";
