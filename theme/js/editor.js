@@ -1,6 +1,8 @@
 (function() {
   var editor;
 
+  $(document).ready(function() {$(document).foundation();});
+
   function useACE(yes) {
     console.log("ACE: %s", yes);
     if (yes) {
@@ -58,5 +60,14 @@
       $('#body').change(updatePreview);
       updatePreview();
     }
+  });
+
+  $('#title-edit').change(function() {
+    $('a[data-dropdown=\'title-drop\']').addClass('active');
+    $('#title-label').text($('#title-edit').val());
+  });
+  $('#slug').change(function() {
+    $('a[data-dropdown=\'slug-drop\']').addClass('active');
+    $('#slug-label').text($('#slug').val());
   });
 })();

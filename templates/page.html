@@ -32,7 +32,6 @@
   {{revision.page.title}}
 </h1>
 {% endif %}
-
 {% if redirectFrom and not missingIndex %}
 <p class="label radius info">Redirected from <a
     href="{{url_for('pages.edit', slug=redirectFrom)}}">{{redirectFrom}}</a>
@@ -75,7 +74,7 @@
   <div class="small-8 columns">
 <p>{{revision.html | safe}}
   </div>
-  <div class="small-4 columns">
+  <div class="small-4 columns sidebar">
     <div class="row">
 
         <h2>Pages under {{revision.page.slug}}/</h2>
