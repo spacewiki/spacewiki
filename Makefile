@@ -3,6 +3,9 @@ CSS 		:= theme/app.scss
 IMAGES 	:= $(wildcard theme/img/*)
 
 SCRIPTS := theme/js/lib/jquery.js \
+					 theme/lib/foundation/js/foundation/foundation.js \
+					 theme/lib/foundation/js/foundation/foundation.tab.js \
+					 theme/lib/foundation/js/foundation/foundation.dropdown.js \
 					 $(wildcard theme/js/lib/*.js) \
 					 $(wildcard theme/js/lib/ace/*.js) \
 					 $(wildcard theme/js/*.js)

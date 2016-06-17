@@ -1,22 +1,53 @@
 <form method="post" action="{{url_for('pages.save', slug=slug)}}">
-  <div class="row">
-    <div class="large-12 columns">
-      <label>Title
-        <p><em>Fix any spelling or capitalization errors here before
-          saving.</em>Currently: {{title}}
-        <input type="text" value="{{title}}" name="title">
-      </label>
-      <label>URL
-        <p><em>Change the URL before saving.</em> Currently: {{slug}}
-        <input type="text" value="{{slug}}" name="slug" id="slug">
-      </label>
-    </div>
-  </div>
   <div class="editor-row">
-      <label id="editor_toggle">Use ACE editor <input type="checkbox" id="editor_toggle_value"></label>
-      <textarea name="body" id="body">{% if revision %}{{revision.body}}{% endif %}</textarea>
-      <div id="editor"></div>
+      <ul class="tabs" data-tab>
+        <li class="tab-title active"><a href="#editor-tab">Editor</a></li>
+        <li class="tab-title"><a href="#preview-tab">Preview</a></li>
+      </ul>
+      <div class="tabs-content">
+        <div class="content active" id="editor-tab">
+          <dl class="sub-nav">
+            <dt>Title:</dt>
+            <dd><a data-dropdown="title-drop" class="editor-button"><i class="fa
+            fa-pencil"></i> <span
+                                              id="title-label">{{title}}</span></a></dd>
+            <dt>URL:</dt>
+            <dd><a data-dropdown="slug-drop" class="editor-button"><i class="fa
+            fa-pencil"></i> <span
+                                             id="slug-label">{{slug}}</span></a></dd>
+            <dt>Nym:</dt>
+            <dd><a data-dropdown="nym-drop" class="editor-button"><i class="fa
+            fa-pencil"></i> <span id="nym-label">{{DEFAULT_AUTHOR}}</span></a></dd>
+            <dt><label id="editor_toggle">Use rich text editor <input
+                       type="checkbox" id="editor_toggle_value"></label></dt>
+          </dl>
+          <div id="title-drop" data-dropdown-content class="f-dropdown content">
+            <label>Title
+              <p><em>Fix any spelling or capitalization errors here before
+                saving.</em>Currently: {{title}}
+              <input type="text" value="{{title}}" name="title" id='title-edit'>
+            </label>
+          </div>
+          <div id="slug-drop" data-dropdown-content class="f-dropdown content">
+            <label>URL
+              <p><em>Change the URL before saving.</em> Currently: {{slug}}
+              <input type="text" value="{{slug}}" name="slug" id="slug">
+            </label>
+          </div>
+          <div id="nym-drop" data-dropdown-content class="f-dropdown content">
+            <label>Nym: <input type="text" name="author" value="{{DEFAULT_AUTHOR}}"></label>
+          </div>
+          <label id="editor_toggle">Use rich text editor <input type="checkbox" id="editor_toggle_value"></label>
+          <textarea name="body" id="body">{% if revision %}{{revision.body}}{% endif %}</textarea>
+          <div id="editor"></div>
+        </div>
+        <div class="content" id="preview-tab">
+          <div class="preview"></div>
+        </div>
+      </div>
   </div>
+<div class="row">
+  <div class="small-12 columns">
   <div class="attachment-bar">
     <h3>Attachments</h3>
     <ul class="attachment-list">
@@ -34,17 +65,8 @@
   <div class="row">
     <div class="large-12 columns">
       <label>Commit message:<input type="text" name="message"></label>
-      <label>Nym: <input type="text" name="author" value="{{DEFAULT_AUTHOR}}"></label>
       <button type="submit">Save</button>
     </div>
   </div>
-  <div class="row">
-    <div class="large-12 columns">
-      <h2>Live Preview</h2>
-    </div>
-  </div>
-  <div class="row">
-    <div class="large-12 columns preview">
-    </div>
-  </div>
+</div>
 </form>

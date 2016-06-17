@@ -128,14 +128,46 @@ body {
   background-color: $secondary-color;
 }
 
-header {
-  background-color: $secondary-color;
-}
-
 main {
   .content {
     background-color: #fff;
   }
+}
+
+body.page-index main {
+  .content {
+    background-color: transparent;
+  }
+  .page-title {
+    background-color: transparent;
+    border: none;
+  }
+}
+
+.page-title {
+  border-bottom: 2px solid darken($secondary-color, 35%);
+  background-color: darken($secondary-color, 10%);
+}
+
+.editor-button {
+  @include button(
+  rem-calc(8),
+  $secondary-color
+  );
+  color: #000;
+  margin-bottom: 0;
+}
+
+.editor-button.active {
+  background-color: $primary-color;
+  color: #fff;
+}
+
+.tool-button {
+  @include button(
+  rem-calc(8)
+  );
+  border-left: 1px solid lighten($primary-color, 25%);
 }
 
 .tools {
@@ -245,6 +277,35 @@ p.warning {
   border: 1px solid $warning-color;
   color: #000;
   padding: 1em;
+}
+
+.tab-title {
+  border-top: 1px solid black;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+}
+
+.tab-title.active {
+  border-top: 2px solid black;
+}
+
+.editor-row {
+  margin-left: -12.5px;
+  margin-right: -12.5px;
+
+  .tabs {
+    padding-left: 2em;
+    margin-top: 1em;
+    border-bottom: 1px solid #ddd;
+  }
+
+  #editor_toggle {
+    padding-left: 2em;
+  }
+}
+
+.sub-nav {
+  margin-bottom: 0;
 }
 
 @import "site";
