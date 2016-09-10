@@ -12,8 +12,14 @@ from spacewiki.app import APP
 
 MANAGER = Manager(APP)
 MANAGER.add_command('db', model.MANAGER)
-MANAGER.add_command('runserver', Server())
 MANAGER.add_command("shell", Shell())
+
+@MANAGER.command
+def runserver():
+    from spacewiki.app import APP
+    from gevent.wsgi import WSGIServer
+    serv = WSGIServer(('', 5000), APP, log=logging.getLogger("http"))
+    serv.serve_forever()
 
 @MANAGER.command
 def import_docs():
