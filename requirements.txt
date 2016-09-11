@@ -15,3 +15,4 @@ pillow
 slugify==0.0.1
 flask-script==2.0.5
 Beaker==1.7.0
+psycopg2
