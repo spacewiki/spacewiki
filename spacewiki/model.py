@@ -380,55 +380,42 @@ def syncdb():
     logging.info("Creating tables...")
     with current_app.app_context():
         get_db()
-        try:
-            DatabaseVersion.select().execute()
-        except peewee.OperationalError:
-            logging.info("Creating initial database version table")
-            DATABASE.create_tables([DatabaseVersion])
+        logging.info("Creating tables")
+        DATABASE.create_tables([Page, Revision, Softlink, Attachment,
+            AttachmentRevision, DatabaseVersion], True)
+
         try:
             version = DatabaseVersion.select()[0]
-            logging.info("Current database is currently at version %s",
-                          version.schema_version)
         except IndexError:
-            logging.debug("Creating initial schema version of 0")
+            logging.debug("Creating initial schema")
             version = DatabaseVersion.create(schema_version=0)
-        while version.schema_version != len(MIGRATIONS):
-            version.schema_version = run_migrations(version.schema_version)
+
+        if version.schema_version == 0:
+            version.schema_version = len(MIGRATIONS)
+        else:
+            logging.debug("Database schema is at version %s",
+                    version.schema_version)
+            try:
+                while version.schema_version < len(MIGRATIONS):
+                        run_migrations(version.schema_version)
+                        version.schema_version += 1
+            except:
+                logging.exception("Could not update database schema to version %s! Fix any errors and re-run syncdb again.", version.schema_version + 1)
+        logging.debug("Database schema is now at version %s",
+                version.schema_version)
         version.save()
     logging.info("OK!")
 
 MIGRATIONS = (
-    lambda m: (
-        m.add_column('revision', 'author', Revision.author),
-    ),
-    lambda m: (
-        m.drop_index('page', 'page_title'),
-    ),
 )
 
 def run_migrations(current_revision):
     """Runs migrations starting at current_revision"""
     migrator = playhouse.migrate.SqliteMigrator(DATABASE)
 
-    for model in (Page, Revision, Softlink, Attachment, AttachmentRevision):
-        with DATABASE.transaction():
-            try:
-                model.get(id=0)
-            except peewee.OperationalError:
-                logging.debug("Creating table for %s", model.__name__)
-                DATABASE.create_tables([model])
-            except model.DoesNotExist:
-                pass
-
-    if current_revision == 0:
-        return len(MIGRATIONS)
-
     for migration in MIGRATIONS[current_revision:]:
         with DATABASE.transaction():
             logging.info("Applying migration %d", current_revision)
             playhouse.migrate.migrate(*migration(migrator))
-            current_revision += 1
 
     logging.info("Upgraded to schema %s", current_revision)
-
-    return current_revision
