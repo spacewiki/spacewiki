@@ -19,7 +19,9 @@ RUN pip install -r /srv/spacewiki/app/requirements.txt && \
 ADD . /srv/spacewiki/app
 
 ADD docker_settings.py /srv/spacewiki/app/local_settings.py
+ADD /docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
 
 RUN make static
 
-CMD ["make", "docker_server"]
+ENTRYPOINT ["/docker-entrypoint.sh"]
