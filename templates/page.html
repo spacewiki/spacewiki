@@ -6,8 +6,7 @@
 
 {% block bodyclass %}page-{{revision.page.slug}}{% endblock %}
 
-{% block content %}
-
+{% block content_title %}
 {% if revision.page.slug != settings.INDEX_PAGE or not revision.is_latest %}
 <h1>
 {% for p in revision.page.parent_tree %}
@@ -21,6 +20,9 @@
 <p><small>Redirected from <a
     href="{{url_for('pages.edit', slug=redirectFrom)}}">{{redirectFrom}}</a></small>
 {% endif %}
+{% endblock %}
+
+{% block content %}
 
 {% if not revision.is_latest %}
 <ul class="pagination">

@@ -7,7 +7,8 @@
   </title>
 </head>
 <body class="{% block bodyclass %}{% endblock %}">
-<header class="top-bar">
+  <div class="sticky">
+<header data-topbar class="top-bar">
   <ul class="title-area">
     <li class="name">
       <a href="{{url_for('pages.view')}}">
@@ -22,10 +23,10 @@
       <li class="has-form">
         <form method="get" action="{{url_for('specials.search')}}">
           <div class="row collapse postfix-round">
-            <div class="small-9 columns">
+            <div class="large-8 small-9 columns">
               <input type="text" name="q" placeholder="{% if random_page %}{{random_page.title}}{% endif %}">
             </div>
-            <div class="small-3 columns">
+            <div class="large-4 small-3 columns">
               <button type="submit" class="button postfix"><i class="fa fa-search"></i> Search</button>
             </div>
           </div>
@@ -43,20 +44,27 @@
   </section>
 </header>
 {% block canvas %}
+<div data-topbar class="row content-title">
+{% block tools %}
+<div class="button-bar tools">
+  <ul class="button-group round">
+    {% if page %}
+      <li><a class="small button" href="{{url_for('pages.view', slug=page.slug)}}"><i class="fa fa-eye"></i> View</a></li>
+      <li><a class="small button" href="{{url_for('pages.edit', slug=page.slug)}}"><i class="fa fa-pencil"></i> Edit</a></li>
+      <li><a class="small button" href="{{url_for('uploads.upload', slug=page.slug)}}"><i class="fa fa-paperclip"></i> Attach File</a></li>
+      <li><a class="small button" href="{{url_for('history.history', slug=page.slug)}}"><i class="fa fa-history"></i> History</a></li>
+    {% endif %}
+  </ul>
+</div>
+{% block content_title %}
+{% endblock %}
+</div>
+</div>
+{% endblock %}
+  </div>
+  </div>
 <main class="row">
   <div class="small-12 columns" id="content">
-    {% block tools %}
-    <div class="button-bar tools">
-      <ul class="button-group round">
-        {% if page %}
-          <li><a class="small button" href="{{url_for('pages.view', slug=page.slug)}}"><i class="fa fa-eye"></i> View</a></li>
-          <li><a class="small button" href="{{url_for('pages.edit', slug=page.slug)}}"><i class="fa fa-pencil"></i> Edit</a></li>
-          <li><a class="small button" href="{{url_for('uploads.upload', slug=page.slug)}}"><i class="fa fa-paperclip"></i> Attach File</a></li>
-          <li><a class="small button" href="{{url_for('history.history', slug=page.slug)}}"><i class="fa fa-history"></i> History</a></li>
-        {% endif %}
-      </ul>
-    </div>
-    {% endblock %}
     {% block content %}
     {% endblock %}
   </div>

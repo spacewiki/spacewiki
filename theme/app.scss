@@ -1,15 +1,16 @@
-$logo-bg-color: #fff;
+@import "settings";
+
 $logo-image: url(../logo.png);
 $logo-width: 150;
 $logo-height: 150;
-
-@import "settings";
 
 @import "site-settings";
 
 @import "foundation";
 
 @import "lightbox";
+
+$logo-bg-color: $secondary-color;
 
 body {
   background: url(../img/noise.png);
@@ -77,6 +78,9 @@ textarea {
   h1 {
     border-bottom: 1px solid black;
   }
+  a {
+    text-decoration: underline;
+  }
 }
 
 ul.softlinks {
@@ -143,6 +147,27 @@ main {
   padding-top: 1em;
 }
 
+.content-title {
+  border-bottom: 2px solid $primary-color;
+  background-color: $secondary-color;
+  padding-left: $logo-width + 10px;
+}
+
+.fixed {
+  .content-title {
+  padding-left: ($logo-width / 2) + 10px;
+    h1 {
+      font-size: x-large;
+    }
+  }
+
+  .top-bar .title-area h1 {
+    width: ($logo-height / 2) + 5px;
+    height: ($logo-width / 2) + 5px;
+    background-size: ($logo-height / 2) + 0px ($logo-width / 2) + 0px;
+  }
+}
+
 .top-bar {
 
   .title-area {
@@ -151,12 +176,13 @@ main {
     h1 {
       height: $logo-height + 5px;
       width: $logo-width + 5px;
-      background-size: $logo-height $logo-width;
+      background-size: $logo-height + 0px $logo-width + 0px;
       background-repeat: no-repeat;
       background-position: center center;
       color: transparent;
       background-image: $logo-image;
       background-color: $logo-bg-color;
+      float: left;
     }
 
     h1:hover {
