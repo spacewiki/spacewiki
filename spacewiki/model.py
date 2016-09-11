@@ -26,6 +26,7 @@ def get_db():
     """Sets up the database"""
     db = getattr(g, '_database', None)
     if db is None:
+        logging.info("Using database at %s", current_app.config['DATABASE'])
         g._database = db = connect(current_app.config['DATABASE'])
     DATABASE.initialize(db)
 
@@ -382,16 +383,17 @@ def syncdb():
         try:
             DatabaseVersion.select().execute()
         except peewee.OperationalError:
-            logging.debug("Creating initial database version table")
+            logging.info("Creating initial database version table")
             DATABASE.create_tables([DatabaseVersion])
         try:
             version = DatabaseVersion.select()[0]
-            logging.debug("Current database is at version %s",
+            logging.info("Current database is currently at version %s",
                           version.schema_version)
         except IndexError:
             logging.debug("Creating initial schema version of 0")
             version = DatabaseVersion.create(schema_version=0)
-        version.schema_version = run_migrations(version.schema_version)
+        while version.schema_version != len(MIGRATIONS):
+            version.schema_version = run_migrations(version.schema_version)
         version.save()
     logging.info("OK!")
 
@@ -403,7 +405,6 @@ MIGRATIONS = (
         m.drop_index('page', 'page_title'),
     ),
 )
-
 
 def run_migrations(current_revision):
     """Runs migrations starting at current_revision"""
@@ -427,5 +428,7 @@ def run_migrations(current_revision):
             logging.info("Applying migration %d", current_revision)
             playhouse.migrate.migrate(*migration(migrator))
             current_revision += 1
+
+    logging.info("Upgraded to schema %s", current_revision)
 
     return current_revision
