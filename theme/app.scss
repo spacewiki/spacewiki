@@ -155,7 +155,7 @@ main {
 
 .fixed {
   .content-title {
-  padding-left: ($logo-width / 2) + 10px;
+    padding-left: ($logo-width / 2) + 10px;
     h1 {
       font-size: x-large;
     }
@@ -166,6 +166,11 @@ main {
     height: ($logo-width / 2) + 5px;
     background-size: ($logo-height / 2) + 0px ($logo-width / 2) + 0px;
   }
+}
+
+.content-title h1 {
+  transition: font-size 0.25s;
+  -webkit-transition: font-size 0.25s;
 }
 
 .top-bar {
@@ -183,6 +188,8 @@ main {
       background-image: $logo-image;
       background-color: $logo-bg-color;
       float: left;
+      transition: width 0.25s, height 0.25s, background-size 0.25s;
+      -webkit-transition: width 0.25s, height 0.25s, background-size 0.25s;
     }
 
     h1:hover {
