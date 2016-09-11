@@ -5,6 +5,8 @@ IMAGES 	:= $(wildcard theme/img/*)
 SCRIPTS := theme/js/lib/jquery.js \
 					 $(wildcard theme/js/*.js) \
 					 $(wildcard theme/js/lib/*.js) \
+					 $(wildcard theme/lib/foundation/js/foundation/foundation.js) \
+					 $(wildcard theme/lib/foundation/js/foundation/*.js) \
 					 $(wildcard theme/js/lib/ace/*.js)
 
 SCRIPTS_OUT	:= static/lib/app.min.js

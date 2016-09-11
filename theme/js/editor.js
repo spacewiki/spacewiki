@@ -32,6 +32,7 @@
   }
 
   $(document).ready(function() {
+    $(document).foundation();
     if ($('#editor').length > 0) {
       if (typeof(ace) != 'undefined') {
         $('#editor_toggle').show();
