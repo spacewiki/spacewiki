@@ -16,10 +16,19 @@
 </h1>
 {% endif %}
 
-{% if redirectFrom %}
-<p><small>Redirected from <a
-    href="{{url_for('pages.edit', slug=redirectFrom)}}">{{redirectFrom}}</a></small>
+{% if redirectFrom and not missingIndex %}
+<p class="label radius info">Redirected from <a
+    href="{{url_for('pages.edit', slug=redirectFrom)}}">{{redirectFrom}}</a>
 {% endif %}
+{% if missingIndex %}
+<p>
+<div class="alert-box radius">
+  <p><em>Welcome to SpaceWiki!</em> You have not yet created this wiki's index
+  page, and are viewing  the included documentation. Create your index page at
+  <a href="{{url_for('pages.edit', slug=settings.INDEX_PAGE)}}">{{settings.INDEX_PAGE}}</a> to get started.
+</div>
+{% endif %}
+
 {% endblock %}
 
 {% block content %}

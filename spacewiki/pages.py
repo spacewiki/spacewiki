@@ -77,7 +77,9 @@ def edit(slug, redirectFrom=None, preview=None):
 @BLUEPRINT.route("/<path:slug>.<string:extension>", methods=['GET'])
 @BLUEPRINT.route("/<path:slug>@<revision>", methods=['GET'])
 @BLUEPRINT.route("/<path:slug>@<revision>.<string:extension>", methods=['GET'])
-def view(slug=None, revision=None, extension=None, redirectFrom=None):
+def view(slug=None, revision=None, extension=None, redirectFrom=None,
+        missingIndex=False):
+
     if slug is None:
         slug = current_app.config['INDEX_PAGE']
 
@@ -123,6 +125,10 @@ def view(slug=None, revision=None, extension=None, redirectFrom=None):
 
         return render_template('page.html',
                                revision=revision, page=revision.page,
-                               redirectFrom=redirectFrom)
+                               redirectFrom=redirectFrom,
+                               missingIndex=missingIndex)
     else:
-        return edit(slug, redirectFrom=redirectFrom)
+        if slug == current_app.config['INDEX_PAGE']:
+            return view(slug='docs', redirectFrom=slug, missingIndex=True)
+        else:
+            return edit(slug, redirectFrom=redirectFrom)
