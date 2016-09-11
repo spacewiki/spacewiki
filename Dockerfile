@@ -1,19 +1,25 @@
-FROM fedora:22
+FROM fedora:24
 
 EXPOSE 5000
-WORKDIR /srv/spacewiki/
+WORKDIR /srv/spacewiki/app/
+VOLUME /srv/spacewiki/shared
 
-RUN dnf -y update && \
-    dnf install -y gcc git python-devel gifsicle ruby rubygem-sass uglify-js pngcrush make && \
-    mkdir -p /srv/spacewiki/ && \
+RUN mkdir -p /srv/spacewiki/
+
+RUN dnf -y update
+
+RUN dnf install -y git python-devel gifsicle ruby rubygem-sass uglify-js \
+        pngcrush make python-pillow && \
     dnf clean all
 
-COPY requirements.txt /srv/spacewiki/requirements.txt
-RUN pip install -r /srv/spacewiki/requirements.txt && \
+COPY requirements.txt /srv/spacewiki/app/requirements.txt
+RUN pip install -r /srv/spacewiki/app/requirements.txt && \
     rm -rf /root/.cache
 
-ADD . /srv/spacewiki/
+ADD . /srv/spacewiki/app
+
+ADD docker_settings.py /srv/spacewiki/app/local_settings.py
 
 RUN make static
 
-CMD ["/srv/spacewiki/manage.py", "runserver", "-h", "0.0.0.0"]
+CMD ["make", "docker_server"]

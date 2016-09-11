@@ -67,3 +67,7 @@ static/lib/%.css: theme/%.scss static/lib theme/lib/foundation
 	sass --scss -I theme/lib/foundation/scss/ $< $@
 
 theme/lib/foundation: submodules
+
+docker_server: static syncdb
+	./manage.py import_docs
+	exec ./manage.py runserver -h 0.0.0.0
