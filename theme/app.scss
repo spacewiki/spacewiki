@@ -151,6 +151,11 @@ main {
   border-bottom: 2px solid $primary-color;
   background-color: $secondary-color;
   padding-left: $logo-width + 10px;
+  transition: border 0.25s;
+  h1 {
+    transition: font-size 0.25s;
+    -webkit-transition: font-size 0.25s;
+  }
 }
 
 .fixed {
@@ -159,6 +164,7 @@ main {
     h1 {
       font-size: x-large;
     }
+    border-bottom: 1px solid $primary-color;
   }
 
   .top-bar .title-area h1 {
@@ -166,11 +172,6 @@ main {
     height: ($logo-width / 2) + 5px;
     background-size: ($logo-height / 2) + 0px ($logo-width / 2) + 0px;
   }
-}
-
-.content-title h1 {
-  transition: font-size 0.25s;
-  -webkit-transition: font-size 0.25s;
 }
 
 .top-bar {
