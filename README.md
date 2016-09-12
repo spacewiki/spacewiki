@@ -1,5 +1,7 @@
 # SpaceWiki
 
+[![Build Status](https://travis-ci.org/tdfischer/spacewiki.svg?branch=master)](https://travis-ci.org/tdfischer/spacewiki)
+
 All wiki software sucks. SpaceWiki sucks less than most.
 
 I've been involved with building hackerspaces for the last ~5 years or so. Every
