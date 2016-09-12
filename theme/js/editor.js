@@ -1,23 +1,99 @@
 (function() {
-  var editor;
-  var editor_stream;
-  var editor_key = Math.random();
 
-  $(document).ready(function() {$(document).foundation();});
+  var EditSession = function(nacl, editor) {
+      this.nacl = nacl
+      this.markers = {};
+      this.editor = editor;
 
-  function useACE(yes) {
-    console.log("ACE: %s", yes);
-    if (yes) {
-      $('#body').hide();
-      $('#editor').show();
-      $('#editor_toggle_value')[0].checked = true;
-      $.cookie('use-ace', true);
-    } else {
-      $('#body').show();
-      $('#editor').hide();
-      $('#editor_toggle_value')[0].checked = false;
-      $.cookie('use-ace', false);
-    }
+      this._eventLock = false;
+
+      this.keys = this.nacl.crypto_sign_keypair();
+      this.hexPubKey = this.nacl.to_hex(this.keys.signPk);
+
+      this.stream = io.connect('http://'+document.domain+':'+location.port+'/editor');
+
+      this.stream.on('text_delta', this.handleDelta.bind(this));
+      this.stream.on('cursor', this.handleCursor.bind(this));
+
+      var doc = this.editor.getSession().getDocument();
+      doc.on('change', this.broadcastChange.bind(this));
+      doc.on('change', this.syncToBody.bind(this));
+
+      var selection = this.editor.getSelection();
+      selection.on('changeCursor', this.broadcastCursorEvent.bind(this));
+
+      this.syncFromBody();
+  }
+
+  EditSession.prototype.verifyEvent = function(evt) {
+      var pubkey = this.nacl.from_hex(evt.key);
+      var verified = this.nacl.decode_utf8(this.nacl.crypto_sign_open(this.nacl.from_hex(evt.payload), pubkey));
+      if (!verified) {
+          console.log("Could not verify event from", evt.key, evt.payload);
+          return false;
+      }
+      return JSON.parse(verified);
+  }
+
+  EditSession.prototype.sendEvent = function(evtType, payload) {
+    var encoded = this.nacl.encode_utf8(JSON.stringify(payload));
+    var signed = this.nacl.crypto_sign(encoded, this.keys.signSk);
+    var bundle = {
+        payload: this.nacl.to_hex(signed),
+        key: this.hexPubKey
+    };
+    this.stream.emit(evtType, bundle);
+  }
+
+  EditSession.prototype.broadcastCursorEvent = function(evt) {
+      var cursor = this.editor.getSelection().getCursor();
+      this.sendEvent('cursor', {row: cursor.row, column:cursor.column});
+  }
+
+  EditSession.prototype.broadcastChange = function(delta) {
+      if (this._eventLock)
+          return;
+      this.sendEvent('text_delta', {delta: delta.data});
+  }
+
+  EditSession.prototype.handleDelta = function(message) {
+      var parsed = this.verifyEvent(message);
+      if (!parsed) {
+          return;
+      }
+      if (message.key != this.hexPubKey) {
+          this._eventLock = true;
+          this.editor.getSession().getDocument().applyDeltas([parsed.delta]);
+          this._eventLock = false;
+          console.log(parsed.delta);
+      }
+  }
+
+  EditSession.prototype.handleCursor = function(message) {
+      var parsed = this.verifyEvent(message);
+      if (!parsed) {
+          return;
+      }
+      if (message.key != this.hexPubKey) {
+          pos = this.editor.renderer.textToScreenCoordinates(parsed.row, parsed.column);
+          if (!this.markers.hasOwnProperty(message.key)) {
+              var marker = document.createElement("div");
+              marker.setAttribute('class', 'human-marker');
+              var randomColor = Math.floor(Math.random()*16777215).toString(16);
+              marker.setAttribute('style', 'background-color:#'+randomColor);
+              $('.editor-row').prepend(marker);
+              this.markers[message.key] = marker;
+          }
+          $(this.markers[message.key]).offset({left:pos.pageX, top:pos.pageY + $(document).scrollTop()});
+      }
+  }
+
+  EditSession.prototype.syncFromBody = function() {
+      this.editor.getSession().getDocument().setValue($('#body').val());
+  }
+
+  EditSession.prototype.syncToBody = function() {
+      $('#body').val(this.editor.getValue());
   }
 
   function updatePreview() {
@@ -26,97 +102,29 @@
     });
   }
 
-  function syncBodyToEditor() {
-    if (editor)
-      editor.getSession().getDocument().setValue($('#body').val());
-  }
-
-  function syncEditorToBody() {
-    $('#body').val(editor.getValue());
-  }
-
   $(document).ready(function() {
     $(document).foundation();
   });
 
-  var _eventLock = true;
-
-  function broadcastChange(delta) {
-    if (_eventLock)
-      return;
-    var signature = Math.random();
-    editor_stream.emit('message', 'foo');
-    editor_stream.emit('text_delta', {delta: delta.data, key: editor_key, signature: signature});
-    console.log('send delta', delta);
-  }
-
-  function broadcastCursorEvent(evt) {
-    var cursor = editor.getSelection().getCursor();
-    editor_stream.emit('message', 'foo');
-    editor_stream.emit('cursor', {key: editor_key, row: cursor.row, column:cursor.column});
-    console.log('send cursor', evt);
-  }
-
-  function handleDeltaEvent(message) {
-    if (message.key != editor_key) {
-      _eventLock = true;
-      editor.getSession().getDocument().applyDeltas([message.delta]);
-      _eventLock = false;
-      console.log(message.delta);
-    }
-  }
-
-  function handleCursorEvent(message) {
-    if (message.key != editor_key) {
-      pos = editor.renderer.textToScreenCoordinates(message.row, message.column);
-      if (!markers.hasOwnProperty(message.key)) {
-        var marker = document.createElement("div");
-        marker.setAttribute('class', 'human-marker');
-        var randomColor = Math.floor(Math.random()*16777215).toString(16);
-        marker.setAttribute('style', 'background-color:#'+randomColor);
-        $('.editor-row').prepend(marker);
-        markers[message.key] = marker;
-      }
-      $(markers[message.key]).offset({left:pos.pageX, top:pos.pageY + $(document).scrollTop()});
-    }
-  }
-
-  var markers = {};
+  var session;
 
   window.require(['ace/ace', 'ace/theme/monokai', 'ace/mode/markdown'], function(ace) {
     if ($('#editor').length > 0) {
-      if (typeof(ace) != 'undefined') {
-        $('#editor_toggle').show();
-        editor = ace.edit("editor");
+        var editor = ace.edit("editor");
 
-        editor_stream = io.connect('http://'+document.domain+':'+location.port+'/editor');
-        editor_stream.on('text_delta', handleDeltaEvent);
-        editor_stream.on('cursor', handleCursorEvent);
+        nacl_factory.instantiate(function(nacl) {
+            session = new EditSession(nacl, editor);
+        });
+
         editor.setTheme("ace/theme/monokai");
         editor.getSession().setMode("ace/mode/markdown");
-        editor.getSession().getDocument().on('change', broadcastChange);
-        editor.getSession().getDocument().on('change', syncEditorToBody);
-        editor.getSelection().on('changeCursor', broadcastCursorEvent);
         editor.getSession().setUseWrapMode(true);
-        $('#body').change(syncBodyToEditor);
-        $.cookie.json = true;
-        if ($.cookie('use-ace')) {
-          useACE(true);
-        } else {
-          useACE(false);
-        }
-      } else {
-        console.log('No ace found');
-      }
-      syncBodyToEditor();
-      _eventLock = false;
-      $('#editor_toggle_value').change(function() {
-        useACE($('#editor_toggle_value')[0].checked);
-      });
-      $('#body').change(updatePreview);
-      updatePreview();
-    } else {
-      console.log('No editor found');
+
+        $('.editor-row .tabs').on('toggled', function(event, tab) {
+            if (tab.innerText == "Preview") {
+                updatePreview();
+            }
+        });
     }
   });
 

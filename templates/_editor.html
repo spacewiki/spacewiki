@@ -18,8 +18,6 @@
             <dt>Nym:</dt>
             <dd><a data-dropdown="nym-drop" class="editor-button"><i class="fa
             fa-pencil"></i> <span id="nym-label">{{DEFAULT_AUTHOR}}</span></a></dd>
-            <dt><label id="editor_toggle">Use rich text editor <input
-                       type="checkbox" id="editor_toggle_value"></label></dt>
           </dl>
           <div id="title-drop" data-dropdown-content class="f-dropdown content">
             <label>Title
@@ -37,7 +35,6 @@
           <div id="nym-drop" data-dropdown-content class="f-dropdown content">
             <label>Nym: <input type="text" name="author" value="{{DEFAULT_AUTHOR}}"></label>
           </div>
-          <label id="editor_toggle">Use rich text editor <input type="checkbox" id="editor_toggle_value"></label>
           <textarea name="body" id="body">{% if revision %}{{revision.body}}{% endif %}</textarea>
           <div id="editor"></div>
         </div>

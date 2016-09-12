@@ -63,15 +63,14 @@ textarea {
   position: relative;
   height: 45em;
   width: 100%;
+}
+
+#body {
   display: none;
 }
 
 .attachment-list {
   list-style: none;
-}
-
-#editor_toggle {
-  display: none;
 }
 
 #content {
@@ -326,10 +325,6 @@ p.warning {
     padding-left: 2em;
     margin-top: 1em;
     border-bottom: 1px solid #ddd;
-  }
-
-  #editor_toggle {
-    padding-left: 2em;
   }
 }
 
