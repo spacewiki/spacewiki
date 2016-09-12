@@ -167,6 +167,16 @@ body.page-index main {
   color: #fff;
 }
 
+.welcome-box {
+  @include panel(
+    $bg:$primary-color
+  );
+  margin: 1em;
+  a {
+    color: #fff;
+  }
+}
+
 .tool-button {
   @include button(
   rem-calc(8)
@@ -203,6 +213,10 @@ body.page-index main {
     width: ($logo-height / 2) + 5px;
     height: ($logo-width / 2) + 5px;
     background-size: ($logo-height / 2) + 0px ($logo-width / 2) + 0px;
+  }
+
+  .edit-message {
+    display: none;
   }
 }
 
@@ -321,6 +335,18 @@ p.warning {
 
 .sub-nav {
   margin-bottom: 0;
+}
+
+.last-edited {
+  font-size: xx-small;
+  p {
+    margin: 0;
+  }
+
+  .edit-message {
+    background-color: lighten($secondary-color, 25%);
+    font-family: monospace;
+  }
 }
 
 @import "site";

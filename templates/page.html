@@ -31,20 +31,15 @@
 {% endfor %}
   {{revision.page.title}}
 </h1>
+<div class="last-edited">
+<p>Last modified {{revision.timestamp.date()}} by {{revision.author}}
+<p class="edit-message">{{revision.message}}
+</div>
 {% endif %}
 {% if redirectFrom and not missingIndex %}
 <p class="label radius info">Redirected from <a
     href="{{url_for('pages.edit', slug=redirectFrom)}}">{{redirectFrom}}</a>
 {% endif %}
-{% if missingIndex %}
-<p>
-<div class="alert-box radius">
-  <p><em>Welcome to SpaceWiki!</em> You have not yet created this wiki's index
-  page, and are viewing  the included documentation. Create your index page at
-  <a href="{{url_for('pages.edit', slug=settings.INDEX_PAGE)}}">{{settings.INDEX_PAGE}}</a> to get started.
-</div>
-{% endif %}
-
 {% endblock %}
 
 {% block content %}
@@ -76,6 +71,16 @@
   </div>
   <div class="small-4 columns sidebar">
     <div class="row">
+
+        {% if missingIndex %}
+        <p>
+        <div class="welcome-box radius">
+          <h2>Welcome to SpaceWiki!</h2>
+          <p>You have not yet created this wiki's index
+          page, and are viewing  the included documentation. Create your index page at
+          <a href="{{url_for('editor.edit', slug=settings.INDEX_PAGE)}}">{{settings.INDEX_PAGE}}</a> to get started.
+        </div>
+        {% endif %}
 
         <h2>Pages under {{revision.page.slug}}/</h2>
         <ul class="subpages">
