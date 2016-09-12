@@ -5,7 +5,7 @@ from flask import Flask
 import logging
 import tempfile
 
-from spacewiki import context, history, model, pages, specials, uploads
+from spacewiki import context, history, model, pages, specials, uploads, editor
 
 APP = Flask(__name__,
             template_folder='../templates',
@@ -18,6 +18,7 @@ APP.register_blueprint(uploads.BLUEPRINT)
 APP.register_blueprint(pages.BLUEPRINT)
 APP.register_blueprint(history.BLUEPRINT)
 APP.register_blueprint(specials.BLUEPRINT)
+APP.register_blueprint(editor.BLUEPRINT)
 
 if APP.config['TEMP_DIR'] is None:
     APP.config['TEMP_DIR'] = tempfile.mkdtemp(prefix='spacewiki')

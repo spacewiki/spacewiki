@@ -38,7 +38,7 @@
 {% endif %}
 {% if redirectFrom and not missingIndex %}
 <p class="label radius info">Redirected from <a
-    href="{{url_for('pages.edit', slug=redirectFrom)}}">{{redirectFrom}}</a>
+    href="{{url_for('editor.edit', slug=redirectFrom)}}">{{redirectFrom}}</a>
 {% endif %}
 {% endblock %}
 
