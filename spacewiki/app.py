@@ -19,6 +19,7 @@ APP.register_blueprint(pages.BLUEPRINT)
 APP.register_blueprint(history.BLUEPRINT)
 APP.register_blueprint(specials.BLUEPRINT)
 APP.register_blueprint(editor.BLUEPRINT)
+editor.SOCKETIO.init_app(APP)
 
 if APP.config['TEMP_DIR'] is None:
     APP.config['TEMP_DIR'] = tempfile.mkdtemp(prefix='spacewiki')

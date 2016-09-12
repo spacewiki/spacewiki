@@ -2,11 +2,23 @@
 
 from flask import (Blueprint, current_app, render_template, request, redirect,
         url_for)
+from flask.ext.socketio import SocketIO, emit
 from spacewiki import model
 import peewee
 
 import logging
 BLUEPRINT = Blueprint('editor', __name__)
+SOCKETIO = SocketIO()
+
+@SOCKETIO.on('text_delta', namespace='/editor')
+def on_editor_delta(message):
+    logging.info('delta %s', message)
+    emit('text_delta', message, broadcast=True)
+
+@SOCKETIO.on('cursor', namespace='/editor')
+def on_cursor(message):
+    logging.info('cursor %s', message)
+    emit('cursor', message, broadcast=True)
 
 @BLUEPRINT.route("/preview", methods=['POST'])
 def preview():
