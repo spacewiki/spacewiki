@@ -5,6 +5,7 @@ import logging
 import sys
 import os
 import os.path
+import colorlog
 
 sys.path.append(os.path.dirname(__file__))
 
@@ -44,6 +45,9 @@ def import_docs():
             p.newRevision(open(os.path.sep.join((root, fname)), 'r').read(), 'Imported from %s' % fname, 'SpaceWiki')
 
 if __name__ == "__main__":
+    handler = colorlog.StreamHandler()
+    handler.setFormatter(colorlog.ColoredFormatter('%(log_color)s%(levelname)s:%(name)s:%(message)s'))
+    logging.root.addHandler(handler)
     logging.getLogger('peewee').setLevel(logging.INFO)
     logging.basicConfig(level=logging.DEBUG)
 
