@@ -9,7 +9,8 @@ RUN mkdir -p /srv/spacewiki/
 RUN dnf -y update
 
 RUN dnf install -y git python-devel gifsicle ruby rubygem-sass uglify-js \
-        pngcrush make python-pillow python-psycopg2 && \
+        pngcrush make python-pillow python-psycopg2 python-gunicorn \
+        python-greenlet && \
     dnf clean all
 
 COPY requirements.txt /srv/spacewiki/app/requirements.txt
