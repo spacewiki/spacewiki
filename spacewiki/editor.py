@@ -48,12 +48,13 @@ def save(slug=None):
     title = request.form['title']
     if slug is None:
         slug = current_app.config['INDEX_PAGE']
-    try:
-        oldPage = model.Page.get(slug=newslug)
-        logging.debug("Attempted rename of %s to %s", slug, newslug)
-        return edit(slug, collision="Cannot change URL! Something already exists there.")
-    except peewee.DoesNotExist:
-        pass
+    if slug != newslug:
+        try:
+            oldPage = model.Page.get(slug=newslug)
+            logging.debug("Attempted rename of %s to %s", slug, newslug)
+            return edit(slug, collision="Cannot change URL! Something already exists there.")
+        except peewee.DoesNotExist:
+            pass
     try:
         page = model.Page.get(slug=slug)
         logging.debug("Updating existing page: %s", page.slug)
