@@ -1,0 +1,30 @@
+{% for parent in page.parentPages %}
+  <ul class="navtree">
+    <li><a href="{{url_for('pages.view', slug=parent.slug)}}">{{parent.title}}</a>
+{% endfor %}
+
+<ul class="navtree">
+  {% for sibling in page.siblings %}
+    <li>
+      {% if sibling.slug == page.slug %}
+      <span class="current">
+      {% else %}
+      <span>
+      {% endif %}
+      <a href="{{url_for('pages.view', slug=sibling.slug)}}">{{sibling.title}}</a>
+      </span>
+      <ul class="navtree">
+      {% if sibling.slug == page.slug %}
+        {% for subpage in sibling.subpages %}
+          <li><a href="{{url_for('pages.view', slug=subpage.slug)}}">{{subpage.title}}</a></li>
+        {% endfor %}
+      {% endif %}
+      </ul>
+    </li>
+  {% endfor %}
+</ul>
+
+{% for parent in page.parentPages %}
+    </li>
+  </ul>
+{% endfor %}

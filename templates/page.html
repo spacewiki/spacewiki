@@ -66,10 +66,7 @@
 
 {% else %}
 <div class="row">
-  <div class="small-8 columns">
-<p>{{revision.html | safe}}
-  </div>
-  <div class="small-4 columns sidebar">
+  <div class="small-3 columns sidebar">
     <div class="row">
 
         {% if missingIndex %}
@@ -82,14 +79,11 @@
         </div>
         {% endif %}
 
-        <h2>Pages under {{revision.page.slug}}/</h2>
-        <ul class="subpages">
-          {% for subpage in revision.page.subpages %}
-          <li><a href="{{url_for('pages.view', slug=subpage.slug)}}">{{subpage.title}}</a></li>
-          {% else %}
-          <li><em>None</em></li>
-          {% endfor %}
-        </ul>
+        <!-- <h2>Pages under {{revision.page.slug}}/</h2> -->
+        {% with %}
+          {% set page = revision.page %}
+          {% include "_navtree.html" %}
+        {% endwith %}
 
         <h2>Softlinks</h2>
         <ul class="softlinks">
@@ -111,6 +105,9 @@
           {% endfor %}
         </ul>
     </div>
+  </div>
+  <div class="small-9 columns">
+<p>{{revision.html | safe}}
   </div>
 </div>
 {% endif %}

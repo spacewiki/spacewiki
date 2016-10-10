@@ -349,4 +349,33 @@ p.warning {
   }
 }
 
+.navtree {
+  list-style-type: none;
+  li {
+    padding: 5px;
+  }
+  li a {
+    border-left: 1px solid $primary-color;
+    display: block;
+    padding: 3px;
+    padding-left: 1em;
+  }
+  li a:hover {
+    border-left: 2px solid $primary-color;
+    background-color: $primary-color;
+    color:#fff;
+  }
+}
+
+.navtree .current {
+  a {
+    font-weight: bold !important;
+    color: #000;
+  }
+}
+
+.sidebar {
+  padding: 1em;
+}
+
 @import "site";
