@@ -1,2 +1,2 @@
-DATABASE = 'sqlite:////srv/spacewiki/shared/spacewiki.sqlite3'
-UPLOAD_PATH = '/srv/spacewiki/shared/uploads/'
+DATABASE = 'sqlite:////data/spacewiki.sqlite3'
+UPLOAD_PATH = '/data/uploads/'

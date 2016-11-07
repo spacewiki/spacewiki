@@ -1,28 +1,18 @@
 FROM fedora:24
-
 EXPOSE 5000
-WORKDIR /srv/spacewiki/app/
-VOLUME /srv/spacewiki/shared
+WORKDIR /spacewiki/app/
+VOLUME /data
 
-RUN mkdir -p /srv/spacewiki/
+RUN dnf -y update && \
+    dnf install -y ruby rubygems && \
+    gem install pups
 
-RUN dnf -y update
+ADD docker/ /spacewiki/docker/
+ADD docker/build.yaml /spacewiki/pups/build.yaml
 
-RUN dnf install -y git python-devel gifsicle ruby rubygem-sass uglify-js \
-        pngcrush make python-pillow python-psycopg2 python-gunicorn \
-        python-greenlet && \
-    dnf clean all
-
-COPY requirements.txt /srv/spacewiki/app/requirements.txt
-RUN pip install -r /srv/spacewiki/app/requirements.txt && \
-    rm -rf /root/.cache
-
-ADD . /srv/spacewiki/app
-
-ADD docker_settings.py /srv/spacewiki/app/local_settings.py
-ADD /docker-entrypoint.sh /docker-entrypoint.sh
-RUN chmod +x /docker-entrypoint.sh
-
-RUN make static
-
+ADD docker/docker-entrypoint.sh /docker-entrypoint.sh
 ENTRYPOINT ["/docker-entrypoint.sh"]
+CMD ["runserver"]
+
+ADD . /spacewiki/git/
+RUN cat /spacewiki/docker/git.yaml /spacewiki/docker/build.yaml | pups --stdin

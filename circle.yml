@@ -14,10 +14,10 @@ dependencies:
 
 test:
   override:
-    - docker build -t spacewiki_app .
-    - docker run -v `pwd`:/srv/spacewiki/ spacewiki_app make docker_test
-    - docker run -v `pwd`:/srv/spacewiki/ spacewiki_app make lint
-    - docker run -d -p 5000:5000 spacewiki_app
+    - docker build -t spacewiki:app .
+    - docker run -v `pwd`:/spacewiki/ spacewiki:app make docker_test
+    - docker run -v `pwd`:/spacewiki/ spacewiki:app make lint
+    - docker run -d -p 5000:5000 spacewiki:app
     - sleep 5
     - curl http://localhost:5000/
 deployment:
@@ -25,5 +25,5 @@ deployment:
     branch: master
     commands:
       - docker login -u $DOCKER_USERNAME -e $DOCKER_EMAIL -p $DOCKER_PASSWORD
-      - docker tag spacewiki_app tdfischer/spacewiki
+      - docker tag spacewiki:app tdfischer/spacewiki
       - docker push tdfischer/spacewiki
