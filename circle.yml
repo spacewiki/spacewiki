@@ -13,8 +13,8 @@ dependencies:
 test:
   override:
     - docker build -t spacewiki:app .
-    - docker run -v `pwd`:/spacewiki/ spacewiki:app make docker_test
-    - docker run -v `pwd`:/spacewiki/ spacewiki:app make lint
+    - docker run -v `pwd`:/spacewiki/app/ spacewiki:app make docker_test
+    - docker run -v `pwd`:/spacewiki/app/ spacewiki:app make lint
     - docker run -d -p 5000:5000 spacewiki:app
     - sleep 5
     - curl http://localhost:5000/
