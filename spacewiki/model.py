@@ -194,8 +194,11 @@ class Page(BaseModel):
         parentSlug = '/'.join(self.slug.split('/')[0:-1])
         if parentSlug == "":
             parentSlug = current_app.config['INDEX_PAGE']
-        parent = Page.select().where(Page.slug == parentSlug)[0]
-        return parent.parentPages + [parent,]
+        try:
+            parent = Page.select().where(Page.slug == parentSlug)[0]
+            return parent.parentPages + [parent,]
+        except IndexError:
+            return []
 
     @property
     def siblings(self):
