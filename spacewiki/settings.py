@@ -1,7 +1,7 @@
 """Spacewiki settings"""
 import os
 
-DATABASE_URI = os.environ.get('DATABASE_URI', 'sqlite:///spacewiki.sqlite3')
+DATABASE_URL = os.environ.get('DATABASE_URL', 'sqlite:///spacewiki.sqlite3')
 SITE_NAME = 'SpaceWiki'
 INDEX_PAGE = 'index'
 UPLOAD_PATH = 'uploads'
