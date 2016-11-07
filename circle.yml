@@ -8,7 +8,6 @@ general:
 
 dependencies:
   override:
-    - git submodule update --init --depth 1
     - docker pull fedora:24
 
 test:

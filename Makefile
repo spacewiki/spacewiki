@@ -40,7 +40,7 @@ lint:
 	pylint -f html *.py | tee linter.html
 
 submodules:
-	git submodule update --init --depth 1
+	git submodule update --init
 
 clean:
 	rm -f $(CSS_OUT) $(IMAGES_OUT) $(SCRIPTS_OUT)
