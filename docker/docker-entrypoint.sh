@@ -1,5 +1,8 @@
 #!/bin/bash
 set -e
 
-make syncdb
+if [ $1 == "make" ]; then
+  exec make $@
+fi
+
 exec ./manage.py $@
