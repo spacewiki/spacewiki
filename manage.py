@@ -22,7 +22,7 @@ def runserver(syncdb):
         model.syncdb()
     from spacewiki.app import APP
     from gevent.wsgi import WSGIServer
-    serv = WSGIServer(('', 5000), APP, log=logging.getLogger("http"))
+    serv = WSGIServer(('', int(os.environ.get('PORT', 5000))), APP, log=logging.getLogger("http"))
     serv.serve_forever()
 
 @MANAGER.command
