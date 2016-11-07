@@ -1,0 +1,16 @@
+run:
+  - exec:
+      cmd: make static
+hooks:
+  after_git:
+    - exec:
+        cmd: cp /spacewiki/git/docker_settings.py /spacewiki/app/spacewiki/local_settings.py
+    - exec:
+        cmd: git remote add git /spacewiki/git/
+        chdir: /spacewiki/app/
+    - exec:
+        cmd: git fetch git
+        chdir: /spacewiki/app/
+    - exec:
+        cmd: git checkout git/master
+        chdir: /spacewiki/app/

@@ -33,14 +33,11 @@ others to get up and going with minimal setup:
 
 spacewiki is distributed as a Docker container. To use:
 
-    $ docker run -p 5000:5000 tdfischer/spacewiki
+    $ docker run -v /srv/spacewiki:/data -p 5000:5000 tdfischer/spacewiki
 
 The Docker container starts ./manage.py runserver, which defaults to serving
-spacewiki on 0.0.0.0;5000. The app is installed in /srv/spacewiki/. To drop in a
-custom configuration, try:
-
-    $ docker run -v my_local_settings.py:/srv/spacewiki/local_settings.py:ro \
-      -p 5000:500 tdfischer/spacewiki
+spacewiki on 0.0.0.0:5000. The app is installed in /spacewiki/, and all
+persistent data/configuration is in /data.
 
 ## wsgi Notes
 

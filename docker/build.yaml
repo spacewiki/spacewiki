@@ -1,0 +1,18 @@
+run:
+  - exec:
+      cmd: dnf install -y git gifsicle rubygem-sass uglify-js pngcrush make python-pillow python-gunicorn python-greenlet python-gevent python-slugify python-flask-script python2-hypothesis
+      hook: packages
+  - exec:
+      cmd: mkdir -p /spacewiki/app /data
+  - exec:
+      cmd: git clone --depth 1 git://github.com/tdfischer/spacewiki /spacewiki/app
+      hook: git
+  - exec:
+      cmd: pip install -r /spacewiki/app/requirements.txt
+      hook: pip
+  - exec:
+      cmd: make static
+      hook: make_static
+  - exec:
+      cmd: dnf clean all
+      hook: clean
