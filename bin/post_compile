@@ -1,0 +1,2 @@
+pip install psycopg2
+./manage.py db syncdb

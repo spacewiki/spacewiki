@@ -1,0 +1,13 @@
+{
+  "name": "SpaceWiki",
+  "description": "All wiki software sucks. SpaceWiki sucks less than most.",
+  "repository": "https://github.com/tdfischer/spacewiki",
+  "scripts": {
+    "postdeploy": "./manage.py import_docs"
+  },
+  "addons": [
+    {
+      "plan": "heroku-postgresql"
+    }
+  ]
+}
