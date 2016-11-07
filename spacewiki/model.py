@@ -27,8 +27,8 @@ def get_db():
     """Sets up the database"""
     db = getattr(g, '_database', None)
     if db is None:
-        logging.info("Using database at %s", current_app.config['DATABASE'])
-        g._database = db = connect(current_app.config['DATABASE'])
+        logging.info("Using database at %s", current_app.config['DATABASE_URL'])
+        g._database = db = connect(current_app.config['DATABASE_URL'])
     DATABASE.initialize(db)
 
 DATABASE = peewee.Proxy()
