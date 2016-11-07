@@ -42,14 +42,19 @@ class BaseModel(peewee.Model):
 
 class SlugField(peewee.CharField):
     """Normalizes strings into a url-friendly 'slug'"""
-    def coerce(self, value):
-        return self.slugify(value)
 
     @staticmethod
     def slugify(title):
         """Translates a string into a reduced character set"""
         parts = unicode(title).split('/')
-        return '/'.join(map(slugify.slugify, parts)).rstrip('/')
+        return '/'.join(map(SlugField._slugify, parts)).rstrip('/')
+
+    @staticmethod
+    def _slugify(value):
+        # For sql queries
+        if value == '%':
+            return value
+        return slugify.slugify(value)
 
     @classmethod
     def split_title(cls, title):
@@ -184,7 +189,8 @@ class Page(BaseModel):
 
     @property
     def subpages(self):
-        return Page.select().where(Page.slug % (self.slug+'/%')).order_by(Page.title)
+        return Page.select().where(peewee.fn.Substr(Page.slug, 1,
+            len(self.slug)+1) == self.slug+'/').order_by(Page.title)
 
     @property
     def parentPages(self):
@@ -205,7 +211,7 @@ class Page(BaseModel):
             return []
         parentSlug = '/'.join(self.slug.split('/')[0:-1])
         if parentSlug == "":
-            return Page.select().where(~(Page.slug % '%/%')).order_by(Page.title)
+            return Page.select().where(~Page.slug.contains('/')).order_by(Page.title)
         parent = Page.select().where(Page.slug == parentSlug)[0]
         return parent.subpages
 
