@@ -1,6 +1,3 @@
-run:
-  - exec:
-      cmd: make static
 hooks:
   after_git:
     - exec:

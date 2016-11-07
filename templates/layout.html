@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link rel="stylesheet" href="{{url_for('static', filename='lib/app.css')}}">
+  {% assets "css" %}
+  <link rel="stylesheet" href="{{ASSET_URL}}">
+  {% endassets %}
   <title>
     {% block title %}{% block subtitle %}{% endblock %} - {{settings.SITE_NAME}}{% endblock %}
   </title>
@@ -78,6 +80,9 @@
   </div>
 </footer>
 </body>
-<script src="{{url_for('static', filename='lib/app.min.js')}}"></script>
+{% assets "javascript" %}
+<script src="{{ASSET_URL}}"></script>
+<link rel="stylesheet" href="{{ASSET_URL}}">
+{% endassets %}
 <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
 </html>
