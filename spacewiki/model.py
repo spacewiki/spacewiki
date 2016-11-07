@@ -184,8 +184,7 @@ class Page(BaseModel):
 
     @property
     def subpages(self):
-        return Page.select().where(peewee.SQL('slug LIKE ?',
-            self.slug+'/%')).order_by(Page.title)
+        return Page.select().where(Page.slug % (self.slug+'/%')).order_by(Page.title)
 
     @property
     def parentPages(self):
@@ -206,7 +205,7 @@ class Page(BaseModel):
             return []
         parentSlug = '/'.join(self.slug.split('/')[0:-1])
         if parentSlug == "":
-            return Page.select().where(~peewee.SQL('slug LIKE ?', '%/%')).order_by(Page.title)
+            return Page.select().where(~(Page.slug % '%/%')).order_by(Page.title)
         parent = Page.select().where(Page.slug == parentSlug)[0]
         return parent.subpages
 
