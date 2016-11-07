@@ -12,13 +12,16 @@ BLUEPRINT = Blueprint('context', __name__)
 @BLUEPRINT.app_context_processor
 def add_git_version():
     """Adds the current git sha to the template context"""
-    repo = git.Repo(
-        os.path.sep.join((
-            os.path.dirname(os.path.realpath(__file__)),
-            '..'
-        ))
-    )
-    return dict(git_version=repo.head.commit.hexsha)
+    try:
+        repo = git.Repo(
+            os.path.sep.join((
+                os.path.dirname(os.path.realpath(__file__)),
+                '..'
+            ))
+        )
+        return dict(git_version=repo.head.commit.hexsha)
+    except:
+        return {'git_version': None}
 
 
 @BLUEPRINT.app_context_processor

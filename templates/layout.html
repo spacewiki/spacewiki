@@ -72,7 +72,9 @@
 <footer class="row">
   <div class="small-12 columns">
     <p class="plug">Powered by <i class="hacker-emblem"></i> <a href="https://github.com/tdfischer/spacewiki">SpaceWiki</a>
+    {% if git_version %}
     <p class="version">Running <i class="fa fa-code-fork"></i> <a href="https://github.com/tdfischer/spacewiki/commit/{{git_version}}">{{git_version}}</a> 
+    {% endif %}
   </div>
 </footer>
 </body>
