@@ -1,0 +1,15 @@
+css:
+  filters: libsass,cssmin
+  output: cache/app.css
+  contents:
+    - ../theme/app.scss
+javascript:
+  output: cache/app.js
+  filters: rjsmin
+  contents:
+    - ../theme/js/lib/jquery.js
+    - ../theme/lib/foundation/js/foundation/foundation.js
+    - ../theme/lib/foundation/js/foundation/foundation.dropdown.js
+    - ../theme/js/lib/*.js
+    - ../theme/js/lib/ace/*.js
+    - ../theme/js/*.js

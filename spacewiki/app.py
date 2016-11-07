@@ -2,10 +2,11 @@
 
 from beaker.middleware import SessionMiddleware
 from flask import Flask
+from flask_assets import Environment, Bundle
 import logging
 import tempfile
 
-from spacewiki import context, history, model, pages, specials, uploads, editor
+from spacewiki import context, history, model, pages, specials, uploads, editor, assets
 
 APP = Flask(__name__,
             template_folder='../templates',
@@ -19,6 +20,7 @@ APP.register_blueprint(pages.BLUEPRINT)
 APP.register_blueprint(history.BLUEPRINT)
 APP.register_blueprint(specials.BLUEPRINT)
 APP.register_blueprint(editor.BLUEPRINT)
+assets.ASSETS.init_app(APP)
 
 if APP.config['TEMP_DIR'] is None:
     APP.config['TEMP_DIR'] = tempfile.mkdtemp(prefix='spacewiki')
