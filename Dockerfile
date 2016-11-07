@@ -12,7 +12,7 @@ ADD docker/build.yaml /spacewiki/pups/build.yaml
 
 ADD docker/docker-entrypoint.sh /docker-entrypoint.sh
 ENTRYPOINT ["/docker-entrypoint.sh"]
-CMD ["runserver"]
+CMD ["runserver", "-s"]
 
 ADD . /spacewiki/git/
 RUN cat /spacewiki/docker/git.yaml /spacewiki/docker/build.yaml | pups --stdin

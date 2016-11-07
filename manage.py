@@ -15,8 +15,11 @@ MANAGER = Manager(APP)
 MANAGER.add_command('db', model.MANAGER)
 MANAGER.add_command("shell", Shell())
 
-@MANAGER.command
-def runserver():
+@MANAGER.option('-s', '--syncdb', dest='syncdb', help='Run syncdb on boot',
+        default=False, action='store_true')
+def runserver(syncdb):
+    if (syncdb):
+        model.syncdb()
     from spacewiki.app import APP
     from gevent.wsgi import WSGIServer
     serv = WSGIServer(('', 5000), APP, log=logging.getLogger("http"))
