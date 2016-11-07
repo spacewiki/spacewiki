@@ -39,9 +39,6 @@ docker_test:
 lint:
 	pylint -f html *.py | tee linter.html
 
-submodules:
-	git submodule update --init
-
 clean:
 	rm -f $(CSS_OUT) $(IMAGES_OUT) $(SCRIPTS_OUT)
 
@@ -68,5 +65,3 @@ $(SCRIPTS_OUT): $(SCRIPTS)
 
 static/lib/%.css: theme/%.scss static/lib theme/lib/foundation
 	sass --scss -I theme/lib/foundation/scss/ $< $@
-
-theme/lib/foundation: submodules
