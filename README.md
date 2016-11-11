@@ -29,6 +29,10 @@ others to get up and going with minimal setup:
   unfamiliar with Softlinks, [check out how Everything2 does
   it](http://everything2.com/title/Soft+link)
 
+## Run on Heroku!
+
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+
 ## Docker Installation
 
 spacewiki is distributed as a Docker container. To use:
@@ -53,10 +57,11 @@ building with sass + uglifyjs + gifsicle + pngcrush.
 
 ### Dependencies
 
-* gifsicle
-* pngcrush
-* sass >= 3.4.3
-* uglifyjs
+    $ pip install -r requirements.txt
+
+For postgres support, also run
+
+    $ pip install psycopg2
 
 ## TODO
 
