@@ -7,12 +7,9 @@ RUN dnf -y update && \
     dnf install -y ruby rubygems && \
     gem install pups
 
-ADD docker/ /spacewiki/docker/
-ADD docker/build.yaml /spacewiki/pups/build.yaml
-
 ADD docker/docker-entrypoint.sh /docker-entrypoint.sh
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["runserver", "-s"]
 
 ADD . /spacewiki/git/
-RUN cat /spacewiki/docker/git.yaml /spacewiki/docker/build.yaml | pups --stdin
+RUN pups /spacewiki/git/docker/build.yaml

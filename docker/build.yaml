@@ -1,12 +1,14 @@
 run:
   - exec:
-      cmd: dnf install -y git gifsicle rubygem-sass uglify-js pngcrush make python-pillow python-gunicorn python-greenlet python-gevent python-slugify python-flask-script python2-hypothesis
+      cmd: dnf install -y /usr/lib/rpm/redhat/redhat-hardened-cc1 gcc gcc-c++ git python-devel gifsicle rubygem-sass uglify-js pngcrush make python-pillow python-gunicorn python-greenlet python-gevent python-slugify python-flask-script python2-hypothesis
       hook: packages
   - exec:
       cmd: mkdir -p /spacewiki/app /data
   - exec:
-      cmd: git clone --depth 10 --recursive git://github.com/tdfischer/spacewiki /spacewiki/app
+      cmd: git clone --depth 10 --recursive /spacewiki/git/ /spacewiki/app
       hook: git
+  - exec:
+      cmd: cp /spacewiki/git/docker/settings.py /spacewiki/app/spacewiki/local_settings.py
   - exec:
       cmd: pip install -r /spacewiki/app/requirements.txt
       hook: pip
