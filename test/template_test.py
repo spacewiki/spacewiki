@@ -9,11 +9,13 @@ test_db = SqliteDatabase(':memory:')
 
 class ParserTestCase(unittest.TestCase):
     def test_directives(self):
-        self.assertEqual(directives.render("", ''), "")
-        self.assertEqual(directives.render("{{foo}}", ''), "{{[[foo]]}}")
+        with test_database(test_db, [model.Page, model.Revision]):
+            self.assertEqual(directives.render("", ''), "")
+            self.assertEqual(directives.render("{{foo}}", ''), "{{[[foo]]}}")
 
     def test_full_empty_render(self):
-        self.assertEqual(wikiformat.render_wikitext("", ''), "")
+        with test_database(test_db, [model.Page, model.Revision]):
+            self.assertEqual(wikiformat.render_wikitext("", ''), "")
 
     def test_recursive_templates(self):
         with test_database(test_db, [model.Page, model.Revision]):
