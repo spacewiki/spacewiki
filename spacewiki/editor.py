@@ -41,11 +41,11 @@ def edit(slug, redirectFrom=None, preview=None, collision=None):
                                redirectFrom=redirectFrom)
 
 @BLUEPRINT.route("/", methods=['POST'])
-@BLUEPRINT.route("/<path:slug>/edit", methods=['POST'])
+@BLUEPRINT.route("/<path:slug>", methods=['POST'])
 def save(slug=None):
     """Save a new Revision, creating a new Page if needed"""
-    newslug = request.form['slug']
-    title = request.form['title']
+    newslug = request.form.get('slug', None)
+    title = request.form.get('title', None)
     if slug is None:
         slug = current_app.config['INDEX_PAGE']
     if slug != newslug:
