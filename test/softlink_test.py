@@ -7,6 +7,10 @@ import hypothesis
 import tempfile
 import string
 from hypothesis.extra.fakefactory import FakeFactory
+from playhouse.test_utils import test_database
+from peewee import SqliteDatabase
+
+test_db = SqliteDatabase(':memory:')
 
 def makePath(s):
     return s.split('://', 1)[1].split('/', 1)[1]
@@ -47,11 +51,6 @@ class SoftlinkParsingTestCase(unittest.TestCase):
 
 class SoftlinkTestCase(unittest.TestCase):
     def setUp(self):
-        app.config['DATABASE'] = 'sqlite:///'+tempfile.mkdtemp()+'/test.sqlite3'
-        with app.app_context():
-            model.syncdb()
-            model.Page.create(title='page', slug='page')
-            model.Page.create(title='index', slug='index')
         self.app = app.test_client()
 
     @hypothesis.given(Path, Path, Domain, Path)
@@ -59,22 +58,25 @@ class SoftlinkTestCase(unittest.TestCase):
         if src == dest:
             return
 
-        self.app.get(
-            prefix+dest,
-            headers={
-              'Referer': 'http://'+host+prefix+src,
-              'Host': host
-            },
-            base_url = 'http://'+host+prefix
-        )
+        with test_database(test_db, [model.Softlink, model.Page]):
+            model.Page.create(title='page', slug='page')
+            model.Page.create(title='index', slug='index')
+            self.app.get(
+                prefix+dest,
+                headers={
+                  'Referer': 'http://'+host+prefix+src,
+                  'Host': host
+                },
+                base_url = 'http://'+host+prefix
+            )
 
-        self.assertTrue(
-          model.Softlink.select() \
-            .join(model.Page, on=model.Softlink.src) \
-            .where(
-                model.Page.slug == src, 
-            ).join(model.Page, on=model.Softlink.dest) \
-            .where(
-                model.Page.slug == dest,
-            ).exists()
-        )
+            self.assertTrue(
+              model.Softlink.select() \
+                .join(model.Page, on=model.Softlink.src) \
+                .where(
+                    model.Page.slug == src, 
+                ).join(model.Page, on=model.Softlink.dest) \
+                .where(
+                    model.Page.slug == dest,
+                ).exists()
+            )
