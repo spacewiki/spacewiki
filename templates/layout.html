@@ -88,6 +88,19 @@
   </div>
 </footer>
 </body>
+{% assets "requirejs" %}
+<script src="{{ASSET_URL}}"></script>
+{% endassets %}
+<script>
+require.config({
+  baseUrl: "/static",
+  paths: {
+    'simplemde': 'js/lib/simplemde',
+    'jquery': 'js/lib/jquery'
+  }
+});
+require(['js/editor']);
+</script>
 {% assets "javascript" %}
 <script src="{{ASSET_URL}}"></script>
 {% endassets %}

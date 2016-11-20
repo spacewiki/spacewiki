@@ -2,14 +2,22 @@ css:
   filters: libsass,cssmin
   output: cache/app.css
   contents:
-    - ../theme/app.scss
-javascript:
-  output: cache/app.js
+    - scss/app.scss
+    - scss/simplemde.min.css
+requirejs:
+  output: cache/require.js
   filters: rjsmin
   contents:
-    - ../theme/js/lib/jquery.js
-    - ../theme/lib/foundation/js/foundation/foundation.js
-    - ../theme/lib/foundation/js/foundation/foundation.dropdown.js
-    - ../theme/js/lib/*.js
-    - ../theme/js/lib/ace/*.js
-    - ../theme/js/*.js
+    - js/lib/require.js
+javascript:
+  output: cache/app.js
+  filters: requirejs
+  contents:
+    - js/lib/jquery.js
+    - js/lib/lightbox.js
+    - js/lib/simplemde.js
+    - js/lib/foundation/foundation.js
+    - js/lib/foundation/foundation.dropdown.js
+    - js/lib/foundation/foundation.topbar.js
+    - js/editor.js
+    - js/lightbox.js

@@ -1,10 +1,5 @@
 <form method="post" action="{{url_for('editor.save', slug=slug)}}">
   <div class="editor-row">
-      <ul class="tabs" data-tab>
-        <li class="tab-title active"><a href="#editor-tab">Editor</a></li>
-        <li class="tab-title"><a href="#preview-tab">Preview</a></li>
-      </ul>
-      <div class="tabs-content">
         <div class="content active" id="editor-tab">
           <dl class="sub-nav">
             <dt>Title:</dt>
@@ -16,10 +11,10 @@
             fa-pencil"></i> <span
                                              id="slug-label">{{slug}}</span></a></dd>
             <dt>Nym:</dt>
-            <dd><a data-dropdown="nym-drop" class="editor-button"><i class="fa
-            fa-pencil"></i> <span id="nym-label">{{current_user.handle}}</span></a></dd>
-            <dt><label id="editor_toggle">Use rich text editor <input
-                       type="checkbox" id="editor_toggle_value"></label></dt>
+            <dd><a data-dropdown="nym-drop" class="editor-button">
+              {% if not current_user.is_authenticated %}<i class="fa
+              fa-pencil"></i> {% endif %} <span id="nym-label">
+              {{current_user.display_name}}</span></a></dd>
           </dl>
           <div id="title-drop" data-dropdown-content class="f-dropdown content">
             <label>Title
@@ -43,13 +38,7 @@
             {% endif %}
             </label>
           </div>
-          <label id="editor_toggle">Use rich text editor <input type="checkbox" id="editor_toggle_value"></label>
           <textarea name="body" id="body">{% if revision %}{{revision.body}}{% endif %}</textarea>
-          <div id="editor"></div>
-        </div>
-        <div class="content" id="preview-tab">
-          <div class="preview"></div>
-        </div>
       </div>
   </div>
 <div class="row">

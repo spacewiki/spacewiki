@@ -1,0 +1,373 @@
+@import "settings";
+
+$logo-image: url(../logo.png);
+$logo-width: 150;
+$logo-height: 150;
+
+@import "site-settings";
+
+@import "lib/foundation/foundation.scss";
+
+@import "lightbox";
+
+$logo-bg-color: $secondary-color;
+
+body {
+  background: url(../img/noise.png);
+  font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.additions {
+  color: #0a0;
+}
+
+.diff {
+  background-color: #eee;
+  padding: 1em;
+  font-family: monospace;
+
+  div {
+    white-space: pre;
+  }
+
+  .meta {
+    background-color: #aaa;
+    color: #000;
+  }
+
+  .context {
+    background-color: #fa5;
+    color: #a20;
+  }
+
+  .addition {
+    background-color: #dfd;
+    color: #030;
+  }
+
+  .subtraction {
+    background-color: #fdd;
+    color: #300;
+  }
+}
+
+.subtractions {
+  color: #a00;
+}
+
+textarea {
+  height: 30em;
+  font-family: monospace;
+}
+
+#editor {
+  position: relative;
+  height: 45em;
+  width: 100%;
+}
+
+.attachment-list {
+  list-style: none;
+}
+
+#content {
+  h1 {
+    border-bottom: 1px solid black;
+  }
+  a {
+    text-decoration: underline;
+  }
+}
+
+ul.softlinks {
+  li {
+    display: block;
+    float: left;
+    a {
+      display: block;
+      min-width: 7em;
+      height: 2em;
+      padding: 0.25em;
+      background-color: lighten($primary-color, 0.5);
+      text-align: center;
+      color: #fff;
+    }
+
+    a:hover {
+      background-color: #aaa;
+    }
+    padding: 1px;
+  }
+}
+
+footer {
+  padding: 1em;
+  background-color: #ddd;
+
+  .plug {
+    font-size: small;
+  }
+
+  .version {
+    font-size: x-small;
+    color: #aaa;
+
+    a {
+      color: #aaa;
+    }
+  }
+}
+
+a {
+  sup {
+    color: #f33;
+  }
+}
+
+body {
+  background-color: $secondary-color;
+}
+
+main {
+  .content {
+    background-color: #fff;
+  }
+}
+
+body.page-index main {
+  .content {
+    background-color: transparent;
+  }
+  .page-title {
+    background-color: transparent;
+    border: none;
+  }
+}
+
+.page-title {
+  border-bottom: 2px solid darken($secondary-color, 35%);
+  background-color: darken($secondary-color, 10%);
+}
+
+.editor-button {
+  @include button(
+  rem-calc(8),
+  $secondary-color
+  );
+  color: #000;
+  margin-bottom: 0;
+}
+
+.editor-button.active {
+  background-color: $primary-color;
+  color: #fff;
+}
+
+.welcome-box {
+  @include panel(
+    $bg:$primary-color
+  );
+  margin: 1em;
+  a {
+    color: #fff;
+  }
+}
+
+.tool-button {
+  @include button(
+  rem-calc(8)
+  );
+  border-left: 1px solid lighten($primary-color, 25%);
+}
+
+.tools {
+  float: right;
+  padding-top: 1em;
+}
+
+.content-title {
+  border-bottom: 2px solid $primary-color;
+  background-color: $secondary-color;
+  padding-left: $logo-width + 10px;
+  transition: border 0.25s;
+  h1 {
+    transition: font-size 0.25s;
+    -webkit-transition: font-size 0.25s;
+  }
+}
+
+.fixed {
+  .content-title {
+    padding-left: ($logo-width / 2) + 10px;
+    h1 {
+      font-size: x-large;
+    }
+    border-bottom: 1px solid $primary-color;
+  }
+
+  .top-bar .title-area h1 {
+    width: ($logo-height / 2) + 5px;
+    height: ($logo-width / 2) + 5px;
+    background-size: ($logo-height / 2) + 0px ($logo-width / 2) + 0px;
+  }
+
+  .edit-message {
+    display: none;
+  }
+}
+
+.top-bar {
+
+  .title-area {
+    margin: 0.5em 2em 0 2em;
+
+    h1 {
+      height: $logo-height + 5px;
+      width: $logo-width + 5px;
+      background-size: $logo-height + 0px $logo-width + 0px;
+      background-repeat: no-repeat;
+      background-position: center center;
+      color: transparent;
+      background-image: $logo-image;
+      background-color: $logo-bg-color;
+      float: left;
+      transition: width 0.25s, height 0.25s, background-size 0.25s;
+      -webkit-transition: width 0.25s, height 0.25s, background-size 0.25s;
+    }
+
+    h1:hover {
+      background-size: $logo-height + 5px $logo-width + 5px;
+    }
+
+    h1:active {
+      background-size: $logo-height - 5px $logo-width - 5px;
+    }
+  }
+
+  margin-bottom: 0;
+}
+
+img {
+  max-width: $row-width/5;
+  height: auto;
+  display: block;
+}
+
+.history {
+  width: 100%;
+
+  .timestamp th {
+    text-align: center;
+    font-size: large;
+  }
+}
+
+
+.hacker-emblem {
+  content: " ";
+  display: inline-block;
+  min-width: 1em;
+  min-height: 1em;
+  font-size: inherit;
+  background: url(../img/glider.svg) no-repeat center center;
+  background-size: contain;
+  box-sizing: border-box;
+}
+
+.preview {
+  border: 1px solid #aaa;
+}
+
+a.template-edit {
+  font-size: 5pt;
+  position: absolute;
+  top: -5pt;
+  opacity: 0.25;
+}
+
+.x-spacewiki-template {
+  position: relative;
+}
+
+.x-spacewiki-template.callout {
+  background-color: $secondary-color;
+}
+
+a.template-edit:hover {
+  opacity: 1;
+}
+
+p.warning {
+  background-color: lighten($warning-color, 35%);
+  border: 1px solid $warning-color;
+  color: #000;
+  padding: 1em;
+}
+
+.tab-title {
+  border-top: 1px solid black;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+}
+
+.tab-title.active {
+  border-top: 2px solid black;
+}
+
+.editor-row {
+  margin-left: -12.5px;
+  margin-right: -12.5px;
+
+  .tabs {
+    padding-left: 2em;
+    margin-top: 1em;
+    border-bottom: 1px solid #ddd;
+  }
+}
+
+.sub-nav {
+  margin-bottom: 0;
+}
+
+.last-edited {
+  font-size: xx-small;
+  p {
+    margin: 0;
+  }
+
+  .edit-message {
+    background-color: lighten($secondary-color, 25%);
+    font-family: monospace;
+  }
+}
+
+.navtree {
+  list-style-type: none;
+  li {
+    padding: 5px;
+  }
+  li a {
+    border-left: 1px solid $primary-color;
+    display: block;
+    padding: 3px;
+    padding-left: 1em;
+  }
+  li a:hover {
+    border-left: 2px solid $primary-color;
+    background-color: $primary-color;
+    color:#fff;
+  }
+}
+
+.navtree .current {
+  a {
+    font-weight: bold !important;
+    color: #000;
+  }
+}
+
+.sidebar {
+  padding: 1em;
+}
+
+@import "site";
