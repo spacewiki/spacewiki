@@ -1,0 +1,7 @@
+<a
+  href="https://slack.com/oauth/authorize?scope=identity.basic&client_id={{settings.SLACK_KEY}}&redirect_uri={{url_for('routes.slack_login', _external=True) | urlencode}}"> <img alt="Sign in with Slack" height="40"
+  width="172" src="https://platform.slack-edge.com/img/sign_in_with_slack.png"
+              srcset="https://platform.slack-edge.com/img/sign_in_with_slack.png
+              1x, https://platform.slack-edge.com/img/sign_in_with_slack@2x.png
+              2x" />
+</a>

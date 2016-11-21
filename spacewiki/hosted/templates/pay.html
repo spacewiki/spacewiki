@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  {% assets "css" %}
+  <link rel="stylesheet" href="{{ASSET_URL}}">
+  {% endassets %}
+  </head>
+<body>
+  <header class="row">
+    <div class="small-10 columns">
+      <h1>SpaceWiki</h1>
+    </div>
+  </header>
+  <main>
+  <div class="row">
+    <div class="small-12 columns">
+      <h2>Payment</h2>
+      <form id="paymentForm" action="{{url_for('routes.payment')}}" method="POST">
+        <input type="hidden" name="stripeToken" id="stripeToken">
+        {% if plan == 'donate' %}
+        <input type="text" id="donationValue" name="donationValue">
+        {% endif %}
+        <button class="button" id="payButton">
+          Pay Now
+        </button>
+      </form>
+    </div>
+  </div>
+  </main>
+  <script src="https://checkout.stripe.com/checkout.js"></script>
+  <script>
+var PLAN_NAME = "{{plan}}";
+
+var handler = StripeCheckout.configure({
+  key: "{{settings.STRIPE_KEY}}",
+  image: "",
+  locale: 'auto',
+  token: function(token) {
+    console.log("Got a token!", token)
+      document.getElementById('stripeToken').value = token.id;
+      document.getElementById('paymentForm').submit();
+  }
+});
+document.getElementById('payButton').addEventListener('click', function(e) {
+
+  if (PLAN_NAME == 'startup') {
+    planAmmount = 2000;
+  } else if (PLAN_NAME == 'corporate') {
+    planAmmount = 5000;
+  } else if (PLAN_NAME == 'donate') {
+    planAmmount = document.getElementById('donationValue').value * 100;
+  }
+  handler.open({
+    name: 'SpaceWiki',
+    description: 'Subscription',
+    amount: planAmmount
+  });
+  e.preventDefault();
+});
+window.addEventListener('popstate', function() {
+  handler.close();
+});
+  </script>
+</body>
+</html>
+

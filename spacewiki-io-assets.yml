@@ -1,0 +1,5 @@
+css:
+  filters: libsass,cssmin
+  output: cache/spacewiki-io-app.css
+  contents:
+    - scss/spacewiki-io.scss

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  {% assets "css" %}
+  <link rel="stylesheet" href="{{ASSET_URL}}">
+  {% endassets %}
+  </head>
+<body>
+  <header class="row">
+    <div class="small-10 columns">
+      <h1>SpaceWiki</h1>
+    </div>
+  </header>
+  <main>
+  <div class="row">
+    <div class="small-12 columns">
+      <h2>You're good to go!</h2>
+      <p>Your wiki is setup and good to go. You can visit it at <a
+         href="https://{{space.domain}}.spacewiki.io/">{{space.domain}}.spacewiki.io/</a>
+    </div>
+  </div>
+  </main>
+</body>
+</html>
+
+
