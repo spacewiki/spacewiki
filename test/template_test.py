@@ -1,7 +1,6 @@
 from spacewiki import model, wikiformat, auth
 from spacewiki.wikiformat import directives
 import unittest
-from spacewiki.app import APP as app
 from playhouse.test_utils import test_database
 from peewee import SqliteDatabase
 

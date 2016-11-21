@@ -1,7 +1,7 @@
 import werkzeug.test
 import unittest
 from spacewiki import model
-from spacewiki.app import APP as app
+from spacewiki.app import create_app
 import logging
 import hypothesis
 import tempfile
@@ -51,7 +51,8 @@ class SoftlinkParsingTestCase(unittest.TestCase):
 
 class SoftlinkTestCase(unittest.TestCase):
     def setUp(self):
-        self.app = app.test_client()
+        self._app = create_app()
+        self.app = self._app.test_client()
 
     @hypothesis.given(Path, Path, Domain, Path)
     def test_create_softlink(self, src, dest, host, prefix):

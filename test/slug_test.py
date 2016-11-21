@@ -5,7 +5,7 @@ import hypothesis
 import string
 import tempfile
 from hypothesis.extra.fakefactory import FakeFactory
-from spacewiki.app import APP as app
+from spacewiki.app import create_app
 from playhouse.test_utils import test_database
 from peewee import SqliteDatabase
 
@@ -19,7 +19,8 @@ Path = hypothesis.strategy(FakeFactory('url')).map(makePath)
 
 class SlugTestCase(unittest.TestCase):
     def setUp(self):
-        self.app = app.test_client()
+        self._app = create_app()
+        self.app = self._app.test_client()
 
     def test_split_title(self):
         self.assertEqual(SlugField.split_title('foo'), ('', 'foo'))

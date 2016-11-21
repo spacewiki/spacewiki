@@ -1,14 +1,15 @@
-from spacewiki.app import APP as app
+from spacewiki.app import create_app
 from spacewiki import model
 import unittest
 import tempfile
 
 class UiTestCase(unittest.TestCase):
     def setUp(self):
-        app.config['DATABASE'] = 'sqlite:///'+tempfile.mkdtemp()+'/test.sqlite3'
-        with app.app_context():
+        self._app = create_app()
+        self._app.config['DATABASE'] = 'sqlite:///'+tempfile.mkdtemp()+'/test.sqlite3'
+        with self._app.app_context():
             model.syncdb()
-        self.app = app.test_client()
+        self.app = self._app.test_client()
 
     def test_index(self):
         self.assertEqual(self.app.get('/').status_code, 200)

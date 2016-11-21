@@ -9,8 +9,9 @@ import colorlog
 
 sys.path.append(os.path.dirname(__file__))
 
-from spacewiki.app import APP
+from spacewiki.app import create_app 
 
+APP = create_app()
 MANAGER = Manager(APP)
 MANAGER.add_command('db', model.MANAGER)
 MANAGER.add_command("shell", Shell())

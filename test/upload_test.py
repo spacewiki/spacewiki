@@ -1,5 +1,5 @@
 from spacewiki import model
-from spacewiki.app import APP as app
+from spacewiki.app import create_app
 import unittest
 import tempfile
 import hashlib
@@ -12,8 +12,9 @@ test_db = SqliteDatabase(':memory:')
 
 class UploadTestCase(unittest.TestCase):
     def setUp(self):
-        app.config['UPLOAD_PATH'] = tempfile.mkdtemp()
-        self.app = app.test_client()
+        self._app = create_app()
+        self._app.config['UPLOAD_PATH'] = tempfile.mkdtemp()
+        self.app = self._app.test_client()
 
     def test_empty_upload(self):
         with test_database(test_db, [model.Attachment,
@@ -24,7 +25,7 @@ class UploadTestCase(unittest.TestCase):
           sha = hashlib.sha256()
           sha.update('')
           emptySha = sha.hexdigest()
-          uploadedFile = os.path.join(app.config['UPLOAD_PATH'],
+          uploadedFile = os.path.join(self._app.config['UPLOAD_PATH'],
             model.Attachment.hashPath(emptySha, 'empty.txt'))
 
           self.assertTrue(os.path.exists(uploadedFile))
@@ -41,7 +42,7 @@ class UploadTestCase(unittest.TestCase):
           sha = hashlib.sha256()
           sha.update('FOOBAR')
           emptySha = sha.hexdigest()
-          uploadedFile = os.path.join(app.config['UPLOAD_PATH'],
+          uploadedFile = os.path.join(self._app.config['UPLOAD_PATH'],
             model.Attachment.hashPath(emptySha, 'foo.bar'))
 
           self.assertTrue(os.path.exists(uploadedFile))
@@ -61,7 +62,7 @@ class UploadTestCase(unittest.TestCase):
             sha = hashlib.sha256()
             sha.update('BARFOO')
             emptySha = sha.hexdigest()
-            uploadedFile = os.path.join(app.config['UPLOAD_PATH'],
+            uploadedFile = os.path.join(self._app.config['UPLOAD_PATH'],
               model.Attachment.hashPath(emptySha, 'foo.bar'))
 
             self.assertTrue(os.path.exists(uploadedFile))
