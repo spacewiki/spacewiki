@@ -1,10 +1,10 @@
 """Various context processors"""
-from flask import Blueprint, request
+from flask import Blueprint, request, current_app
 import git
 import os
 import peewee
 
-from spacewiki import model, settings
+from spacewiki import model
 
 BLUEPRINT = Blueprint('context', __name__)
 
@@ -38,7 +38,7 @@ def add_random_page():
 @BLUEPRINT.app_context_processor
 def add_site_settings():
     """Adds the contents of settings.py to the template context"""
-    return dict(settings=settings)
+    return dict(settings=current_app.config)
 
 
 @BLUEPRINT.app_context_processor
