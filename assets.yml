@@ -13,7 +13,7 @@ javascript:
   output: cache/app.js
   filters: requirejs
   contents:
-    - js/lib/jquery.js
+    - jquery.js
     - js/lib/lightbox.js
     - js/lib/simplemde.js
     - js/lib/foundation/foundation.js

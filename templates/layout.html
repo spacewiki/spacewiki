@@ -94,12 +94,14 @@
 <script>
 require.config({
   baseUrl: "/static",
-  paths: {
-    'simplemde': 'js/lib/simplemde',
-    'jquery': 'js/lib/jquery'
+  shim: {
+    'js/lib/foundation/foundation': {
+      'deps': ['jquery']
+    }
   }
 });
-require(['js/editor']);
+// FIXME: Not sure why this needs to be an absolute path
+require(['/static/js/editor.js']);
 </script>
 {% assets "javascript" %}
 <script src="{{ASSET_URL}}"></script>
