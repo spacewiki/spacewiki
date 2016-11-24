@@ -7,7 +7,7 @@ import logging
 import tempfile
 
 from spacewiki import context, history, model, pages, specials, \
-        uploads, editor, assets, auth
+        uploads, editor, assets, auth, middleware
 
 def create_app():
     APP = Flask(__name__,
@@ -37,7 +37,7 @@ def create_app():
         'session.data_dir': APP.config['TEMP_DIR']
     })
 
-    APP.config['ASSETS_DEBUG'] = True
+    APP.wsgi_app = middleware.ReverseProxied(APP.wsgi_app)
 
     if APP.config['ADMIN_EMAILS']:
         from logging.handlers import SMTPHandler
