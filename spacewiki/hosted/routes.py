@@ -9,7 +9,7 @@ import spacewiki.model
 from dispatcher import make_wiki_app
 import stripe
 
-BLUEPRINT = Blueprint('routes', __name__)
+BLUEPRINT = Blueprint('routes', __name__, template_folder='templates')
 
 @BLUEPRINT.app_context_processor
 def add_site_settings():
