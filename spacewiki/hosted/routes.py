@@ -53,7 +53,7 @@ def slack_login():
         space_app = make_wiki_app(space.domain)
         with space_app.app_context():
             user_id = login_slack_id(slack_id)
-            user_id.display_name = slack_id['user']['name']
+            user_id.display_name = user_id['user']['name']
             user_id.handle = handle
             user_id.save()
         return redirect('https://%s.spacewiki.io/'%(domain))
