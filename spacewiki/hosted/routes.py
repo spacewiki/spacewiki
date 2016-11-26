@@ -25,7 +25,11 @@ def index(path=None):
 
 @BLUEPRINT.route('/slack_add_flow')
 def add_to_slack():
-    slacker = consume_token(url_for('routes.add_to_slack', _external=True))
+    try:
+        slacker = consume_token(url_for('routes.add_to_slack', _external=True))
+    except e:
+        flash("There was an error logging you in: %s", e)
+        return redirect(url_for('routes.index'))
     if slacker is None:
         flash('You denied the request to login')
         return redirect(url_for('routes.index'))
@@ -41,7 +45,11 @@ def add_to_slack():
 
 @BLUEPRINT.route('/slack_login_flow')
 def slack_login():
-    slacker = consume_token(url_for('routes.slack_login', _external=True))
+    try:
+        slacker = consume_token(url_for('routes.slack_login', _external=True))
+    except e:
+        flash("There was an error logging in: %s", e)
+        return redirect(url_for('routes.index'))
     if slacker is None:
         flash('You denied the request to login')
         return redirect(url_for('routes.index'))
