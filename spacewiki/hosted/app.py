@@ -10,7 +10,7 @@ def create_app():
     APP = Flask(__name__)
     APP.config.from_object('spacewiki.hosted.settings')
     ASSETS = Environment(APP)
-    ASSETS.from_yaml("spacewiki-io-assets.yml")
+    ASSETS.from_yaml("assets.yml")
     APP.secret_key = APP.config['SECRET_SESSION_KEY']
     APP.wsgi_app = ReverseProxied(APP.wsgi_app)
 
