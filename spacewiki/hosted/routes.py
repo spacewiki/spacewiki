@@ -20,6 +20,8 @@ def add_site_settings():
 def index(path=None):
     if current_app.config['DEADSPACE']:
         return render_template('deadspace.html')
+    elif current_app.config['LOGIN_NEEDED']:
+        return render_template('private.html')
     else:
         return render_template('index.html')
 

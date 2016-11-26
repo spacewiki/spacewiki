@@ -2,6 +2,7 @@ import logging
 from threading import Lock
 from spacewiki.hosted import model
 from flask import current_app
+from flask_login import current_user
 import peewee
 import spacewiki.app
 import spacewiki.model
@@ -30,6 +31,10 @@ def make_wiki_app(subdomain):
             hostedApp.config['DEADSPACE'] = True
             return hostedApp
     app = spacewiki.app.create_app()
+    with app.app_context():
+        if not current_user.is_authenticated():
+            hostedApp.config['LOGIN_NEEDED'] = True
+            return hostedApp
     app.secret_key = hostedApp.secret_key
     app.config['DATABASE_URL'] = db_url
     app.config['SITE_NAME'] = subdomain
