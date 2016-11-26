@@ -21,7 +21,6 @@ MANAGER.add_command("shell", Shell())
 def runserver(syncdb):
     if (syncdb):
         model.syncdb()
-    from spacewiki.app import APP
     from gevent.wsgi import WSGIServer
     serv = WSGIServer(('', int(os.environ.get('PORT', 5000))), APP, log=logging.getLogger("http"))
     serv.serve_forever()
@@ -30,8 +29,8 @@ def runserver(syncdb):
 def import_docs():
     from spacewiki import model
     from spacewiki.auth.tripcodes import new_anon_user
-    anon_user = new_anon_user()
     model.get_db()
+    anon_user = new_anon_user()
     doc_path = os.path.sep.join((os.path.dirname(__file__), 'doc'))
     for root, dirs, files in os.walk(doc_path):
         for fname in files:
