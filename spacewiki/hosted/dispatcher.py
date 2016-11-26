@@ -38,6 +38,7 @@ def failed_auth():
     import app, routes
     hostedApp = app.create_app()
     hostedApp.config['LOGIN_NEEDED'] = True
+    logging.debug("redirecting to failed app")
     with hostedApp.request_context(request.environ):
         return routes.index()
 
