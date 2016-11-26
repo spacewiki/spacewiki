@@ -39,6 +39,7 @@ def failed_auth():
     hostedApp = app.create_app()
     hostedApp.config['LOGIN_NEEDED'] = True
     logging.debug("redirecting to failed app")
+    current_app.register_blueprint(routes.BLUEPRINT)
     with hostedApp.app_context():
         return render_template('private.html')
 
