@@ -21,7 +21,7 @@ def db_url_for_subdomain(domain):
     return current_app.config['SPACE_DB_URL_PATTERN'] % (db_name)
 
 def confirm_logged_in():
-    if not current_user.is_authenticated():
+    if not current_user.is_authenticated:
         hostedApp = app.create_app()
         hostedApp.config['LOGIN_NEEDED'] = True
         with hostedApp.app_context():
