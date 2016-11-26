@@ -38,7 +38,7 @@ def failed_auth():
     import app, routes
     hostedApp = app.create_app()
     hostedApp.config['LOGIN_NEEDED'] = True
-    with hostedApp.request_context(request):
+    with hostedApp.request_context(request.environ):
         return routes.index()
 
 def make_wiki_app(subdomain):
