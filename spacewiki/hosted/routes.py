@@ -58,10 +58,11 @@ def slack_login():
         user_id = slacker.api.get('users.identity').body
         handle = slacker.api.get('auth.test').body['user']
         slack_id = user_id['user']['id']
+        display_name = user_id['user']['name']
         space_app = make_wiki_app(space.domain)
         with space_app.app_context():
             user_id = login_slack_id(slack_id)
-            user_id.display_name = user_id['user']['name']
+            user_id.display_name = display_name
             user_id.handle = handle
             user_id.save()
         return redirect('https://%s.spacewiki.io/'%(domain))
