@@ -27,7 +27,7 @@ def index(path=None):
 def add_to_slack():
     try:
         slacker = consume_token(url_for('routes.add_to_slack', _external=True))
-    except e:
+    except Error, e:
         flash("There was an error logging you in: %s", e)
         return redirect(url_for('routes.index'))
     if slacker is None:
@@ -47,7 +47,7 @@ def add_to_slack():
 def slack_login():
     try:
         slacker = consume_token(url_for('routes.slack_login', _external=True))
-    except e:
+    except Error, e:
         flash("There was an error logging in: %s", e)
         return redirect(url_for('routes.index'))
     if slacker is None:
