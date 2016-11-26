@@ -1,7 +1,7 @@
 import logging
 from threading import Lock
 from spacewiki.hosted import model
-from flask import current_app, session
+from flask import current_app, session, request
 from flask_login import current_user, login_user
 import peewee
 import spacewiki.app
@@ -22,8 +22,9 @@ def db_url_for_subdomain(domain):
     return current_app.config['SPACE_DB_URL_PATTERN'] % (db_name)
 
 def confirm_logged_in():
-    common_user = session.get('_spacewikio_auth_id', None)
+    common_user = session.get('_spacewikiio_auth_id', None)
     if common_user is not None:
+        del session['_spacewikiio_auth_id']
         try:
             u = spacewiki.model.Identity.get(spacewiki.model.Identity.auth_id ==
                     common_user, spacewiki.model.Identity.auth_type == 'slack')
@@ -32,6 +33,13 @@ def confirm_logged_in():
             pass
     if not current_user.is_authenticated:
         spacewiki.auth.LOGIN_MANAGER.unauthorized()
+
+def failed_auth():
+    import app, routes
+    hostedApp = app.create_app()
+    hostedApp.config['LOGIN_NEEDED'] = True
+    with hostedApp.request_context(request):
+        return routes.index()
 
 def make_wiki_app(subdomain):
     import app
@@ -51,6 +59,7 @@ def make_wiki_app(subdomain):
     app.config['UPLOAD_PATH'] = '/srv/spacewiki/uploads/%s'%(subdomain)
     app.config['ASSETS_CACHE'] = '/tmp/'
     app.logger.setLevel(logging.DEBUG)
+    spacewiki.auth.LOGIN_MANAGER.unauthorized_handler(failed_auth)
     with app.app_context():
         spacewiki.model.syncdb()
     return app
