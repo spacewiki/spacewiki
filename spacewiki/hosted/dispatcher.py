@@ -54,6 +54,7 @@ def make_wiki_app(subdomain):
     app = spacewiki.app.create_app()
     app.before_request(confirm_logged_in)
     app.secret_key = hostedApp.secret_key
+    app.config['SLACK_KEY']  = hostedApp.config['SLACK_KEY']
     app.config['DATABASE_URL'] = db_url
     app.config['SITE_NAME'] = subdomain
     app.config['UPLOAD_PATH'] = '/srv/spacewiki/uploads/%s'%(subdomain)
