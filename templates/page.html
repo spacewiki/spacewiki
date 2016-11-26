@@ -32,7 +32,7 @@
   {{revision.page.title}}
 </h1>
 <div class="last-edited">
-<p>Last modified {{revision.timestamp.date()}} by {{revision.author}}
+<p>Last modified {{revision.timestamp.date()}} by {{revision.author.display_name}}
 <p class="edit-message">{{revision.message}}
 </div>
 {% endif %}
@@ -55,7 +55,12 @@
   <caption>Revert to this revision</caption>
   <input type="hidden" name="revision" value="{{revision.id}}">
   <label>Commit message: <input type="text" name="message"></label>
-  <label>Nym: <input type="text" name="author" value="{{DEFAULT_AUTHOR}}"></label>
+  <label>Nym:
+    {% if current_user.is_authenticated%}
+      <strong>{{current_user.display_name}}</strong>
+    {% else %}
+      <input type="text" name="author" value="{{current_user.display_name}}"></label>
+    {% endif %}
   <button type="submit">Save</button>
 </fieldset>
 </form>

@@ -17,7 +17,7 @@
                                              id="slug-label">{{slug}}</span></a></dd>
             <dt>Nym:</dt>
             <dd><a data-dropdown="nym-drop" class="editor-button"><i class="fa
-            fa-pencil"></i> <span id="nym-label">{{DEFAULT_AUTHOR}}</span></a></dd>
+            fa-pencil"></i> <span id="nym-label">{{current_user.handle}}</span></a></dd>
             <dt><label id="editor_toggle">Use rich text editor <input
                        type="checkbox" id="editor_toggle_value"></label></dt>
           </dl>
@@ -35,7 +35,13 @@
             </label>
           </div>
           <div id="nym-drop" data-dropdown-content class="f-dropdown content">
-            <label>Nym: <input type="text" name="author" value="{{DEFAULT_AUTHOR}}"></label>
+            <label>Nym: 
+            {% if current_user.is_authenticated%}
+              <strong>{{current_user.display_name}}</strong>
+            {% else %}
+              <input type="text" name="author" value="{{current_user.display_name}}"></label>
+            {% endif %}
+            </label>
           </div>
           <label id="editor_toggle">Use rich text editor <input type="checkbox" id="editor_toggle_value"></label>
           <textarea name="body" id="body">{% if revision %}{{revision.body}}{% endif %}</textarea>

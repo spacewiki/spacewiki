@@ -40,17 +40,6 @@ def add_site_settings():
     """Adds the contents of settings.py to the template context"""
     return dict(settings=current_app.config)
 
-
-@BLUEPRINT.app_context_processor
-def add_default_author():
-    """Adds the default author to the template context"""
-    session = request.environ['beaker.session']
-    if 'author' in session:
-        author = session['author']
-    else:
-        author = 'Anonymous'
-    return dict(DEFAULT_AUTHOR=author)
-
 @BLUEPRINT.app_context_processor
 def add_nav_pages():
     pages = []

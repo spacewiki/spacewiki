@@ -2,7 +2,8 @@
 
 from flask import (Blueprint, current_app, render_template, request, redirect,
         url_for)
-from spacewiki import model
+from flask_login import current_user
+from spacewiki import model, auth
 import peewee
 
 import logging
@@ -42,6 +43,7 @@ def edit(slug, redirectFrom=None, preview=None, collision=None):
 
 @BLUEPRINT.route("/", methods=['POST'])
 @BLUEPRINT.route("/<path:slug>", methods=['POST'])
+@auth.tripcodes.tripcode_login_field('author')
 def save(slug=None):
     """Save a new Revision, creating a new Page if needed"""
     newslug = request.form.get('slug', None)
@@ -67,9 +69,6 @@ def save(slug=None):
                                  slug=slug)
         logging.debug("Created new page: %s (%s)", page.title, page.slug)
     page.newRevision(request.form['body'], request.form['message'],
-                     request.form['author'])
-    session = request.environ['beaker.session']
-    session['author'] = request.form['author']
-    session.save()
+                     current_user._get_current_object())
 
     return redirect(url_for('pages.view', slug=page.slug))

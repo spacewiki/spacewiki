@@ -39,6 +39,14 @@
         </ul>
         {% block toolbar %}
           <ul class="left page-tools">
+            {% if current_user.is_authenticated %}
+            <li class="has-dropdown"><a href="#"><i class="fa fa-user"></i> Hello, {{current_user.display_name}}</a>
+              <ul class="dropdown">
+                <li><a
+                  href="{{url_for('auth.logout')}}"><i class="fa fa-lock"></i> Logout</a></li>
+              </ul>
+            </li>
+            {% endif %}
             <li><a href="{{url_for('specials.allPages')}}"><i class="fa fa-globe"></i> All Pages</a></li>
             {% for nav in NAVIGATION_PAGES %}
               <li><a href="{{url_for('pages.view', slug=nav.slug)}}">{{nav.title}}</a></li>

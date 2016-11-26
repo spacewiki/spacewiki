@@ -1,4 +1,4 @@
-from spacewiki import model, wikiformat
+from spacewiki import model, wikiformat, auth
 from spacewiki.wikiformat import directives
 import unittest
 from spacewiki.app import APP as app
@@ -20,6 +20,7 @@ class ParserTestCase(unittest.TestCase):
     def test_recursive_templates(self):
         with test_database(test_db, [model.Page, model.Revision]):
             page = model.Page.create(title='recursive', slug='recursive')
-            page.newRevision('{{recursive}}', '', '')
+            page.newRevision('{{recursive}}', '',
+                    auth.tripcodes.new_anon_user())
             canary = "{{Max include depth of"
             self.assertTrue(canary in directives.render("{{recursive}}", ''))

@@ -6,7 +6,8 @@ from flask_assets import Environment, Bundle
 import logging
 import tempfile
 
-from spacewiki import context, history, model, pages, specials, uploads, editor, assets
+from spacewiki import context, history, model, pages, specials, \
+        uploads, editor, assets, auth
 
 APP = Flask(__name__,
             template_folder='../templates',
@@ -20,7 +21,9 @@ APP.register_blueprint(pages.BLUEPRINT)
 APP.register_blueprint(history.BLUEPRINT)
 APP.register_blueprint(specials.BLUEPRINT)
 APP.register_blueprint(editor.BLUEPRINT)
+APP.register_blueprint(auth.BLUEPRINT)
 assets.ASSETS.init_app(APP)
+auth.LOGIN_MANAGER.init_app(APP)
 
 APP.secret_key = APP.config['SECRET_SESSION_KEY']
 

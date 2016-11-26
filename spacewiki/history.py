@@ -1,18 +1,19 @@
 """Routes for handling page history and reverts"""
 
 from flask import Blueprint, render_template, request, url_for, redirect
+from flask_login import current_user
 
-from spacewiki import model
+from spacewiki import model, auth
 
 BLUEPRINT = Blueprint('history', __name__)
 
 
 @BLUEPRINT.route("/<path:slug>/revert", methods=['POST'])
+@auth.tripcodes.tripcode_login_field('author')
 def revert(slug):
     """Handles reverting pages to previous revisions"""
     revision = request.form['revision']
     message = request.form['message']
-    author = request.form['author']
     page = model.Page.get(slug=slug)
     old_revision = model.Revision.get(page=page, id=revision)
     page.newRevision(old_revision.body,
@@ -21,10 +22,7 @@ def revert(slug):
                          old_revision.timestamp,
                          message
                      ),
-                     author)
-    session = request.environ['beaker.session']
-    session['author'] = author
-    session.save()
+                     current_user._get_current_object())
     return redirect(url_for('pages.view', slug=page.slug))
 
 

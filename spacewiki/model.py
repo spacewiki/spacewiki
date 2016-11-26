@@ -3,9 +3,9 @@ import crypt
 import difflib
 import datetime
 from flask import g, current_app, Blueprint
+from flask_login import current_user, login_user, UserMixin, AnonymousUserMixin
 from flask.ext.script import Manager
 import logging
-import hashlib
 import os
 import peewee
 import playhouse.migrate
@@ -70,24 +70,6 @@ class SlugField(peewee.CharField):
         if slug == '':
           return (subslug, title)
         return ('/'.join((slug, subslug)), title)
-
-
-class TripcodeField(peewee.CharField):
-    """Hashes tripcodes from specially formatted strings"""
-    def coerce(self, value):
-        return self.tripcode(value)
-
-    @staticmethod
-    def tripcode(value):
-        """Parses a string and returns the tripcode-ified version"""
-        tokens = value.split('#', 1)
-        if len(tokens) == 1:
-            return tokens[0]
-        token_hash = hashlib.sha1()
-        token_hash.update(tokens[0])
-        token_hash.update(tokens[1])
-        return tokens[0]+'#'+token_hash.hexdigest()
-
 
 class Page(BaseModel):
     """A wiki page"""
@@ -230,6 +212,46 @@ class Softlink(BaseModel):
     dest = peewee.ForeignKeyField(Page, related_name='softlinks_in')
     hits = peewee.IntegerField(default=0)
 
+class Identity(BaseModel, UserMixin):
+    """An identity in the wiki"""
+    display_name = peewee.CharField()
+    handle = peewee.CharField()
+    auth_id = peewee.CharField()
+    auth_type = peewee.CharField()
+
+    def __repr__(self):
+        return "Identity(%s, %s)"%(self.id, self.get_id())
+
+    @property
+    def is_anonymous(self):
+        return self.auth_type == 'tripcode'
+
+    @property
+    def is_authenticated(self):
+        return self.auth_type != 'tripcode'
+
+    def get_id(self):
+        return self.auth_type + ':' + self.auth_id
+
+    @staticmethod
+    def get_from_id(user_id, display=None, handle=None):
+        provider, id = user_id.split(':', 1)
+        try:
+            ret = Identity.get(auth_type=provider, auth_id=id)
+            return ret
+        except:
+            ret = Identity(auth_type=provider, auth_id=id)
+        if display is not None:
+            ret.display_name = display
+        if handle is not None:
+            ret.handle = handle
+        return ret
+
+    @staticmethod
+    def get_or_create_from_id(*args, **kwargs):
+        ret = Identity.get_from_id(*args, **kwargs)
+        ret.save()
+        return ret
 
 class Revision(BaseModel):
     """A page revision"""
@@ -237,7 +259,7 @@ class Revision(BaseModel):
     body = peewee.TextField()
     message = peewee.TextField(default='')
     timestamp = peewee.DateTimeField(default=datetime.datetime.now)
-    author = TripcodeField(default='Anonymous')
+    author = peewee.ForeignKeyField(Identity, related_name='revisions')
 
     @staticmethod
     def render_text(body, slug):
@@ -421,7 +443,7 @@ def syncdb():
         get_db()
         logging.info("Creating tables")
         DATABASE.create_tables([Page, Revision, Softlink, Attachment,
-            AttachmentRevision, DatabaseVersion], True)
+            AttachmentRevision, DatabaseVersion, Identity], True)
 
         start_version = 0
         initial_schema = False
@@ -451,7 +473,28 @@ def syncdb():
         if version.schema_version == len(MIGRATIONS):
             logging.info("OK!")
 
+def migrate_identities(migrator):
+    playhouse.migrate.migrate(
+        migrator.rename_column('revision', 'author', 'tripcode')
+    )
+
+    author_id_field = peewee.IntegerField(default=0)
+    playhouse.migrate.migrate(
+        migrator.add_column('revision', 'author_id', author_id_field)
+    )
+
+    logging.info("Converting tripcodes to identities")
+    for r in Revision.raw('SELECT id,tripcode FROM revision'):
+        id = Identity.from_tripcode(r.tripcode)
+        r.author = id
+        r.save()
+
+    playhouse.migrate.migrate(
+        migrator.drop_column('revision', 'tripcode')
+    )
+
 MIGRATIONS = (
+    migrate_identities,
 )
 
 def run_migrations(current_revision):
