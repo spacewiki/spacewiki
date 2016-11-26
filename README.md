@@ -14,8 +14,8 @@ has that and it works fantastic for them. Noisebridge does not and the wiki
 tends to turn into a mess of outdated pages, broken images, and the like.
 Entropy kills.
 
-To see a live demo of SpaceWiki, [check out
-ratchet.noisebridge.systems](http://ratchet.noisebridge.systems/wiki/)
+Chances are, you'll be looking for the hosted version of SpaceWiki. This can be
+found at https://spacewiki.io/, and is free to try.
 
 ## Features
 
