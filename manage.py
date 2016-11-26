@@ -29,6 +29,8 @@ def runserver(syncdb):
 @MANAGER.command
 def import_docs():
     from spacewiki import model
+    from spacewiki.auth.tripcodes import new_anon_user
+    anon_user = new_anon_user()
     model.get_db()
     doc_path = os.path.sep.join((os.path.dirname(__file__), 'doc'))
     for root, dirs, files in os.walk(doc_path):
@@ -46,7 +48,8 @@ def import_docs():
                 p = model.Page.get(slug=slug)
             except model.Page.DoesNotExist:
                 p = model.Page.create(title=title, slug=slug)
-            p.newRevision(open(os.path.sep.join((root, fname)), 'r').read(), 'Imported from %s' % fname, 'SpaceWiki')
+            p.newRevision(open(os.path.sep.join((root, fname)), 'r').read(),
+                    'Imported from %s' % fname, anon_user)
 
 if __name__ == "__main__":
     handler = colorlog.StreamHandler()
