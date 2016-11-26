@@ -423,13 +423,17 @@ def syncdb():
         DATABASE.create_tables([Page, Revision, Softlink, Attachment,
             AttachmentRevision, DatabaseVersion], True)
 
+        start_version = 0
+        initial_schema = False
         try:
             version = DatabaseVersion.select()[0]
+            start_version = version.schema_version
         except IndexError:
             logging.debug("Creating initial schema")
             version = DatabaseVersion.create(schema_version=0)
+            initial_schema = True
 
-        if version.schema_version == 0:
+        if initial_schema:
             version.schema_version = len(MIGRATIONS)
         else:
             logging.debug("Database schema is at version %s",
@@ -440,10 +444,12 @@ def syncdb():
                         version.schema_version += 1
             except:
                 logging.exception("Could not update database schema to version %s! Fix any errors and re-run syncdb again.", version.schema_version + 1)
-        logging.debug("Database schema is now at version %s",
-                version.schema_version)
+        if version.schema_version != start_version:
+            logging.debug("Database schema is now at version %s",
+                    version.schema_version)
         version.save()
-    logging.info("OK!")
+        if version.schema_version == len(MIGRATIONS):
+            logging.info("OK!")
 
 MIGRATIONS = (
 )
@@ -454,7 +460,8 @@ def run_migrations(current_revision):
 
     for migration in MIGRATIONS[current_revision:]:
         with DATABASE.transaction():
-            logging.info("Applying migration %d", current_revision)
-            playhouse.migrate.migrate(*migration(migrator))
+            logging.info("Applying migration %d -> %d", current_revision,
+                    current_revision+1)
+            migration(migrator)
 
     logging.info("Upgraded to schema %s", current_revision)
