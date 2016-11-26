@@ -142,7 +142,7 @@ def login_slack_id(slack_id):
                 display_name='',
                 handle=slack_id
         )
-    login_user(identity)
+    session['_spacewikiio_auth_id'] = slack_id
     return identity
 
 def consume_token(uri):
