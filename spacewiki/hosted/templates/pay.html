@@ -1,4 +1,6 @@
 {% extends "_layout.html" %}
+
+{% block content %}
   <div class="row">
     <div class="small-12 columns">
       <h2>Payment</h2>
@@ -14,6 +16,7 @@
     </div>
   </div>
 {% endblock %}
+
 {% block extrafoot %}
   <script src="https://checkout.stripe.com/checkout.js"></script>
   <script>
