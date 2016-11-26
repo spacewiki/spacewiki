@@ -1,7 +1,7 @@
 import logging
 from threading import Lock
 from spacewiki.hosted import model
-from flask import current_app, session, request
+from flask import current_app, session, request, render_template
 from flask_login import current_user, login_user
 import peewee
 import spacewiki.app
@@ -39,7 +39,8 @@ def failed_auth():
     hostedApp = app.create_app()
     hostedApp.config['LOGIN_NEEDED'] = True
     logging.debug("redirecting to failed app")
-    return render_template('private.html')
+    with hostedApp.app_context():
+        return render_template('private.html')
 
 def make_wiki_app(subdomain):
     import app
