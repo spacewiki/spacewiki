@@ -22,11 +22,11 @@ def db_url_for_subdomain(domain):
 
 def confirm_logged_in():
     if not current_user.is_authenticated:
-        import app
+        import app, routes
         hostedApp = app.create_app()
         hostedApp.config['LOGIN_NEEDED'] = True
         with hostedApp.app_context():
-            return hostedApp.index()
+            return routes.index()
 
 def make_wiki_app(subdomain):
     import app
