@@ -73,6 +73,7 @@ class Space(BaseModel):
         try:
             space = Space.get(Space.slack_team_id == team_id)
             logging.debug("Space found for %s", team_id)
+            return space
         except peewee.DoesNotExist:
             logging.debug("No space found for %s", team_id)
             return None
