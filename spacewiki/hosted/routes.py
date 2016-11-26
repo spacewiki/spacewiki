@@ -50,7 +50,7 @@ def slack_login():
         user_id = slacker.api.get('users.identity').body
         handle = slacker.api.get('auth.test').body['user']
         slack_id = user_id['user']['id']
-        space_app = make_wiki_app(domain)
+        space_app = make_wiki_app(space.domain)
         with space_app.app_context():
             user_id = login_slack_id(slack_id)
             user_id.display_name = slack_id['user']['name']
