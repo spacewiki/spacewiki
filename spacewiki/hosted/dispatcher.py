@@ -2,6 +2,7 @@ import logging
 from threading import Lock
 from spacewiki.hosted import model
 from flask import current_app, session, request, render_template
+from flask.globals import _request_ctx_stack
 from flask_login import current_user, login_user
 import peewee
 import spacewiki.app
@@ -32,19 +33,16 @@ def confirm_logged_in():
         except peewee.DoesNotExist:
             pass
     if not current_user.is_authenticated:
-        spacewiki.auth.LOGIN_MANAGER.unauthorized()
+        if not request.path.startswith('/static'):
+            return spacewiki.auth.LOGIN_MANAGER.unauthorized()
 
 def failed_auth():
-    import app, routes
-    hostedApp = app.create_app()
-    hostedApp.config['LOGIN_NEEDED'] = True
-    logging.debug("redirecting to failed app")
-    current_app.register_blueprint(routes.BLUEPRINT)
-    with hostedApp.app_context():
-        return render_template('private.html')
+    import routes
+    _request_ctx_stack.top.url_adapter.server_name = 'spacewiki.io'
+    return routes.index()
 
 def make_wiki_app(subdomain):
-    import app
+    import app, routes
     hostedApp = app.create_app()
     with hostedApp.app_context():
         model.get_db()
@@ -60,6 +58,9 @@ def make_wiki_app(subdomain):
     app.config['SITE_NAME'] = subdomain
     app.config['UPLOAD_PATH'] = '/srv/spacewiki/uploads/%s'%(subdomain)
     app.config['ASSETS_CACHE'] = '/tmp/'
+    app.config['LOGIN_NEEDED'] = True
+    app.config['DEADSPACE'] = False
+    app.register_blueprint(routes.BLUEPRINT)
     app.logger.setLevel(logging.DEBUG)
     spacewiki.auth.LOGIN_MANAGER.unauthorized_handler(failed_auth)
     with app.app_context():
