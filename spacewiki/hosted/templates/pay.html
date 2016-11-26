@@ -1,17 +1,4 @@
-<!DOCTYPE html>
-<html>
-  <head>
-  {% assets "css" %}
-  <link rel="stylesheet" href="{{ASSET_URL}}">
-  {% endassets %}
-  </head>
-<body>
-  <header class="row">
-    <div class="small-10 columns">
-      <h1>SpaceWiki</h1>
-    </div>
-  </header>
-  <main>
+{% extends "_layout.html" %}
   <div class="row">
     <div class="small-12 columns">
       <h2>Payment</h2>
@@ -26,7 +13,8 @@
       </form>
     </div>
   </div>
-  </main>
+{% endblock %}
+{% block extrafoot %}
   <script src="https://checkout.stripe.com/checkout.js"></script>
   <script>
 var PLAN_NAME = "{{plan}}";
@@ -61,6 +49,4 @@ window.addEventListener('popstate', function() {
   handler.close();
 });
   </script>
-</body>
-</html>
-
+{% endblock %}

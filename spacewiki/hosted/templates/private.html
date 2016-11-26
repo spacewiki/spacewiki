@@ -1,17 +1,6 @@
-<!DOCTYPE html>
-<html>
-  <head>
-  {% assets "css" %}
-  <link rel="stylesheet" href="{{ASSET_URL}}">
-  {% endassets %}
-  </head>
-<body>
-  <header class="row">
-    <div class="small-10 columns">
-      <h1>SpaceWiki</h1>
-    </div>
-  </header>
-  <main>
+{% extends "_layout.html" %}
+
+{% block content %}
   <div class="row">
     <div class="small-8 small-centered columns blurb">
       <p>Login Required
@@ -24,7 +13,4 @@
       {% include "_signin.html" %}
     </div>
   </div>
-  </main>
-</body>
-</html>
-
+{% endblock %}

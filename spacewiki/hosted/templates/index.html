@@ -1,32 +1,6 @@
-<!DOCTYPE html>
-<html>
-  <head>
-  {% assets "css" %}
-  <link rel="stylesheet" href="{{ASSET_URL}}">
-  {% endassets %}
-  </head>
-<body>
-  <header class="row">
-    <div class="small-10 columns">
-      <h1>SpaceWiki</h1>
-    </div>
-    <div class="small-2 columns">
-      Already using SpaceWiki?
-      {% include "_signin.html" %}
-    </div>
-  </header>
-  <main>
-  {% with messages = get_flashed_messages() %}
-  {% if messages %}
-  <div class="row">
-    <div class="small-12">
-      {% for message in messages %}
-      <p>{{message}}
-      {% endfor %}
-    </div>
-  </div>
-  {% endif %}
-  {% endwith %}
+{% extends "_layout.html" %}
+
+{% block content %}
   <div class="row">
     <div class="small-8 small-centered columns blurb">
       <p><strong>The wiki you never knew you needed.</strong>
@@ -92,6 +66,4 @@
       </ul>
     </div>
   </div>
-  </main>
-</body>
-</html>
+{% endblock %}
