@@ -22,6 +22,8 @@ APP.register_blueprint(specials.BLUEPRINT)
 APP.register_blueprint(editor.BLUEPRINT)
 assets.ASSETS.init_app(APP)
 
+APP.secret_key = APP.config['SECRET_SESSION_KEY']
+
 if APP.config['TEMP_DIR'] is None:
     APP.config['TEMP_DIR'] = tempfile.mkdtemp(prefix='spacewiki')
 

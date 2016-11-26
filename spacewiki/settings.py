@@ -11,6 +11,8 @@ TEMP_DIR = None
 
 TWITTER_CARD_SITE = None
 
+SECRET_SESSION_KEY = None
+
 try:
     from local_settings import *  # pylint: disable=unused-wildcard-import,wildcard-import
 except ImportError:
