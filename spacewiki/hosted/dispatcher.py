@@ -20,6 +20,13 @@ def db_url_for_subdomain(domain):
         return None
     return current_app.config['SPACE_DB_URL_PATTERN'] % (db_name)
 
+def confirm_logged_in():
+    if not current_user.is_authenticated():
+        hostedApp = app.create_app()
+        hostedApp.config['LOGIN_NEEDED'] = True
+        with hostedApp.app_context():
+            return hostedApp.index()
+
 def make_wiki_app(subdomain):
     import app
     hostedApp = app.create_app()
@@ -31,10 +38,7 @@ def make_wiki_app(subdomain):
             hostedApp.config['DEADSPACE'] = True
             return hostedApp
     app = spacewiki.app.create_app()
-    with app.app_context():
-        if not current_user.is_authenticated():
-            hostedApp.config['LOGIN_NEEDED'] = True
-            return hostedApp
+    app.before_request(confirm_logged_in)
     app.secret_key = hostedApp.secret_key
     app.config['DATABASE_URL'] = db_url
     app.config['SITE_NAME'] = subdomain
