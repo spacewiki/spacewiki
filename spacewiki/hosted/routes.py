@@ -1,6 +1,6 @@
 from flask import Blueprint, current_app, render_template, url_for, redirect,\
     request, session, flash
-from slacker import Slacker
+from slacker import Slacker, Error
 from flask_login import login_user
 import model
 import peewee
