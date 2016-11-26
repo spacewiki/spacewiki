@@ -1,6 +1,5 @@
 """SpaceWiki Flask application"""
 
-from beaker.middleware import SessionMiddleware
 from flask import Flask
 from flask_assets import Environment, Bundle
 import logging
@@ -30,12 +29,6 @@ def create_app():
 
     if APP.config['TEMP_DIR'] is None:
         APP.config['TEMP_DIR'] = tempfile.mkdtemp(prefix='spacewiki')
-
-    APP.wsgi_app = SessionMiddleware(APP.wsgi_app, {
-        'session.type': 'file',
-        'session.cookie_expires': False,
-        'session.data_dir': APP.config['TEMP_DIR']
-    })
 
     APP.wsgi_app = middleware.ReverseProxied(APP.wsgi_app)
 
