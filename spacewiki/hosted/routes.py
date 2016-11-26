@@ -65,7 +65,7 @@ def slack_login():
             user_id.display_name = display_name
             user_id.handle = handle
             user_id.save()
-        return redirect('https://%s.spacewiki.io/'%(domain))
+        return redirect('https://%s.spacewiki.io/'%(space.domain))
     else:
         flash("Your team doesn't have a wiki yet!")
         return redirect(url_for('routes.index'))
