@@ -39,8 +39,7 @@ def failed_auth():
     hostedApp = app.create_app()
     hostedApp.config['LOGIN_NEEDED'] = True
     logging.debug("redirecting to failed app")
-    with hostedApp.request_context(request.environ):
-        return render_template('private.html')
+    return render_template('private.html')
 
 def make_wiki_app(subdomain):
     import app
