@@ -1,0 +1,63 @@
+{% extends "_layout.html" %}
+
+{% block content %}
+  <div class="row upsell">
+    <div class="small-10 small-centered columns">
+      <h2>Welcome to SpaceWiki</h2>
+      <p>Hooray! This is exciting! You are seconds away from having A wiki just
+      for you and your team. A limitless repository of knowledge in a
+      searchable, structured format with some markdown formatting mixed in.
+      Imagine the things you'll write! The things you'll learn! The experience
+      of knowing exactly what your coworkers are talking about.
+      <p>Before you jump in though, there is the matter of payment. SpaceWiki is
+      a tiny one-person startup. Its my bread and butter, you see. All of this
+      before you takes time, energy, and a well-fed hacker to make happen. These
+      things aren't free. SpaceWiki is provided free of charge to most groups,
+      but that doesn't pay the bills. Please consider making a donation
+      subscription to support SpaceWiki's growth, development, and maintenence
+      needs.
+      <p>You can also just use it for free. If you want. Up to you.
+    </div>
+  </div>
+  <div class="row pricing">
+    <div class="large-12 columns">
+      <h2>Select a plan</h2>
+    </div>
+  </div>
+  <div class="row pricing">
+    <div class="large-4 columns">
+      <h3>Non-profits and Communities</h3>
+      <ul>
+        <li>Unlimited users</li>
+        <li>Unlimited pages</li>
+        <li>20MB attachments</li>
+        <li class="the-price">
+          <a class="free-button" href="{{url_for('routes.choose_plan', plan='free')}}">Free!</a>
+          <a class="donate-button" href="{{url_for('routes.choose_plan', plan='donate')}}">Or donate $5</a>
+        </li>
+      </ul>
+    </div>
+    <div class="large-4 columns">
+      <h3>Startup</h3>
+      <ul>
+        <li>1-25 Users</li>
+        <li>Unlimited pages</li>
+        <li>50GB attachments</li>
+        <li class="the-price">
+          <a class="paid-button" href="{{url_for('routes.choose_plan', plan='startup')}}">$20 per month</a>
+        </li>
+      </ul>
+    </div>
+    <div class="large-4 columns">
+      <h3>Corporate</h3>
+      <ul>
+        <li>Unlimited Users</li>
+        <li>Unlimited pages</li>
+        <li>500GB attachments</li>
+        <li class="the-price">
+          <a class="paid-button" href="{{url_for('routes.choose_plan', plan='corporate')}}">$50 per month</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+{% endblock %}

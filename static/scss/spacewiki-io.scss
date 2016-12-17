@@ -1,0 +1,140 @@
+@import "settings";
+
+$body-font-color: #fff;
+
+@import "lib/foundation/foundation.scss";
+
+body {
+  background: url(../img/space.jpg) no-repeat center center;
+  background-size: cover;
+  font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+header {
+  padding-top: 0.5em;
+  h1 {
+    color: #fff;
+    padding-left: 82px;
+    height: 58px;
+    background: url(../img/spacewiki.svg) no-repeat center left;
+    background-size: auto 58px;
+  }
+}
+
+.blurb {
+  text-align: center;
+  p {
+    font-size: 48pt;
+    text-shadow: 0px 0px 30px rgba(0, 0, 0, 0.55);
+  }
+}
+
+.create-wiki {
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.65);
+  border-radius: 20px;
+  padding: 0.5em;
+  p {
+    font-size: 24pt;
+  }
+}
+
+.features {
+  text-align: center;
+  margin-top: 3em;
+  h2 {
+    color: #fff;
+  }
+
+  ul {
+    list-style: none;
+  }
+}
+
+.pricing {
+  text-align: center;
+
+  h2 {
+    color: #fff;
+  }
+
+  h3 {
+    color: #000;
+    background-color: rgba(darken($secondary-color, 25%), 0.75);
+    margin: 0;
+    border-radius: 20px 20px 0px 0px;
+    border-bottom: 1px solid $primary-color;
+    padding: 1.25em;
+  }
+
+  ul {
+    list-style: none;
+    margin-left: 0 !important;
+  }
+
+  li {
+    background-color: rgba($secondary-color, 0.75);
+    color: #000;
+    font-size: larger;
+    padding: 0.5em;
+  }
+
+  li:nth-child(2) {
+    background-color: rgba(lighten(#fff, 25%), 0.75);
+  }
+
+  .the-price {
+    border-radius: 0px 0px 20px 20px;
+    background-color: rgba($primary-color, 0.75);
+    font-weight: bold;
+    font-size: larger;
+    padding: 1em;
+    color: #fff;
+
+    .free-button, .donate-button, .paid-button {
+      font-weight: bold !important;
+      font-size: larger !important;
+    }
+
+    .free-button {
+      @include button(
+        $radius:15px,
+        $bg:#0000dd
+      );
+    }
+
+    .donate-button {
+      @include button(
+        $radius:15px,
+        $bg:#00dd00
+      );
+    }
+
+    .paid-button {
+      @include button(
+        $radius:15px,
+        $bg:#dd0000
+      );
+    }
+  }
+}
+
+.upsell {
+  background-color: rgba(0, 0, 0, 0.75);
+  border-radius: 15px;
+
+  h2 {
+    color: #fff;
+  }
+}
+
+header {
+  .tools {
+    font-size: large;
+    height: 58px;
+    vertical-align: middle;
+  }
+  a {
+    color: #fff !important;
+  }
+}

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  {% assets "spacewiki_io_css" %}
+  <link rel="stylesheet" href="{{ASSET_URL}}">
+  {% endassets %}
+  </head>
+<body>
+  <header class="row">
+    <div class="small-10 columns">
+      <h1><a href="{{url_for('routes.index')}}">SpaceWiki</a></h1>
+    </div>
+    <div class="small-2 columns">
+      Already using SpaceWiki?
+      {% include "_signin.html" %}
+    </div>
+  </header>
+  <main>
+  {% with messages = get_flashed_messages() %}
+  {% if messages %}
+  <div class="row">
+    <div class="small-12">
+      {% for message in messages %}
+      <p>{{message}}
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+  {% endwith %}
+  {% block content %}
+  {% endblock %}
+  </main>
+</body>
+{% block extrafoot %}
+{% endblock %}
+</html>
+

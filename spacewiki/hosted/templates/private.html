@@ -1,0 +1,16 @@
+{% extends "_layout.html" %}
+
+{% block content %}
+  <div class="row">
+    <div class="small-8 small-centered columns blurb">
+      <p>Login Required
+    </div>
+  </div>
+  <div class="row">
+    <div class="small-4 small-centered columns create-wiki">
+      <p>The wiki you're looking for is private.
+      <p>Login:
+      {% include "_signin.html" %}
+    </div>
+  </div>
+{% endblock %}

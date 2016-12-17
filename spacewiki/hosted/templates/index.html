@@ -1,0 +1,69 @@
+{% extends "_layout.html" %}
+
+{% block content %}
+  <div class="row">
+    <div class="small-8 small-centered columns blurb">
+      <p><strong>The wiki you never knew you needed.</strong>
+    </div>
+  </div>
+  <div class="row">
+    <div class="small-4 small-centered columns create-wiki">
+      <p>Create your wiki <em>now</em>
+      {% include "_add.html" %}
+    </div>
+  </div>
+  <div class="row features">
+    <div class="large-4 large-offset-2 columns">
+      <h2>Collaborative documents</h2>
+      <ul>
+        <li>Structured long-form pages</li>
+        <li>Its like a book</li>
+        <li>But webscale</li>
+        <li>Format it with Markdown!</li>
+      </ul>
+    </div>
+    <div class="large-4 columns">
+      <h2>With Slack</h2>
+      <ul>
+        <li>Wiki-as-a-service. Why have the overhead of running it yourself?</li>
+        <li>You can share it with your team</li>
+        <li>Its hip and trendy</li>
+      </ul>
+    </div>
+    <div class="large-2 columns"></div>
+  </div>
+  <div class="row pricing">
+    <div class="large-12 columns">
+      <h2>Pricing</h2>
+    </div>
+  </div>
+  <div class="row pricing">
+    <div class="large-4 columns">
+      <h3>Non-profits and Communities</h3>
+      <ul>
+        <li>Unlimited users</li>
+        <li>Unlimited pages</li>
+        <li>20MB attachments</li>
+        <li class="the-price">Free</li>
+      </ul>
+    </div>
+    <div class="large-4 columns">
+      <h3>Startup</h3>
+      <ul>
+        <li>1-25 Users</li>
+        <li>Unlimited pages</li>
+        <li>50GB attachments</li>
+        <li class="the-price">$20 per month</li>
+      </ul>
+    </div>
+    <div class="large-4 columns">
+      <h3>Corporate</h3>
+      <ul>
+        <li>Unlimited Users</li>
+        <li>Unlimited pages</li>
+        <li>500GB attachments</li>
+        <li class="the-price">$50 per month</li>
+      </ul>
+    </div>
+  </div>
+{% endblock %}
