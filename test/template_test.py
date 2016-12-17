@@ -17,7 +17,7 @@ class ParserTestCase(unittest.TestCase):
             self.assertEqual(wikiformat.render_wikitext("", ''), "")
 
     def test_recursive_templates(self):
-        with test_database(test_db, [model.Page, model.Revision]):
+        with test_database(test_db, [model.Page, model.Revision, model.Identity]):
             page = model.Page.create(title='recursive', slug='recursive')
             page.newRevision('{{recursive}}', '',
                     auth.tripcodes.new_anon_user())
