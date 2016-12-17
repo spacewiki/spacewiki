@@ -6,6 +6,13 @@
     <p><small>Redirected from <a
         href="{{url_for('editor.edit', slug=redirectFrom)}}">{{redirectFrom}}</a></small>
     {% endif %}
+    {% if deletedPage %}
+      {% with rev = deletedPage.revisions[0] %}
+      <p><em>This page was previously deleted on
+        {{rev.timestamp}} by {{rev.author}}. <a
+        href="{{url_for('history.undelete', slug=deletedPage.slug)}}">)Undo</a></em>
+      {% endwith %}
+    {% endif %}
     <p><em>There is no page titled "{{title}}". You may create one here:</em>
 {% endblock %}
 
