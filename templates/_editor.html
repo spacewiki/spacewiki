@@ -56,11 +56,14 @@
       {% endif %}
       <li><a class="small button" href="{{url_for('uploads.upload', slug=slug)}}">Upload</a></li>
     </ul>
+    <label>Commit message:<input type="text" name="message"></label>
   </div>
   <div class="row">
-    <div class="large-12 columns">
-      <label>Commit message:<input type="text" name="message"></label>
-      <button type="submit">Save</button>
+    <div class="large-1 columns">
+      <button type="submit" name="action" value="save">Save</button>
+    </div>
+    <div class="large-11 columns text-right">
+      <button class="button alert" type="submit" name="action" value="delete">Delete</button>
     </div>
   </div>
 </div>
