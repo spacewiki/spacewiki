@@ -51,8 +51,24 @@ header {
   }
 }
 
+div.cmid {
+  box-shadow: -10px 8px 20px;
+  border-radius: 20px;
+  color: #335E7A;
+  background-color: rgba($primary-color, 0.75);
+  height: 300px;
+}
+
+div.cleft {
+  color: blue;
+}
+div.cright {
+  color: yellow;
+}
 .pricing {
   text-align: center;
+  //background-color: blue;
+
 
   h2 {
     color: #fff;
@@ -60,7 +76,8 @@ header {
 
   h3 {
     color: #000;
-    background-color: rgba(darken($secondary-color, 25%), 0.75);
+    //background-color: rgba(darken($secondary-color, 25%), 0.75);
+    background-color: #fff;
     margin: 0;
     border-radius: 20px 20px 0px 0px;
     border-bottom: 1px solid $primary-color;
@@ -73,14 +90,15 @@ header {
   }
 
   li {
-    background-color: rgba($secondary-color, 0.75);
+    //background-color: rgba($secondary-color, 0.75);
+    background-color: #fff;
     color: #000;
     font-size: larger;
     padding: 0.5em;
   }
 
   li:nth-child(2) {
-    background-color: rgba(lighten(#fff, 25%), 0.75);
+    //background-color: rgba(lighten(#fff, 25%), 0.75);
   }
 
   .the-price {
