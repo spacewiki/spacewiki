@@ -97,14 +97,21 @@ require.config({
   shim: {
     'js/lib/foundation/foundation': {
       'deps': ['jquery']
+    },
+    'js/lib/foundation/foundation.dropdown': {
+      'deps': ['js/lib/foundation/foundation']
+    },
+    'js/lib/foundation/foundation.topbar': {
+      'deps': ['js/lib/foundation/foundation']
     }
   }
 });
-// FIXME: Not sure why this needs to be an absolute path
-require(['/static/js/editor.js']);
 </script>
 {% assets "javascript" %}
 <script src="{{ASSET_URL}}"></script>
 {% endassets %}
+<script>
+require(['js/editor'])
+</script>
 <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
 </html>

@@ -1,4 +1,7 @@
-define(['jquery', 'js/lib/simplemde', 'js/lib/foundation/foundation'], function($, SimpleMDE) {
+define(['jquery', 'js/lib/simplemde',
+        'js/lib/foundation/foundation',
+        'js/lib/foundation/foundation.dropdown',
+        'js/lib/foundation/foundation.topbar'], function($, SimpleMDE) {
   var editor;
 
   console.log('editor active!');
