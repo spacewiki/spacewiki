@@ -1,6 +1,6 @@
 run:
   - exec:
-      cmd: dnf install -y /usr/lib/rpm/redhat/redhat-hardened-cc1 gcc gcc-c++ git python-devel gifsicle rubygem-sass uglify-js pngcrush make python-pillow python-gunicorn python-greenlet python-gevent python-slugify python-flask-script python2-hypothesis
+      cmd: dnf install -y /usr/lib/rpm/redhat/redhat-hardened-cc1 gcc gcc-c++ git python-devel gifsicle rubygem-sass uglify-js pngcrush make python-pillow python-gunicorn python-greenlet python-gevent python-slugify python-flask-script python2-hypothesis nodejs-requirejs
       hook: packages
   - exec:
       cmd: mkdir -p /spacewiki/app /data
