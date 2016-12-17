@@ -194,7 +194,10 @@ class Page(BaseModel):
         parentSlug = '/'.join(self.slug.split('/')[0:-1])
         if parentSlug == "":
             return Page.select().where(~Page.slug.contains('/')).order_by(Page.title)
-        parent = Page.select().where(Page.slug == parentSlug)[0]
+        try:
+            parent = Page.get(Page.slug == parentSlug)
+        except peewee.DoesNotExist:
+            return []
         return parent.subpages
 
     @property
