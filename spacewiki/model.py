@@ -75,6 +75,24 @@ class Page(BaseModel):
     """A wiki page"""
     title = peewee.CharField(unique=False)
     slug = SlugField(unique=True)
+    deleted = peewee.BooleanField(default=False)
+
+    @classmethod
+    def get(cls, *query, **kwargs):
+        sq = cls.select(include_deleted=kwargs.pop('include_deleted', False))
+        if query:
+            sq = sq.where(*query)
+        if kwargs:
+            sq = sq.filter(**kwargs)
+        return sq.get()
+
+    @classmethod
+    def select(cls, *selection, **kwargs):
+        q = peewee.SelectQuery(cls, *selection)
+        if kwargs.get('include_deleted', False):
+            return q
+        else:
+            return q.where(cls.deleted == False)
 
     @staticmethod
     def parsePreviousSlugFromRequest(req, default):
@@ -106,6 +124,13 @@ class Page(BaseModel):
         logging.debug("Creating new revision on %s", self.slug)
         return Revision.create(page=self, body=body, message=message,
                                author=author)
+
+    def markDeleted(self, author):
+        logging.debug("Marking page %s deleted", self.slug)
+        rev = self.newRevision("", "Page deleted", author)
+        self.deleted = True
+        self.save()
+        return rev
 
     def makeSoftlinkFrom(self, prev):
         logging.debug("Linking from %s to %s", prev.slug, self.slug)
@@ -164,7 +189,7 @@ class Page(BaseModel):
         try:
             return Revision.select() \
                 .join(cls) \
-                .where(cls.slug == slug) \
+                .where(cls.slug == slug, cls.deleted == False) \
                 .order_by(Revision.id.desc())[0]  # pylint: disable=no-member
         except IndexError:
             return None
@@ -182,9 +207,9 @@ class Page(BaseModel):
         if parentSlug == "":
             parentSlug = current_app.config['INDEX_PAGE']
         try:
-            parent = Page.select().where(Page.slug == parentSlug)[0]
+            parent = Page.get(Page.slug == parentSlug)
             return parent.parentPages + [parent,]
-        except IndexError:
+        except peewee.DoesNotExist:
             return []
 
     @property
@@ -496,8 +521,15 @@ def migrate_identities(migrator):
         migrator.drop_column('revision', 'tripcode')
     )
 
+def deletable_pages(migrator):
+    page_deleted_field = peewee.BooleanField(default=False)
+    playhouse.migrate.migrate(
+        migrator.add_column('page', 'deleted', page_deleted_field)
+    )
+
 MIGRATIONS = (
     migrate_identities,
+    deletable_pages,
 )
 
 def run_migrations(current_revision):
