@@ -6,6 +6,7 @@ import sys
 import os
 import os.path
 import colorlog
+from flask_assets import ManageAssets
 
 sys.path.append(os.path.dirname(__file__))
 
@@ -15,6 +16,7 @@ APP = create_app()
 MANAGER = Manager(APP)
 MANAGER.add_command('db', model.MANAGER)
 MANAGER.add_command("shell", Shell())
+MANAGER.add_command('assets', ManageAssets())
 
 @MANAGER.option('-s', '--syncdb', dest='syncdb', help='Run syncdb on boot',
         default=False, action='store_true')
