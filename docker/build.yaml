@@ -13,5 +13,9 @@ run:
       cmd: pip install -r /spacewiki/app/requirements.txt
       hook: pip
   - exec:
+      cmd: ./manage.py assets build
+      hook: assets
+      chdir: /srv/spacewiki/app/
+  - exec:
       cmd: dnf clean all
       hook: clean
