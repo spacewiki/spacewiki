@@ -51,27 +51,34 @@ header {
   }
 }
 
-div.cmid {
+div.cmid{
   box-shadow: -10px 8px 20px;
   border-radius: 20px;
-  color: #335E7A;
-  background-color: rgba($primary-color, 0.75);
-  height: 300px;
+  color: #020E19;
+  transform: scale(1,1.1);
+  background-color: rgba(darken($primary-color, 0.75), 1.0);
+  margin: 1%;
 }
 
 div.cleft {
-  color: blue;
+/*  box-shadow: -10px 8px 20px;
+  border-radius: 20px;
+  color: #020E19;*/
 }
-div.cright {
-  color: yellow;
+div.cright{
+  /*box-shadow: -10px 8px 20px;
+  border-radius: 20px;
+  color: #020E19;*/
 }
 .pricing {
   text-align: center;
-  //background-color: blue;
-
+  background-color: rgba(darken($primary-color, 0.75), 0.35);
+  box-shadow: 10px -10px 30px rgba(darken($primary-color, 0.75), 0.35);
+  padding: .5%;
 
   h2 {
     color: #fff;
+    text-shadow: 2px 2px 2px #333;
   }
 
   h3 {
