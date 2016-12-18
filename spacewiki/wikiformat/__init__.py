@@ -11,7 +11,7 @@ TAG_WHITELIST = [
     'strong', 'a', 'abbr', 'aside', 'audio', 'blockquote', 'br', 'button',
     'code', 'dd', 'del', 'dfn', 'dl', 'dt', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
     'hr', 'i', 'img', 'ins', 'kbd', 'pre', 's', 'small', 'span', 'sub', 'sup',
-    'u', 'video', 'section', 'input', 'form'
+    'u', 'video', 'section', 'input', 'form', 'iframe'
 ]
 
 ATTRIBUTE_WHITELIST = {
@@ -21,6 +21,7 @@ ATTRIBUTE_WHITELIST = {
     'img': ['src', 'alt'],
     'form': ['action', 'method'],
     'input': ['type', 'placeholder', 'value'],
+    'iframe': ['src', 'seamless']
 }
 
 STYLE_WHITELIST = [
