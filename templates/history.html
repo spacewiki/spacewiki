@@ -37,7 +37,7 @@
       {{rev.message}}
     </td>
     <td>
-      {{rev.author}}
+      {{rev.author.display_name}}
     </td>
     <td>
       <a href="{{url_for('pages.view', slug=rev.page.slug, revision=rev.id)}}"
