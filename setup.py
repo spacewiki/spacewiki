@@ -21,6 +21,7 @@ setup(name='spacewiki',
           'Flask-Assets',
           'flask-login',
           'PyYAML',
-          'flask-cache'
+          'flask-cache',
+          'webpreview'
       ]
 )

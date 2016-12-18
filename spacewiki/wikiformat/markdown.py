@@ -2,6 +2,7 @@
 
 import mistune
 import re
+import unfurl
 
 class WikiRenderer(mistune.Renderer):
     """Specialization of markdown renderer that handles wiki format additions"""
@@ -23,6 +24,9 @@ class WikiRenderer(mistune.Renderer):
         else:
             ret = first_line + parser.render(unicode(rest.lstrip()))
         return ret
+
+    def autolink(self, link, is_email=False):
+        return unfurl.unfurl_url(link)
 
 
 def render(text):
