@@ -4,7 +4,7 @@ import difflib
 import datetime
 from flask import g, current_app, Blueprint
 from flask_login import current_user, login_user, UserMixin, AnonymousUserMixin
-from flask.ext.script import Manager
+from flask_script import Manager
 import logging
 import os
 import peewee
@@ -263,6 +263,10 @@ class Revision(BaseModel):
     message = peewee.TextField(default='')
     timestamp = peewee.DateTimeField(default=datetime.datetime.now)
     author = peewee.ForeignKeyField(Identity, related_name='revisions')
+
+    @property
+    def summary(self):
+        return self.body[0:500]
 
     @staticmethod
     def render_text(body, slug):
