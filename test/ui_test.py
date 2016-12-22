@@ -5,7 +5,7 @@ import tempfile
 
 class UiTestCase(unittest.TestCase):
     def setUp(self):
-        self._app = create_app()
+        self._app = create_app(False)
         self._app.config['DATABASE'] = 'sqlite:///'+tempfile.mkdtemp()+'/test.sqlite3'
         with self._app.app_context():
             model.syncdb()

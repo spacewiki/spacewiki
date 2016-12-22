@@ -8,12 +8,15 @@ import tempfile
 from spacewiki import context, history, model, pages, specials, \
         uploads, editor, assets, auth, middleware
 
-def create_app():
+def create_app(with_config=True):
     APP = Flask(__name__,
                 template_folder='../templates',
                 static_folder='../static')
 
-    APP.config.from_object('spacewiki.settings')
+    APP.config.setdefault('INDEX_PAGE', 'index')
+
+    if with_config:
+        APP.config.from_object('spacewiki.settings')
     APP.register_blueprint(context.BLUEPRINT)
     APP.register_blueprint(model.BLUEPRINT)
     APP.register_blueprint(uploads.BLUEPRINT)

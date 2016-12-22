@@ -12,7 +12,7 @@ test_db = SqliteDatabase(':memory:')
 
 class UploadTestCase(unittest.TestCase):
     def setUp(self):
-        self._app = create_app()
+        self._app = create_app(False)
         self._app.config['UPLOAD_PATH'] = tempfile.mkdtemp()
         self.app = self._app.test_client()
 

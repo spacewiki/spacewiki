@@ -19,7 +19,7 @@ Path = hypothesis.strategy(FakeFactory('url')).map(makePath)
 
 class SlugTestCase(unittest.TestCase):
     def setUp(self):
-        self._app = create_app()
+        self._app = create_app(False)
         self._app.config['DATABASE_URL'] = 'sqlite:///:memory:'
         self._app.secret_key = 'foo'
         self.app = self._app.test_client()

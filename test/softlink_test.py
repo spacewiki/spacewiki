@@ -51,7 +51,7 @@ class SoftlinkParsingTestCase(unittest.TestCase):
 
 class SoftlinkTestCase(unittest.TestCase):
     def setUp(self):
-        self._app = create_app()
+        self._app = create_app(False)
         self.app = self._app.test_client()
 
     @hypothesis.given(Path, Path, Domain, Path)
