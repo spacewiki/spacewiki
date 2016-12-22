@@ -5,7 +5,6 @@ import datetime
 from flask import g, current_app, Blueprint
 from flask_login import current_user, login_user, UserMixin, AnonymousUserMixin
 from flask_script import Manager
-import logging
 import os
 import peewee
 import playhouse.migrate
@@ -27,7 +26,7 @@ def get_db():
     """Sets up the database"""
     db = getattr(g, '_database', None)
     if db is None:
-        logging.info("Using database at %s", current_app.config['DATABASE_URL'])
+        current_app.logger.info("Using database at %s", current_app.config['DATABASE_URL'])
         g._database = db = connect(current_app.config['DATABASE_URL'])
     DATABASE.initialize(db)
 
@@ -88,7 +87,7 @@ class Page(BaseModel):
                     last_page_slug = urllib.unquote(
                         refer_url.path.replace(script_name, '', 1)
                     )
-                    logging.debug("script_name: %s referrer: %s", script_name, last_page_slug)
+                    current_app.logger.debug("script_name: %s referrer: %s", script_name, last_page_slug)
                     if '/' in last_page_slug:
                         last_page_slug, _ = last_page_slug.split('/', 1)
                     if last_page_slug == "":
@@ -103,23 +102,23 @@ class Page(BaseModel):
 
     def newRevision(self, body, message, author):
         """Creates a new Revision of this Page with the given body"""
-        logging.debug("Creating new revision on %s", self.slug)
+        current_app.logger.debug("Creating new revision on %s", self.slug)
         return Revision.create(page=self, body=body, message=message,
                                author=author)
 
     def makeSoftlinkFrom(self, prev):
-        logging.debug("Linking from %s to %s", prev.slug, self.slug)
+        current_app.logger.debug("Linking from %s to %s", prev.slug, self.slug)
 
         if prev == self:
-            logging.debug("Refusing to link %s to itself", prev.slug)
+            current_app.logger.debug("Refusing to link %s to itself", prev.slug)
             return
 
         try:
             Softlink.get(Softlink.src == prev, Softlink.dest == self)
-            logging.debug("Link exists!")
+            current_app.logger.debug("Link exists!")
         except peewee.DoesNotExist:
             Softlink.create(src=prev, dest=self)
-            logging.debug("New link!")
+            current_app.logger.debug("New link!")
 
         Softlink.update(hits=Softlink.hits + 1) \
                 .where(Softlink.src == prev, Softlink.dest == self) \
@@ -130,7 +129,7 @@ class Page(BaseModel):
         assert isinstance(filename, basestring)
         assert isinstance(uploadPath, basestring)
 
-        logging.info("Attaching upload %s (%s), saved at %s",
+        current_app.logger.info("Attaching upload %s (%s), saved at %s",
                      src, filename, uploadPath)
 
         hex_sha = Attachment.hashFile(src)
@@ -144,20 +143,20 @@ class Page(BaseModel):
         # FIXME: These db queries should be handled by the model
         try:
             attachment = Attachment.get(page=self, slug=filename)
-            logging.debug("Updating existing attachment: %s", attachment.slug)
+            current_app.logger.debug("Updating existing attachment: %s", attachment.slug)
         except peewee.DoesNotExist:
             attachment = Attachment.create(page=self, filename=filename,
                                            slug=filename)
-            logging.debug("Creating new attachment: %s", attachment.slug)
+            current_app.logger.debug("Creating new attachment: %s", attachment.slug)
 
         try:
             AttachmentRevision.get(attachment=attachment, sha=hex_sha)
-            logging.debug("Duplicate file upload: %s", attachment.slug)
+            current_app.logger.debug("Duplicate file upload: %s", attachment.slug)
         except peewee.DoesNotExist:
             AttachmentRevision.create(attachment=attachment, sha=hex_sha)
-            logging.debug("New upload: %s -> %s", attachment.slug, hex_sha)
+            current_app.logger.debug("New upload: %s -> %s", attachment.slug, hex_sha)
 
-        logging.info("Uploaded file %s to %s", filename, saved_name)
+        current_app.logger.info("Uploaded file %s to %s", filename, saved_name)
 
     @classmethod
     def latestRevision(cls, slug):
@@ -445,10 +444,10 @@ MANAGER = Manager(usage='Database tools')
 @MANAGER.command
 def syncdb():
     """Creates and updates database schema"""
-    logging.info("Creating tables...")
     with current_app.app_context():
+        current_app.logger.info("Creating tables...")
         get_db()
-        logging.info("Creating tables")
+        current_app.logger.info("Creating tables")
         DATABASE.create_tables([Page, Revision, Softlink, Attachment,
             AttachmentRevision, DatabaseVersion, Identity], True)
 
@@ -458,27 +457,27 @@ def syncdb():
             version = DatabaseVersion.select()[0]
             start_version = version.schema_version
         except IndexError:
-            logging.debug("Creating initial schema")
+            current_app.logger.debug("Creating initial schema")
             version = DatabaseVersion.create(schema_version=0)
             initial_schema = True
 
         if initial_schema:
             version.schema_version = len(MIGRATIONS)
         else:
-            logging.debug("Database schema is at version %s",
+            current_app.logger.debug("Database schema is at version %s",
                     version.schema_version)
             try:
                 while version.schema_version < len(MIGRATIONS):
                         run_migrations(version.schema_version)
                         version.schema_version += 1
             except:
-                logging.exception("Could not update database schema to version %s! Fix any errors and re-run syncdb again.", version.schema_version + 1)
+                current_app.logger.exception("Could not update database schema to version %s! Fix any errors and re-run syncdb again.", version.schema_version + 1)
         if version.schema_version != start_version:
-            logging.debug("Database schema is now at version %s",
+            current_app.logger.debug("Database schema is now at version %s",
                     version.schema_version)
         version.save()
         if version.schema_version == len(MIGRATIONS):
-            logging.info("OK!")
+            current_app.logger.info("OK!")
 
 def migrate_identities(migrator):
     playhouse.migrate.migrate(
@@ -490,7 +489,7 @@ def migrate_identities(migrator):
         migrator.add_column('revision', 'author_id', author_id_field)
     )
 
-    logging.info("Converting tripcodes to identities")
+    current_app.logger.info("Converting tripcodes to identities")
     for r in Revision.raw('SELECT id,tripcode FROM revision'):
         id = Identity.from_tripcode(r.tripcode)
         r.author = id
@@ -510,8 +509,8 @@ def run_migrations(current_revision):
 
     for migration in MIGRATIONS[current_revision:]:
         with DATABASE.transaction():
-            logging.info("Applying migration %d -> %d", current_revision,
+            current_app.logger.info("Applying migration %d -> %d", current_revision,
                     current_revision+1)
             migration(migrator)
 
-    logging.info("Upgraded to schema %s", current_revision)
+    current_app.logger.info("Upgraded to schema %s", current_revision)
