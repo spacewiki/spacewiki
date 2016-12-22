@@ -31,7 +31,7 @@ def create_app(with_config=True):
     APP.register_blueprint(auth.BLUEPRINT)
     assets.ASSETS.init_app(APP)
     auth.LOGIN_MANAGER.init_app(APP)
-    cache.CACHE.init_app(APP, config=APP.config['CACHE_CONFIG'])
+    cache.CACHE.init_app(APP, config=APP.config.get('CACHE_CONFIG', None))
 
     APP.wsgi_app = middleware.ReverseProxied(APP.wsgi_app)
 
