@@ -1,3 +1,4 @@
+from spacewiki.test import create_test_app
 from spacewiki import model, wikiformat, auth
 from spacewiki.wikiformat import directives
 import unittest
@@ -7,6 +8,9 @@ from peewee import SqliteDatabase
 test_db = SqliteDatabase(':memory:')
 
 class ParserTestCase(unittest.TestCase):
+    def setUp(self):
+        self.app = create_test_app()
+
     def test_directives(self):
         with test_database(test_db, [model.Page, model.Revision]):
             self.assertEqual(directives.render("", ''), "")
@@ -18,8 +22,9 @@ class ParserTestCase(unittest.TestCase):
 
     def test_recursive_templates(self):
         with test_database(test_db, [model.Page, model.Revision, model.Identity]):
-            page = model.Page.create(title='recursive', slug='recursive')
-            page.newRevision('{{recursive}}', '',
-                    auth.tripcodes.new_anon_user())
-            canary = "{{Max include depth of"
-            self.assertTrue(canary in directives.render("{{recursive}}", ''))
+            with self.app.app_context():
+                page = model.Page.create(title='recursive', slug='recursive')
+                page.newRevision('{{recursive}}', '',
+                        auth.tripcodes.new_anon_user())
+                canary = "{{Max include depth of"
+                self.assertTrue(canary in directives.render("{{recursive}}", ''))

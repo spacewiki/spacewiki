@@ -1,3 +1,4 @@
+from spacewiki.test import create_test_app
 import werkzeug.test
 import unittest
 from spacewiki import model
@@ -22,6 +23,9 @@ FullUrl = hypothesis.strategy(FakeFactory('url'))
 Domain = hypothesis.strategy(FakeFactory('domain_name'))
 
 class SoftlinkParsingTestCase(unittest.TestCase):
+    def setUp(self):
+        self.app = create_test_app()
+
     @hypothesis.given(Path)
     def test_parser_no_refer(self, s):
         req = werkzeug.test.EnvironBuilder(path=s)
@@ -41,17 +45,18 @@ class SoftlinkParsingTestCase(unittest.TestCase):
 
     @hypothesis.given(Path, Path, Domain, Path)
     def test_parser_page_refer(self, page, referPage, host, prefix):
-        req = werkzeug.test.EnvironBuilder(
-            path=prefix+page,
-            headers={'Referer': 'http://'+host+prefix+referPage, 'Host': host},
-            base_url='http://'+host+prefix
-        ).get_request()
-        resp = model.Page.parsePreviousSlugFromRequest(req, referPage)
-        self.assertEqual(req.lastSlug, referPage)
+        with self.app.app_context():
+            req = werkzeug.test.EnvironBuilder(
+                path=prefix+page,
+                headers={'Referer': 'http://'+host+prefix+referPage, 'Host': host},
+                base_url='http://'+host+prefix
+            ).get_request()
+            resp = model.Page.parsePreviousSlugFromRequest(req, referPage)
+            self.assertEqual(req.lastSlug, referPage)
 
 class SoftlinkTestCase(unittest.TestCase):
     def setUp(self):
-        self._app = create_app(False)
+        self._app = create_test_app()
         self.app = self._app.test_client()
 
     @hypothesis.given(Path, Path, Domain, Path)

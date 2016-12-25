@@ -1,5 +1,5 @@
+from spacewiki.test import create_test_app
 from spacewiki import model
-from spacewiki.app import create_app
 import unittest
 import tempfile
 import hashlib
@@ -12,7 +12,7 @@ test_db = SqliteDatabase(':memory:')
 
 class UploadTestCase(unittest.TestCase):
     def setUp(self):
-        self._app = create_app(False)
+        self._app = create_test_app()
         self._app.config['UPLOAD_PATH'] = tempfile.mkdtemp()
         self.app = self._app.test_client()
 
