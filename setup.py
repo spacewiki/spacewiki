@@ -20,6 +20,8 @@ setup(name='spacewiki',
           'cssmin',
           'Flask-Assets',
           'flask-login',
-          'PyYAML'
+          'PyYAML',
+          'flask-cache',
+          'webpreview'
       ]
 )

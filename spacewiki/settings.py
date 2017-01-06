@@ -13,6 +13,10 @@ TWITTER_CARD_SITE = None
 
 SECRET_SESSION_KEY = None
 
+CACHE_CONFIG = {
+    'CACHE_TYPE': 'simple'
+}
+
 try:
     from local_settings import *  # pylint: disable=unused-wildcard-import,wildcard-import
 except ImportError:
