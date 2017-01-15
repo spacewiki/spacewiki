@@ -10,6 +10,7 @@ dependencies:
   override:
     - docker pull fedora:24
     - pip install -e .[test]
+    - npm install -g requirejs
 
 test:
   override:
