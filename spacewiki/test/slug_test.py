@@ -1,20 +1,13 @@
 from spacewiki.model import SlugField
 from spacewiki import model
 import unittest
-import hypothesis
 import string
 import tempfile
-from hypothesis.extra.fakefactory import FakeFactory
 from spacewiki.app import create_app
 from playhouse.test_utils import test_database
 from peewee import SqliteDatabase
 
 test_db = SqliteDatabase(':memory:')
-
-def makePath(s):
-    return s.split('://', 1)[1].split('/', 1)[1]
-
-Path = hypothesis.strategy(FakeFactory('url')).map(makePath)
 
 
 class SlugTestCase(unittest.TestCase):
