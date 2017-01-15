@@ -9,9 +9,12 @@ general:
 dependencies:
   override:
     - docker pull fedora:24
+    - pip install -r requirements.txt
+    - pip install nose coverage
 
 test:
   override:
+    - make test
     - docker build -t spacewiki:app .
     - docker run -v `pwd`:/spacewiki/app/ spacewiki:app make docker_test
     - docker run -d -p 5000:5000 spacewiki:app
