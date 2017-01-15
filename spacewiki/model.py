@@ -88,8 +88,7 @@ class Page(BaseModel):
                         refer_url.path.replace(script_name, '', 1)
                     )
                     current_app.logger.debug("script_name: %s referrer: %s", script_name, last_page_slug)
-                    if '/' in last_page_slug:
-                        last_page_slug, _ = last_page_slug.split('/', 1)
+                    last_page_slug = last_page_slug.strip('/')
                     if last_page_slug == "":
                         last_page_slug = default
                     req.lastSlug = last_page_slug
