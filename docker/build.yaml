@@ -10,7 +10,7 @@ run:
   - exec:
       cmd: cp /spacewiki/git/docker/settings.py /spacewiki/app/spacewiki/local_settings.py
   - exec:
-      cmd: pip install -r /spacewiki/app/requirements.txt
+      cmd: pip install -e /spacewiki/app/
       hook: pip
   - exec:
       cmd: ./manage.py assets build

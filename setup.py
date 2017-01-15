@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 from setuptools import setup, find_packages
 
+extras = {
+    'test': ['nose', 'coverage', 'faker', 'hypothesis']
+}
+
 setup(name='spacewiki',
       packages=find_packages(),
       install_requires=[
@@ -10,7 +14,6 @@ setup(name='spacewiki',
           'bleach',
           'GitPython',
           'mistune',
-          'hypothesis',
           'pillow',
           'slugify',
           'flask-script',
@@ -21,5 +24,6 @@ setup(name='spacewiki',
           'Flask-Assets',
           'flask-login',
           'PyYAML'
-      ]
+      ],
+      extras_require = extras
 )
