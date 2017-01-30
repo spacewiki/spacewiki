@@ -1,0 +1,23 @@
+<div class="unfurl">
+  <div class="title">#{{channel}}</div>
+<ul>
+{% for msg in log %}
+<li {% if msg.target %}style='background-color: #fff;'{% endif %}>
+    <strong>{{msg.username}}</strong>:
+    {% if msg.text %}
+    {{msg.text}}
+    {% endif %}
+    {% if msg.attachments %}
+    <ul>
+      {% for attachment in msg.attachments %}
+      <li>
+        <strong>{{attachment.title}}</strong> - {{attachment.fallback}}
+      </li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+  </li>
+</li>
+{% endfor %}
+</ul>
+</div>

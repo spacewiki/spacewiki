@@ -185,8 +185,18 @@ body.page-index main {
   padding-top: 1em;
 }
 
+.progress-line {
+  width: 100%;
+  clear: both;
+
+  .progress-fill {
+    background: $primary-color;
+    height: 2px;
+    transition: width 0.2s;
+  }
+}
+
 .content-title {
-  border-bottom: 2px solid $primary-color;
   background-color: $secondary-color;
   padding-left: $logo-width + 10px;
   transition: border 0.25s;

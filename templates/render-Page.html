@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+
+{% block extrahead %}
+<meta property="og:type" content="article"/>
+<meta property="og:title" content="{{data.title}} - {{settings.SITE_NAME}}"/>
+<meta property="og:description" content="{{data.revisions[0].html}}"/>
+<meta property="og:site_name" content="{{settings.SITE_NAME}}"/>
+<meta property="og:updated_time" content="{{data.revisions[0].timestamp}}"/>
+<meta property="og:image" content="{{url_for('static', filename='logo.png', _external=True)}}"/>
+<!-- TODO: og:see_also for softlinks -->
+
+{% if settings.TWITTER_CARD_SITE %}
+<meta property="twitter:card" content="summary"/>
+<meta property="twitter:site" content="{{settings.TWITTER_CARD_SITE}}"/>
+{% endif %}
+
+{% endblock %}

@@ -5,80 +5,16 @@
   <link rel="stylesheet" href="{{ASSET_URL}}">
   {% endassets %}
   <title>
-    {% block title %}{% block subtitle %}{% endblock %} - {{settings.SITE_NAME}}{% endblock %}
+    {% block title %}{{settings.SITE_NAME}}{% endblock %}
   </title>
+<script type="text/javascript">
+var GlobalConfiguration = {{app_config|tojson}};
+</script>
   {% block extrahead %}
   {% endblock %}
 </head>
-<body class="{% block bodyclass %}{% endblock %}">
-  <div class="sticky">
-    <header data-topbar class="top-bar">
-      <ul class="title-area">
-        <li class="name">
-          <a href="{{url_for('pages.view')}}">
-            <h1>
-              {{settings.SITE_NAME}}
-            </h1>
-          </a>
-        </li>
-      </ul>
-      <section class="top-bar-section">
-        <ul class="right">
-          <li class="has-form">
-            <form method="get" action="{{url_for('specials.search')}}">
-              <div class="row collapse postfix-round">
-                <div class="large-8 small-9 columns">
-                  <input type="text" name="q" placeholder="{% if random_page %}{{random_page.title}}{% endif %}">
-                </div>
-                <div class="large-4 small-3 columns">
-                  <button type="submit" class="button postfix"><i class="fa fa-search"></i> Search</button>
-                </div>
-              </div>
-            </form>
-          </li>
-        </ul>
-        {% block toolbar %}
-          <ul class="left page-tools">
-            {% if current_user.is_authenticated %}
-            <li class="has-dropdown"><a href="#"><i class="fa fa-user"></i> Hello, {{current_user.display_name}}</a>
-              <ul class="dropdown">
-                <li><a
-                  href="{{url_for('auth.logout')}}"><i class="fa fa-lock"></i> Logout</a></li>
-              </ul>
-            </li>
-            {% endif %}
-            <li><a href="{{url_for('specials.allPages')}}"><i class="fa fa-globe"></i> All Pages</a></li>
-            {% for nav in NAVIGATION_PAGES %}
-              <li><a href="{{url_for('pages.view', slug=nav.slug)}}">{{nav.title}}</a></li>
-            {% endfor %}
-          </ul>
-        {% endblock %}
-      </section>
-    </header>
-    <div data-topbar class="row content-title">
-    {% block tools %}
-      <div class="button-bar tools">
-        <ul class="button-group round">
-          {% if page %}
-            <li><a class="small tool-button" href="{{url_for('pages.view', slug=page.slug)}}"><i class="fa fa-eye"></i> View</a></li>
-            <li><a class="small tool-button" href="{{url_for('editor.edit', slug=page.slug)}}"><i class="fa fa-pencil"></i> Edit</a></li>
-            <li><a class="small tool-button" href="{{url_for('uploads.upload', slug=page.slug)}}"><i class="fa fa-paperclip"></i> Attach File</a></li>
-            <li><a class="small tool-button" href="{{url_for('history.history', slug=page.slug)}}"><i class="fa fa-history"></i> History</a></li>
-          {% endif %}
-        </ul>
-      </div>
-      {% block content_title %}
-      {% endblock %}
-    </div>
-  </div>
-{% block canvas %}
-<main class="row">
-  <div class="small-12 columns content">
-    {% block content %}
-    {% endblock %}
-</main>
-{% endblock %}
-{% endblock %}
+<body>
+  <div id="canvas"></div>
 <footer class="row">
   <div class="small-12 columns">
     <p class="plug">Powered by <i class="hacker-emblem"></i> <a href="https://github.com/tdfischer/spacewiki">SpaceWiki</a>
@@ -91,27 +27,8 @@
 {% assets "requirejs" %}
 <script src="{{ASSET_URL}}"></script>
 {% endassets %}
-<script>
-require.config({
-  baseUrl: "/static",
-  shim: {
-    'js/lib/foundation/foundation': {
-      'deps': ['jquery']
-    },
-    'js/lib/foundation/foundation.dropdown': {
-      'deps': ['js/lib/foundation/foundation']
-    },
-    'js/lib/foundation/foundation.topbar': {
-      'deps': ['js/lib/foundation/foundation']
-    }
-  }
-});
-</script>
 {% assets "javascript" %}
 <script src="{{ASSET_URL}}"></script>
 {% endassets %}
-<script>
-require(['js/editor'])
-</script>
 <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
 </html>
