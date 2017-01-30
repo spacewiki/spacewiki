@@ -1,6 +1,8 @@
 machine:
   services:
     - docker
+  environment:
+    PATH: $HOME/spacewiki/node_modules/.bin:$PATH
 
 general:
   artifacts:
@@ -10,7 +12,7 @@ dependencies:
   override:
     - docker pull fedora:24
     - pip install -e .[test]
-    - npm install -g requirejs
+    - npm install
 
 test:
   override:
