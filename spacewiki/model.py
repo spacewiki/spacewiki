@@ -2,9 +2,10 @@
 import crypt
 import difflib
 import datetime
-from flask import g, current_app, Blueprint
+from flask import g, current_app, Blueprint, url_for
 from flask_login import current_user, login_user, UserMixin, AnonymousUserMixin
 from flask_script import Manager
+from flask.json import JSONEncoder
 import os
 import peewee
 import playhouse.migrate
@@ -20,6 +21,11 @@ import spacewiki
 
 BLUEPRINT = Blueprint('model', __name__)
 
+class ModelEncoder(JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, BaseModel):
+            return obj.to_json()
+        return JSONEncoder.default(self, obj)
 
 @BLUEPRINT.before_app_request
 def get_db():
@@ -74,6 +80,33 @@ class Page(BaseModel):
     """A wiki page"""
     title = peewee.CharField(unique=False)
     slug = SlugField(unique=True)
+
+    def to_json(self):
+        def map_nav(p):
+            return {'title': p.title, 'slug': '/'+p.slug}
+        def map_links(link):
+            return {'title': link.dest.title, 'slug': '/'+link.dest.slug}
+        def map_links_in(link):
+            return {'title': link.src.title, 'slug': '/'+link.src.slug}
+        all_links = map(map_links, list(self.softlinks_out))
+        all_links += map(map_links_in, list(self.softlinks_in))
+        unique_links = []
+        for x in all_links:
+            if x not in unique_links:
+                unique_links.append(x)
+        return {
+            'title': self.title,
+            'slug': self.slug,
+            'revisions': list(self.revisions),
+            'latest': self.latestRevision(self.slug),
+            'attachments': list(self.attachments),
+            'softlinks': unique_links,
+            'navigation': {
+                'siblings': map(map_nav, list(self.siblings)),
+                'subpages': map(map_nav, list(self.subpages)),
+                'parents': map(map_nav, list(self.parentPages))
+            }
+        }
 
     @staticmethod
     def parsePreviousSlugFromRequest(req, default):
@@ -220,6 +253,12 @@ class Identity(BaseModel, UserMixin):
     auth_id = peewee.CharField()
     auth_type = peewee.CharField()
 
+    def to_json(self):
+        return {
+            'display': self.display_name,
+            'handle': self.handle
+        }
+
     def __repr__(self):
         return "Identity(%s, %s)"%(self.id, self.get_id())
 
@@ -261,6 +300,16 @@ class Revision(BaseModel):
     message = peewee.TextField(default='')
     timestamp = peewee.DateTimeField(default=datetime.datetime.now)
     author = peewee.ForeignKeyField(Identity, related_name='revisions')
+
+    def to_json(self):
+        return {
+            'body': self.body,
+            'id': self.id,
+            'timestamp': self.timestamp,
+            'author': self.author,
+            'message': self.message,
+            'rendered': self.html
+        }
 
     @property
     def summary(self):
@@ -390,6 +439,14 @@ class Attachment(BaseModel):
     page = peewee.ForeignKeyField(Page, related_name='attachments')
     filename = peewee.CharField(unique=True)
     slug = SlugField(unique=True)
+
+    def to_json(self):
+        return {
+            'filename': self.filename,
+            'slug': self.slug,
+            'url': url_for('uploads.get_attachment', slug=self.page.slug,
+                fileslug=self.slug)
+        }
 
     @staticmethod
     def hashFile(src):

@@ -3,8 +3,8 @@
 from flask import Flask
 from flask_assets import Environment, Bundle
 
-from spacewiki import context, history, model, pages, specials, \
-        uploads, editor, assets, auth, middleware, api
+from spacewiki import context, model, \
+        uploads,  assets, auth, middleware, api
 
 def create_app(with_config=True):
     APP = Flask(__name__,
@@ -22,10 +22,6 @@ def create_app(with_config=True):
     APP.register_blueprint(context.BLUEPRINT)
     APP.register_blueprint(model.BLUEPRINT)
     APP.register_blueprint(uploads.BLUEPRINT)
-    APP.register_blueprint(pages.BLUEPRINT)
-    APP.register_blueprint(history.BLUEPRINT)
-    APP.register_blueprint(specials.BLUEPRINT)
-    APP.register_blueprint(editor.BLUEPRINT)
     APP.register_blueprint(api.BLUEPRINT)
     APP.register_blueprint(auth.BLUEPRINT)
     APP.json_encoder = model.ModelEncoder
