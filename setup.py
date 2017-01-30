@@ -23,7 +23,8 @@ setup(name='spacewiki',
           'cssmin',
           'Flask-Assets',
           'flask-login',
-          'PyYAML'
+          'PyYAML',
+          'flask_restful'
       ],
       extras_require = extras
 )
