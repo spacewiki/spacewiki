@@ -13,6 +13,9 @@ run:
       cmd: pip install -e /spacewiki/app/
       hook: pip
   - exec:
+      cmd: npm install
+      hook: npm
+  - exec:
       cmd: ./manage.py assets build
       hook: assets
       chdir: /srv/spacewiki/app/

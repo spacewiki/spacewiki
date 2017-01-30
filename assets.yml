@@ -11,13 +11,12 @@ requirejs:
     - js/lib/require.js
 javascript:
   output: cache/app.js
-  filters: requirejs
+  filters:
+    - browserify
+  config:
+    BROWSERIFY_TRANSFORMS:
+      - ['babelify', '--presets', '[', 'es2015', 'react', ']']
+  depends:
+    - js/**.js
   contents:
-    - jquery.js
-    - js/lib/lightbox.js
-    - js/lib/simplemde.js
-    - js/lib/foundation/foundation.js
-    - js/lib/foundation/foundation.dropdown.js
-    - js/lib/foundation/foundation.topbar.js
     - js/editor.js
-    - js/lightbox.js

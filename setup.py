@@ -24,6 +24,7 @@ setup(name='spacewiki',
           'Flask-Assets',
           'flask-login',
           'PyYAML',
+          'webassets-browserify',
           'flask_restful'
       ],
       extras_require = extras
