@@ -370,4 +370,26 @@ p.warning {
   padding: 1em;
 }
 
+.ghost-viewer {
+  .ghost-text {
+  }
+
+  .navtree a {
+    background-color: #ddd;
+    width: 10ex;
+    height: 1em;
+  }
+
+  .ghost-title {
+    h1 {
+      font-size: x-large;
+    }
+    h1, p {
+      background-color: #ddd;
+      width: 10ex;
+      height: 1em;
+    }
+  }
+}
+
 @import "site";

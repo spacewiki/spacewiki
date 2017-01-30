@@ -1,23 +1,16 @@
-define(['jquery', 'js/lib/simplemde',
-        'js/lib/foundation/foundation',
-        'js/lib/foundation/foundation.dropdown',
-        'js/lib/foundation/foundation.topbar'], function($, SimpleMDE) {
-  var editor;
+import $ from 'jquery-browserify';
+import foundation from './lib/foundation/foundation';
+import topbar from './lib/foundation/foundation.topbar';
+import dropdown from './lib/foundation/foundation.dropdown';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import App from './components/App';
 
-  console.log('editor active!');
+$(document).foundation();
 
-  $(document).foundation();
+var canvasDom = document.getElementById('canvas');
 
-  var simplemde = new SimpleMDE({
-    element: document.getElementById("body")
-  });
-
-  $('#title-edit').change(function() {
-    $('a[data-dropdown=\'title-drop\']').addClass('active');
-    $('#title-label').text($('#title-edit').val());
-  });
-  $('#slug').change(function() {
-    $('a[data-dropdown=\'slug-drop\']').addClass('active');
-    $('#slug-label').text($('#slug').val());
-  });
-});
+ReactDOM.render(
+  <App initialConfig={GlobalConfiguration} />,
+  canvasDom
+);
