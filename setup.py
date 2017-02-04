@@ -28,7 +28,5 @@ setup(name='spacewiki',
           'flask_restful'
       ],
       extras_require = extras,
-      package_data={
-          'spacewiki': ['assets.yml', 'templates/*']
-      }
+      include_package_data=True,
 )

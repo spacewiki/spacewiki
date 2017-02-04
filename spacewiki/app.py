@@ -7,8 +7,7 @@ from spacewiki import context, model, \
         uploads,  assets, auth, middleware, api
 
 def create_app(with_config=True):
-    APP = Flask(__name__,
-                static_folder='../static')
+    APP = Flask(__name__)
 
     APP.config.setdefault('INDEX_PAGE', 'index')
 

@@ -1,0 +1,5 @@
+recursive-include spacewiki/templates *
+recursive-include spacewiki/static *
+recursive-include node_modules
+include spacewiki/assets.yml
+include package.json
