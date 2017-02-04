@@ -8,7 +8,6 @@ from spacewiki import context, model, \
 
 def create_app(with_config=True):
     APP = Flask(__name__,
-                template_folder='../templates',
                 static_folder='../static')
 
     APP.config.setdefault('INDEX_PAGE', 'index')

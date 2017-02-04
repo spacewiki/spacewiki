@@ -29,6 +29,6 @@ setup(name='spacewiki',
       ],
       extras_require = extras,
       package_data={
-          'spacewiki': ['assets.yml']
+          'spacewiki': ['assets.yml', 'templates/*']
       }
 )
