@@ -23,30 +23,7 @@ def add_git_version():
     except:
         return {'git_version': None}
 
-
-@BLUEPRINT.app_context_processor
-def add_random_page():
-    """Adds a random page to the template context"""
-    page = None
-    try:
-        page = model.Page.select().order_by(peewee.fn.Random()).limit(1)[0]
-    except IndexError:
-        pass
-    return dict(random_page=page)
-
-
 @BLUEPRINT.app_context_processor
 def add_site_settings():
     """Adds the contents of settings.py to the template context"""
     return dict(settings=current_app.config)
-
-@BLUEPRINT.app_context_processor
-def add_nav_pages():
-    pages = []
-    nav_page = model.Page.latestRevision('.spacewiki/navigation-list')
-    if nav_page:
-        for link in nav_page.body.split('\n'):
-            pageRev = model.Page.latestRevision(link)
-            if pageRev:
-                pages.append(pageRev.page)
-    return dict(NAVIGATION_PAGES=pages)
