@@ -27,5 +27,8 @@ setup(name='spacewiki',
           'webassets-browserify',
           'flask_restful'
       ],
-      extras_require = extras
+      extras_require = extras,
+      package_data={
+          'spacewiki': ['assets.yml']
+      }
 )

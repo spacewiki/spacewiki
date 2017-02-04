@@ -7,5 +7,4 @@ register_filter(Browserify)
 
 ASSETS = Environment()
 
-ASSETS.from_yaml(os.path.sep.join((os.path.dirname(__file__), '..',
-    'assets.yml')))
+ASSETS.from_yaml(os.path.sep.join((os.path.dirname(__file__), 'assets.yml')))
