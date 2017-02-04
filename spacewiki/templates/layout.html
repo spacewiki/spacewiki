@@ -7,6 +7,7 @@
   <title>
     {% block title %}{{settings.SITE_NAME}}{% endblock %}
   </title>
+{{settings.HEADER_INJECTION|safe}}
 <script type="text/javascript">
 var GlobalConfiguration = {{app_config|tojson}};
 </script>
