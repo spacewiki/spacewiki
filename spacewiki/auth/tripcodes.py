@@ -5,6 +5,9 @@ import hashlib
 import logging
 from spacewiki import model
 
+import random
+import string
+
 def tripcode_login_field(fieldname='author'):
     def decorator(f):
         @wraps(f)
@@ -40,8 +43,12 @@ def hash_tripcode(value):
     token_hash.update(tokens[1])
     return tokens[0]+'$'+token_hash.hexdigest()
 
+def randomHash():
+    return ''.join([random.choice(string.ascii_letters+string.digits) for x in range(0, 10)])
+
 def new_anon_user():
-    code = 'Anonymous'
+    code = 'Anonymous#' + randomHash()
     hashed = hash_tripcode(code)
-    return model.Identity.get_or_create_from_id('tripcode:' + hashed, display=hashed,
+    return model.Identity.get_or_create_from_id('tripcode:' + hashed,
+            display=hashed,
             handle=hashed)
