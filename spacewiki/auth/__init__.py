@@ -14,10 +14,3 @@ def load_user(user_id):
 LOGIN_MANAGER.anonymous_user = tripcodes.new_anon_user
 
 BLUEPRINT = Blueprint('auth', __name__)
-
-@BLUEPRINT.route('/logout')
-@login_required
-def logout():
-    logout_user()
-    flash('Logged out.')
-    return redirect(url_for('pages.view'))

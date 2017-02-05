@@ -1,6 +1,6 @@
 from flask import Blueprint, current_app, request, render_template, make_response, jsonify
 from flask_restful import Api, Resource, fields, marshal_with
-from flask_login import current_user
+from flask_login import current_user, logout_user
 import peewee
 import logging
 
@@ -17,6 +17,14 @@ REVISION_FIELDS = {
     'message': fields.String,
     'rendered': fields.String(attribute='html')
 }
+
+class Identity(Resource):
+    def get(self, id=None):
+        if id is None:
+            return current_user._get_current_object()
+        if id == 'logout':
+            logout_user()
+            return current_user._get_current_object()
 
 class PageItem(Resource):
     @staticmethod
@@ -93,6 +101,7 @@ class PageItem(Resource):
         else:
             return None, 404
 
+API.add_resource(Identity, '/_/identity/', '/_/identity/<string:id>')
 API.add_resource(PageItem, '/', '/<path:slug>', '/<path:slug>@<int:revision>')
 
 @API.representation('text/html')
