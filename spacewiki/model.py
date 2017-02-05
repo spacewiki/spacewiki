@@ -256,7 +256,8 @@ class Identity(BaseModel, UserMixin):
     def to_json(self):
         return {
             'display': self.display_name,
-            'handle': self.handle
+            'handle': self.handle,
+            'id': self.get_id()
         }
 
     def __repr__(self):
