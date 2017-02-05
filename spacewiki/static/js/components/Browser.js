@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import API, { Page, Revision, PageNotFound, WikiError } from '../API';
+import API, { Page, Revision, PageNotFound, WikiError, Identity } from '../API';
 import { Route, IndexRoute } from 'react-router';
 import Header from './Header';
 import WelcomeBox from './WelcomeBox';
@@ -22,6 +22,11 @@ export default class Browser extends Component {
     var api = new API();
     api.pageSavedHandler((page) => {
       this.setState({currentRevision: page.latestRevision, error: null});
+    });
+    api.loggedOutHandler(() => {
+      console.log("Logged out!");
+      this.setState({currentUser: new Identity()});
+      this.fetchPage(this.props.params.splat);
     });
   }
 
@@ -57,7 +62,7 @@ export default class Browser extends Component {
           }
         } else if (error instanceof WikiError) {
           console.error("Page load Error: " + error.stack);
-          this.setState({error: error});
+          this.setState({currentRevision: null, error: error});
         } else {
           throw error;
         }

@@ -20,16 +20,21 @@ export default class API {
 
     this.progress = () => {};
     this.saved = () => {};
+    this.loggedOut = () => {};
 
     return instance;
   }
 
-  progressHandler(cb) {
-    this.progress = cb;
+  loggedOutHandler(f) {
+    this.loggedOut = f;
   }
 
-  pageSavedHandler(cb) {
-    this.saved = cb;
+  logout() {
+    this.progress(25);
+    return this.fetch('/_/identity/logout', {credentials: 'include'}).then((response) => {
+      this.loggedOut();
+      return response;
+    });
   }
 
   fetch(url, options) {
@@ -49,6 +54,14 @@ export default class API {
       this.progress(100);
       throw error;
     });
+  }
+
+  progressHandler(cb) {
+    this.progress = cb;
+  }
+
+  pageSavedHandler(cb) {
+    this.saved = cb;
   }
 
   getPage(slug, revision) {
