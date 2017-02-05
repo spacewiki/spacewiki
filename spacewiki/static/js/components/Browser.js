@@ -13,7 +13,11 @@ export default class Browser extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {currentRevision: undefined, missingIndex: false};
+    this.state = {
+      currentRevision: undefined,
+      missingIndex: false,
+      currentUser: this.props.route.initialUser
+    };
 
     var api = new API();
     api.pageSavedHandler((page) => {
@@ -66,7 +70,8 @@ export default class Browser extends Component {
       return (
         <div>
           <Header
-            revision={this.state.currentRevision} />
+            revision={this.state.currentRevision}
+            currentUser={this.state.currentUser} />
           <main className="row">
             <div className="small-12 columns content">
               <div className="row">

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import SidebarAttachments from './SidebarAttachments';
-import API, { Page, Revision } from '../API';
+import API, { Page, Revision, Identity } from '../API';
 import Browser from './Browser';
 import Editor from './Editor';
 import Viewer from './Viewer';
@@ -14,16 +14,11 @@ export default class App extends Component {
     console.log("Booting up with %o", props.initialConfig);
   }
 
-  componentWillUpdate(nextProps, nextState) {
-    if (nextState.currentSlug != this.state.currentSlug) {
-      this.fetchPage(nextState.currentSlug, nextProps.revision);
-    }
-  }
-
   render() {
+    var user = new Identity(this.props.initialConfig.current_user);
     return (
       <Router history={browserHistory}>
-        <Route component={Browser}>
+        <Route initialUser={user} component={Browser} >
           <Route path="/*/edit" component={Editor} />
           <Route path="/edit" component={Editor} />
           <Route path="*" component={Viewer} />
