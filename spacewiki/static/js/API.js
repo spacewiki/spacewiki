@@ -1,5 +1,6 @@
 let instance = null;
 
+import 'whatwg-fetch';
 import ExtendableError from 'es6-error';
 
 export class WikiError extends ExtendableError {
@@ -31,13 +32,9 @@ export default class API {
     this.saved = cb;
   }
 
-  getPage(slug, revision) {
-    var url = '/' + slug;
-    if (revision) {
-      url += '@'+revision;
-    }
+  fetch(url, options) {
     this.progress(25);
-    return fetch(url, {credentials: 'include'}).then((response) => {
+    return fetch(url, options).then((response) => {
       this.progress(75);
       if (response.ok) {
         return response.json();
@@ -48,12 +45,21 @@ export default class API {
           throw new WikiError(response);
         }
       }
-    }).then((data) => {
-      this.progress(100);
-      return new Page(data);
     }).catch((error) => {
       this.progress(100);
       throw error;
+    });
+  }
+
+  getPage(slug, revision) {
+    var url = '/' + slug;
+    if (revision) {
+      url += '@'+revision;
+    }
+    this.progress(25);
+    return this.fetch(url, {credentials: 'include'}).then((data) => {
+      this.progress(100);
+      return new Page(data);
     });
   }
 
@@ -64,21 +70,10 @@ export default class API {
     form.set('title', pageData.title);
     form.set('body', pageData.body);
     form.set('message', pageData.message);
-    return fetch('/' + slug, {credentials: 'include', method: "POST", body: form}).then((response) => {
-      this.progress(75);
-      if (response.ok) {
-        return response.json();
-      } else {
-        throw new WikiError('Save error: '+response.statusText);
-      }
-    }).then((data) => {
+    return this.fetch('/' + slug, {credentials: 'include', method: "POST", body: form}).then((data) => {
       var p = new Page(data);
       this.saved(p);
-      this.progress(100);
       return p;
-    }).catch((error) => {
-      this.progress(100);
-      throw error;
     });
   }
 }

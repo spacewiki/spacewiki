@@ -10,6 +10,7 @@
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
     "react-router": "^3.0.2",
-    "simplemde": "^1.11.2"
+    "simplemde": "^1.11.2",
+    "whatwg-fetch": "^2.0.2"
   }
 }
