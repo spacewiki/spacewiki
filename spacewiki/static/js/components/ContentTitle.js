@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Identity } from '../API';
+import { Identity } from '../Model';
 
 export default class ContentTitle extends Component {
   render() {

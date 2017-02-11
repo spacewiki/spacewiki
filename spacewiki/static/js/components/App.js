@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 
 import SidebarAttachments from './SidebarAttachments';
-import API, { Page, Revision, Identity } from '../API';
+import API from '../API';
+import { Page, Revision, Identity } from '../Model';
 import Browser from './Browser';
 import Editor from './Editor';
 import Viewer from './Viewer';

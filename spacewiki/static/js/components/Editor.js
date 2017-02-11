@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import DropdownEdit from './DropdownEdit';
 import MDEEditor from './MDEEditor';
 import Attachments from './Attachments';
-import API, { Page, Revision } from '../API';
+import API from '../API';
+import { Page, Revision } from '../Model';
 import { browserHistory } from 'react-router';
 
 export default class Editor extends Component {

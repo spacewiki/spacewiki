@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Revision } from '../API';
+import { Revision } from '../Model';
 import Raw from './Raw';
 
 export default class Viewer extends Component {

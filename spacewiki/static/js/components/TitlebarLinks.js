@@ -1,6 +1,7 @@
 import $ from 'jquery-browserify';
 import React, { Component } from 'react';
-import API, { Identity } from '../API';
+import API from '../API';
+import { Identity } from '../Model';
 
 import { Link } from 'react-router';
 

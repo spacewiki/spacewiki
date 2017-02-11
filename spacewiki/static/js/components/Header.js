@@ -3,7 +3,8 @@ import React, { Component } from 'react';
 import TitlebarLinks from './TitlebarLinks';
 import Toolbar from './Toolbar';
 import ProgressLine from './ProgressLine';
-import API, { Revision, Identity } from '../API';
+import API from '../API';
+import { Revision, Identity } from '../Model';
 
 import { Link } from 'react-router';
 
