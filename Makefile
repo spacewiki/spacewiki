@@ -2,23 +2,26 @@ IMAGES 	:= $(wildcard theme/img/*)
 
 IMAGES_OUT 	:= $(patsubst theme/img/%,static/img/%,$(IMAGES))
 
-.PHONY: test all static syncdb
+.PHONY: test all static syncdb npm static_test
 
 all: static syncdb
 
-static: images
+static: images npm
 
 syncdb:
 	./manage.py db syncdb
 
 check: test
 
-test:
+test: static_test
 	nosetests --with-coverage
+
+static_test: npm
+	cd spacewiki/static/js/ && npm test
 
 docker_test:
 	pip install nose
-	nosetests --with-coverage
+	$(MAKE) test
 
 lint:
 	pylint -f html *.py | tee linter.html
@@ -39,3 +42,6 @@ static/img/%.gif: theme/img/%.gif
 
 static/img/%.svg: theme/img/%.svg
 	cp $< $@
+
+npm:
+	cd spacewiki/static/js && yarn install
