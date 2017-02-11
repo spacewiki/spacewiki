@@ -44,4 +44,4 @@ static/img/%.svg: theme/img/%.svg
 	cp $< $@
 
 npm:
-	cd spacewiki/static/js && yarn install
+	cd spacewiki/static/js && npm install
