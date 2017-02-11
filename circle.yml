@@ -12,7 +12,7 @@ dependencies:
   override:
     - docker pull fedora:24
     - pip install -e .[test]
-    - npm install
+    - make npm
 
 test:
   override:
