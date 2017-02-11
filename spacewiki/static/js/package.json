@@ -18,5 +18,8 @@
     "react-test-renderer": "^15.4.2",
     "simplemde": "^1.11.2",
     "whatwg-fetch": "^2.0.2"
+  },
+  "scripts": {
+    "test": "jest"
   }
 }
