@@ -91,11 +91,9 @@ export default class Editor extends Component {
 };
 
 Editor.propTypes = {
-  revision: React.PropTypes.instanceOf(Revision),
-  onPageSaved: React.PropTypes.func
+  revision: React.PropTypes.instanceOf(Revision)
 };
 
 Editor.defaultProps = {
-  onPageSaved: () => {},
   revision: new Page().latestRevision
 };
