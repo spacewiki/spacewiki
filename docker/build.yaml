@@ -15,6 +15,7 @@ run:
   - exec:
       cmd: npm install
       hook: npm
+      chdir: /srv/spacewiki/app/spacewiki/static/js/
   - exec:
       cmd: ./manage.py assets build
       hook: assets
