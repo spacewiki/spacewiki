@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router';
 
 export default class Softlinks extends Component {
   render() {
     var links = this.props.softlinks.map((softlink) => {
       return (
         <li key={softlink.slug}>
-          <a href={softlink.slug}>{softlink.title}</a>
+          <Link to={softlink.slug}>{softlink.title}</Link>
         </li>
       );
     });
