@@ -41,7 +41,7 @@ export default class Browser extends Component {
   }
 
   fetchPage(slug, revision) {
-    (new API()).getPage(slug, revision)
+    return (new API()).getPage(slug, revision)
       .then((page) => {
         this.setState({currentRevision: page.latestRevision, error: null});
         if (this.state.missingIndex && slug == '') {
@@ -66,7 +66,7 @@ export default class Browser extends Component {
         } else {
           throw error;
         }
-      });
+      })
   }
 
   render() {
