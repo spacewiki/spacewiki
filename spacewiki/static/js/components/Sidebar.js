@@ -22,6 +22,7 @@ export default class Sidebar extends Component {
         <h2>Related pages</h2>
         <Softlinks
           softlinks={this.props.revision.page.softlinks} />
+        <br style={{"clear":"both"}}/>
         <h2>Attachments</h2>
         <SidebarAttachments
           attachments={this.props.revision.page.attachments} />
