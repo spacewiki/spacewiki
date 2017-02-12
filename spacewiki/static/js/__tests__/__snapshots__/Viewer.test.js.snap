@@ -1,0 +1,3 @@
+exports[`test Blank page 1`] = `"<p></p>"`;
+
+exports[`test Empty revision 1`] = `"<p></p>"`;
