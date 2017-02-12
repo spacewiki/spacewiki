@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import API, { Page, Revision, PageNotFound, WikiError, Identity } from '../API';
+import API, { PageNotFound, WikiError } from '../API';
+import { Page, Revision, Identity } from '../Model';
 import { Route, IndexRoute } from 'react-router';
 import Header from './Header';
 import WelcomeBox from './WelcomeBox';
