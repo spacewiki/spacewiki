@@ -19,6 +19,7 @@ dependencies:
 
 test:
   override:
+    - ln -s spacewiki/static/js/node_modules/ ./
     - make test
     - docker build -t spacewiki:app .
     - docker run -v `pwd`:/spacewiki/app/ spacewiki:app make docker_test
