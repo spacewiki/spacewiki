@@ -7,8 +7,15 @@ class Navlink extends Component {
   }
 
   render() {
+    var className = "";
+    if (this.props.subpages) {
+      className = "has-subpages";
+      if (this.props.expanded) {
+        className += " expanded";
+      }
+    }
     return (
-      <Link to={this.props.url}>{this.props.title}</Link>
+      <Link className={className} to={this.props.url}>{this.props.title}</Link>
     );
   }
 }
@@ -22,7 +29,7 @@ export default class Navtree extends Component {
     var subpages = this.props.navigation.subpages.map((subpage) => {
       return (
         <li key={subpage.slug}>
-          <Navlink url={subpage.slug} title={subpage.title}/>
+          <Navlink url={subpage.slug} title={subpage.title} subpages={subpage.hasChildren}/>
         </li>
       );
     });
@@ -37,7 +44,7 @@ export default class Navtree extends Component {
       return (
         <li key={sibling.slug}>
           <span className={activeClass}>
-            <Navlink url={sibling.slug} title={sibling.title} />
+            <Navlink url={sibling.slug} title={sibling.title} subpages={sibling.hasChildren} />
           </span>
           <ul className="navtree">
             {subnav}
@@ -58,7 +65,7 @@ export default class Navtree extends Component {
       ret = (
         <ul className="navtree">
           <li>
-            <Navlink url={parent.slug} title={parent.title} />
+            <Navlink url={parent.slug} title={parent.title} subpages={true} expanded={true} />
             {ret}
           </li>
         </ul>
