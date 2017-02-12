@@ -110,8 +110,8 @@ class Page(BaseModel):
 
     @staticmethod
     def parsePreviousSlugFromRequest(req, default):
-        if 'Referer' in req.headers:
-            referer = req.headers['Referer']
+        referer = req.headers.get('x-spacewiki-referer', req.headers.get('referer', None))
+        if referer is not None:
             refer_url = urlparse.urlparse(referer)
             if 'Host' in req.headers:
                 if refer_url.netloc == req.headers['Host']:

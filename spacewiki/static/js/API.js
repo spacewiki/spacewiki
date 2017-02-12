@@ -11,6 +11,12 @@ export class WikiError extends ExtendableError {
   }
 }
 
+function qualifyURL(url) {
+      var a = document.createElement('a');
+      a.href = url;
+      return a.cloneNode(false).href;
+}
+
 export class PageNotFound extends WikiError {}
 
 export default class API {
@@ -31,7 +37,6 @@ export default class API {
   }
 
   logout() {
-    this.progress(25);
     return this.fetch('/_/identity/logout', {credentials: 'include'}).then((response) => {
       this.loggedOut();
       return response;
@@ -41,7 +46,7 @@ export default class API {
   fetch(url, options) {
     this.progress(25);
     return fetch(url, options).then((response) => {
-      this.progress(75);
+      this.progress(100);
       if (response.ok) {
         return response.json();
       } else {
@@ -65,14 +70,20 @@ export default class API {
     this.saved = cb;
   }
 
-  getPage(slug, revision) {
-    var url = '/' + slug;
+  getPage(slug, previousPage, revision) {
+    var nextUrl = '/' + slug;
     if (revision) {
-      url += '@'+revision;
+      nextUrl += '@'+revision;
     }
-    this.progress(25);
-    return this.fetch(url, {credentials: 'include'}).then((data) => {
-      this.progress(100);
+    var headers = new Headers();
+    if (previousPage) {
+      headers.append('X-SpaceWiki-Referer', qualifyURL('/'+previousPage));
+    }
+    var options = {
+      credentials: 'include',
+      headers: headers
+    };
+    return this.fetch(nextUrl, options).then((data) => {
       return new Page(data);
     });
   }

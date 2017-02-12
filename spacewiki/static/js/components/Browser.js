@@ -37,12 +37,12 @@ export default class Browser extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.params.splat != this.props.params.splat) {
-      this.fetchPage(nextProps.params.splat || "");
+      this.fetchPage(nextProps.params.splat || "", this.props.params.splat);
     }
   }
 
-  fetchPage(slug, revision) {
-    return (new API()).getPage(slug, revision)
+  fetchPage(slug, previousPage, revision) {
+    return (new API()).getPage(slug, previousPage, revision)
       .then((page) => {
         this.setState({currentRevision: page.latestRevision, error: null});
         if (this.state.missingIndex && slug == '') {
@@ -50,7 +50,6 @@ export default class Browser extends Component {
         }
       })
       .catch((error) => {
-        console.log(typeof(error));
         if (error instanceof PageNotFound && this.props.params.splat == "" && !this.state.missingIndex) {
           this.setState({missingIndex: true});
           browserHistory.push('/docs');
