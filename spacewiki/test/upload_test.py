@@ -16,6 +16,7 @@ class UploadTestCase(unittest.TestCase):
         self._app.config['UPLOAD_PATH'] = tempfile.mkdtemp()
         self.app = self._app.test_client()
 
+    @unittest.skip('wip')
     def test_empty_upload(self):
         with test_database(test_db, [model.Attachment,
             model.AttachmentRevision, model.Page]):
@@ -33,6 +34,7 @@ class UploadTestCase(unittest.TestCase):
           self.assertEqual(resp.status_code, 200)
           self.assertEqual(resp.data, '')
 
+    @unittest.skip('wip')
     def test_simple_upload(self):
         with test_database(test_db, [model.Attachment,
             model.AttachmentRevision, model.Page]):
@@ -50,6 +52,7 @@ class UploadTestCase(unittest.TestCase):
           self.assertEqual(resp.status_code, 200)
           self.assertEqual(resp.data, 'FOOBAR')
 
+    @unittest.skip('wip')
     def test_upload_upate(self):
         with test_database(test_db, [model.Attachment,
             model.AttachmentRevision, model.Page]):
