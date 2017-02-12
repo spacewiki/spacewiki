@@ -3,7 +3,7 @@ import WelcomeBox from './WelcomeBox';
 import Navtree from './Navtree';
 import Softlinks from './Softlinks';
 import SidebarAttachments from './SidebarAttachments';
-import { Revision } from '../API';
+import { Revision } from '../Model';
 
 export default class Sidebar extends Component {
   render() {
