@@ -4,7 +4,7 @@ import $ from 'jquery-browserify';
 import ToolbarButton from './ToolbarButton';
 import ContentTitle from './ContentTitle';
 
-import { Page, Revision } from '../API';
+import { Page, Revision } from '../Model';
 
 export default class Toolbar extends Component {
   componentDidMount() {
