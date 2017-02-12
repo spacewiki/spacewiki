@@ -15,6 +15,7 @@ export class Page {
 
     this.latestRevision = new Revision(this.data.latest || {}, this);
     this.navigation = this.data.navigation || {subpages: [], parents: [], siblings: []};
+    this.softlinks = this.data.softlinks || [];
     this.slug = this.data.slug || slug;
     this.title = this.data.title || this.slug;
     this.url = '/' + this.slug
