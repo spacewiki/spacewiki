@@ -83,7 +83,8 @@ class Page(BaseModel):
 
     def to_json(self):
         def map_nav(p):
-            return {'title': p.title, 'slug': '/'+p.slug}
+            return {'title': p.title, 'slug': '/'+p.slug, 'hasChildren':
+                    len(p.subpages) > 0}
         def map_links(link):
             return {'title': link.dest.title, 'slug': '/'+link.dest.slug}
         def map_links_in(link):
