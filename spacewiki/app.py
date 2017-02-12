@@ -2,6 +2,7 @@
 
 from flask import Flask
 from flask_assets import Environment, Bundle
+import logging.config
 
 from spacewiki import context, model, \
         uploads,  assets, auth, middleware, api
