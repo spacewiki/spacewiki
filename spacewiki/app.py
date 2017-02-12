@@ -10,6 +10,7 @@ def create_app(with_config=True):
     APP = Flask(__name__)
 
     APP.config.setdefault('INDEX_PAGE', 'index')
+    APP.config.setdefault('SITE_NAME', 'SpaceWiki')
 
     if with_config:
         APP.config.from_object('spacewiki.settings')
