@@ -207,7 +207,7 @@ class Page(BaseModel):
 
     @property
     def parentPages(self):
-        if self.slug == current_app.config['INDEX_PAGE']:
+        if '/' not in self.slug:
             return []
         parentSlug = '/'.join(self.slug.split('/')[0:-1])
         if parentSlug == "":
@@ -220,8 +220,6 @@ class Page(BaseModel):
 
     @property
     def siblings(self):
-        if self.slug == current_app.config['INDEX_PAGE']:
-            return []
         parentSlug = '/'.join(self.slug.split('/')[0:-1])
         if parentSlug == "":
             return Page.select().where(~Page.slug.contains('/')).order_by(Page.title)
