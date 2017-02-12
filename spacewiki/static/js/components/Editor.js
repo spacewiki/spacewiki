@@ -28,16 +28,17 @@ export default class Editor extends Component {
   }
 
   save(evt) {
-    evt.preventDefault();
-    var api = new API();
+    if (evt) {
+      evt.preventDefault();
+    }
     var pageData = {
       slug: this.state.slug,
       title: this.state.title,
       body: this.state.body,
       message: this.state.message
     }
+    var api = new API();
     api.savePage(this.props.revision.page.slug, pageData).then((page) => {
-      console.log(page);
       browserHistory.push('/'+page.slug);
     });
   }
