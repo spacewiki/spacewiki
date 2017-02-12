@@ -13,7 +13,7 @@ run:
       cmd: pip install -e /spacewiki/app/
       hook: pip
   - exec:
-      cmd: npm install
+      cmd: cd /srv/spacewiki/app/static/js && npm install
       hook: npm
       chdir: /srv/spacewiki/app/static/js/
   - exec:
