@@ -55,6 +55,10 @@ class SlugField(peewee.CharField):
         return '/'.join(map(SlugField._slugify, parts)).rstrip('/')
 
     @staticmethod
+    def coerce(value):
+        return SlugField.slugify(unicode(value))
+
+    @staticmethod
     def _slugify(value):
         # For sql queries
         if value == '%':
