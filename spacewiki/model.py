@@ -207,8 +207,11 @@ class Page(BaseModel):
 
     @property
     def subpages(self):
-        return Page.select().where(peewee.fn.Substr(Page.slug, 1,
-            len(self.slug)+1) == self.slug+'/').order_by(Page.title)
+        # Find pages where the slug starts with our current page name
+        return Page.select().where(
+                peewee.fn.Substr(Page.slug, 1, len(self.slug)+1) == self.slug+'/',
+                ~peewee.fn.Substr(Page.slug, len(self.slug)+2).contains('/')
+        ).order_by(Page.title)
 
     @property
     def parentPages(self):
