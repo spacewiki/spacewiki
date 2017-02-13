@@ -222,7 +222,7 @@ class Page(BaseModel):
             parentSlug = current_app.config['INDEX_PAGE']
         try:
             parent = Page.select().where(Page.slug == parentSlug)[0]
-            return parent.parentPages + [parent,]
+            return [parent,] + parent.parentPages
         except IndexError:
             return []
 
