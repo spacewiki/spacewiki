@@ -12,7 +12,7 @@ requirejs:
 javascript:
   output: cache/app.js
   filters:
-    - browserify
+    - local-browserify
   config:
     BROWSERIFY_TRANSFORMS:
       - ['babelify', '--presets', '[', 'es2015', 'react', ']']

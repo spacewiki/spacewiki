@@ -3,20 +3,18 @@ run:
       cmd: dnf install -y /usr/lib/rpm/redhat/redhat-hardened-cc1 gcc gcc-c++ git python-devel gifsicle rubygem-sass uglify-js pngcrush make python-pillow python-gunicorn python-greenlet python-gevent python-slugify python-flask-script python2-hypothesis nodejs-requirejs
       hook: packages
   - exec:
-      cmd: mkdir -p /spacewiki/app /data
+      cmd: mkdir -p /spacewiki/{build,app} /data
   - exec:
       cmd: git clone --depth 10 --recursive /spacewiki/git/ /spacewiki/app
       hook: git
   - exec:
-      cmd: cp /spacewiki/git/docker/settings.py /spacewiki/app/spacewiki/local_settings.py
+      cmd: pip install -e /spacewiki/app
   - exec:
-      cmd: ./setup.py install --root /srv/spacewiki/app/
-      hook: build
-      chdir: /srv/spacewiki/git/
+      cmd: cp /spacewiki/git/docker/settings.py /spacewiki/app/local_settings.py
   - exec:
-      cmd: ./manage.py assets build
-      hook: assets
-      chdir: /srv/spacewiki/app/
+      cmd: ./setup.py build_npm
+      hook: npm
+      cd: /spacewiki/app
   - exec:
       cmd: dnf clean all
       hook: clean
